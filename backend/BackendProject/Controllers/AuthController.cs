@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendProject.Models;
+using BackendProject.Data;
 using BCrypt.Net;
 
 namespace BackendProject.Controllers

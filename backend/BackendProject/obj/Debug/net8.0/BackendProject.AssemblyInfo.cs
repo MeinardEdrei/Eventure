@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BackendProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c053cea3cfc9a640a9c6a8f6a85595c95909d45c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53b4f25a80aff7872c39589c9f5e5bf6cc74e7b1")]
 [assembly: System.Reflection.AssemblyProductAttribute("BackendProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BackendProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

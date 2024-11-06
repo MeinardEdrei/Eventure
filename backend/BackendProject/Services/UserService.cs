@@ -1,4 +1,7 @@
 using BCrypt.Net;
+using BackendProject.Data;
+using BackendProject.Services;
+using BackendProject.Models;
 
 public class UserService
 {

@@ -10,7 +10,6 @@ namespace BackendProject.Models
         [Required]
         [EmailAddress]
         [StringLength(100)]
-        [Index(IsUnique = true)]  // Ensure unique email
         public string Email { get; set; }
 
         [Required]

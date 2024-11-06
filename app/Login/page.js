@@ -4,8 +4,8 @@ import Link from "next/link";
 
 export default function Login() {
 
-    const handleSubmit = () => {
-
+    const handleSubmit = (e) => {
+        e.preventDefault();
     }
 
     return (

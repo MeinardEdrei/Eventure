@@ -14,7 +14,11 @@ export default function Register() {
         e.preventDefault();
         
         try {
-            const res = await axios.post('http://localhost:5000/api/register', { username, email, password });
+            const res = await axios.post('https://localhost:5001/api/Auth/register', { username, email, password}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
             alert(res.data.message); 
         } catch (error) {
             console.error(error);
@@ -27,16 +31,19 @@ export default function Register() {
             <div>
                 <form onSubmit={handleSubmit}>
                     <input 
+                        className="text-black"
                         placeholder="Username" 
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <input 
+                        className="text-black"
                         placeholder="Email" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <input 
+                        className="text-black"
                         placeholder="Password" 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}

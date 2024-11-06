@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', 'Nunito';
+  overflow: hidden;
+}
+
+/* Login.css */
+.LogIn {
+  height: 90vh;
+}
+
+.Main-cntr {
+  background-color: #2e113e;
+  height: auto;
+  width: auto;
+  border-radius: 25px;
+  border: 0.5px solid #6c6c6c;
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
+  padding: 3rem; 
+}
+
+.Main-cntr .title1 {
+  text-align: center;
+  margin-bottom: 1.5rem; /* Adds space below the title */
+  font-size: 2.5em;
+  font-weight: bolder;
+}
+
+.input-cntr {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; 
+  width: 100%;
+}
+
+.input-cntr input {
+  background-color: transparent;
+  color: rgb(255, 255, 255);
+  padding: 0.75rem;
+  border: 1px solid #ad63d8;
+  border-radius: 8px;
+  width: 25rem;
+  outline: none;
+}
+.input-cntr input:focus {
+  background-color: #350054;
+  border: 2px solid #9d63d3;
+}
+.input-cntr input::placeholder{
+  color: #ffffff;
+  opacity: 0.5;
+}
+
+.input-cntr button {
+  margin-top: 15px;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.input-cntr p {
+  margin-top: 0rem;
+  text-align: right;
+  font-size: 0.8em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

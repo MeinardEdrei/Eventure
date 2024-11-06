@@ -1,23 +1,30 @@
-'use client';
+"use client";
+import "../css/Login-Signup.css";
 
 import Link from "next/link";
 
 export default function Login() {
+  const handleSubmit = () => {};
 
-    const handleSubmit = () => {
-
-    }
-
-    return (
-        <div>
+  return (
+    <div className="LogIn flex flex-col items-center justify-center">
+      <div className="Main-cntr flex flex-col items-center justify-center">
+        <form onSubmit={handleSubmit}>
+          <h1 className="title1">Welcome!</h1>
+          <div className="input-cntr">
             <div>
-                <form onSubmit={handleSubmit}>
-                    <input placeholder="Username"/>
-                    <input placeholder="Password"/>
-                    <button type="submit">Login</button>
-                    <Link href='/Register'><p className="underline">Don't have an account?</p></Link>
-                </form>
+              <input placeholder="Username" />
             </div>
-        </div>
-    )
+            <div>
+              <input placeholder="Password" />
+            </div>
+            <button type="submit">Login</button>
+            <Link href="/Register">
+              <p className="underline">Don't have an account?</p>
+            </Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

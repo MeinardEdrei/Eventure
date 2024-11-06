@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BackendApp.Models
+namespace BackendProject.Models
 {
     public class User
     {
@@ -27,6 +27,6 @@ namespace BackendApp.Models
 
         [Required]
         [StringLength(10)]
-        public string Status { get; set; } = "pending" // Default Status until Approval
+        public string Status { get; set; } = "pending"; // Default Status until Approval
     }
 }

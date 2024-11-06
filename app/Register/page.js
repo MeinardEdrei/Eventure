@@ -13,8 +13,13 @@ export default function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const res = await axios.post('/api/register', { username, email, password });
-        
+        try {
+            const res = await axios.post('http://localhost:5000/api/register', { username, email, password });
+            alert(res.data.message); 
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || "Registration failed");
+        }
     }
 
     return (

@@ -1,0 +1,8 @@
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.csproj.AssemblyReference.cache
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.AssemblyInfoInputs.cache
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.AssemblyInfo.cs
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.csproj.CoreCompileInputs.cache
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Meinard Edrei\source\repos\eventure\backend\BackendProject\obj\Debug\net8.0\BackendProject.sourcelink.json

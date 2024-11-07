@@ -1,5 +1,8 @@
 using BackendProject.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +29,31 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-builder.Services.AddScoped<UserService>(); // User Service
+// JWT Config
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])
+            )
+        };
+    });
+
+// builder.Services.AddScoped<UserService>(); // User Service
 
 var app = builder.Build();
 
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowLocalhost"); // CORS
 
-// Configure the HTTP request pipeline.
+// HTTP request pipeline config
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,10 +62,13 @@ if (app.Environment.IsDevelopment())
 
 // Enable routing and controllers
 app.UseRouting();
-app.UseAuthorization();
+app.UseAuthorization(); // IMPORTANT for auth
+app.UseAuthentication(); // IMPORTANT for auth
 app.MapControllers();
 
-// ---------FOR TEST RUN SERVER
+
+
+// --------- FOR TEST RUN SERVER
 
 var summaries = new[]
 {

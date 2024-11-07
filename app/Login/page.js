@@ -1,4 +1,5 @@
-'use client';
+"use client";
+import "../css/Login-Signup.css";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,25 +35,34 @@ export default function Login() {
 
     }
 
-    return (
-        <div>
+  return (
+    <div className="LogIn flex flex-col items-center justify-center">
+      <div className="Main-cntr flex flex-col items-center justify-center">
+        <form onSubmit={handleSubmit}>
+          <h1 className="title1">Welcome!</h1>
+          <div className="input-cntr">
             <div>
-                <form onSubmit={handleSubmit}>
-                    <input 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Email"
-                    />
-                    <input 
-                        className="text-black"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                    />
-                    <button type="submit">Login</button>
-                    <Link href='/Register'><p className="underline">Don't have an account?</p></Link>
-                </form>
+              <input 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+              />
             </div>
-        </div>
-    )
+            <div>
+              <input 
+                  className="text-black"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+              />
+            </div>
+            <button type="submit">Login</button>
+            <Link href="/Register">
+              <p className="underline">Don't have an account?</p>
+            </Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

@@ -1,5 +1,5 @@
-'use client';
-
+"use client";
+import "../css/Login-Signup.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
@@ -25,31 +25,34 @@ export default function Register() {
         }
     }
 
-    return (
-        <div>
-            <div>
-                <form onSubmit={handleSubmit}>
-                    <input 
-                        className="text-black"
-                        placeholder="Username" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <input 
-                        className="text-black"
-                        placeholder="Email" 
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <input 
-                        className="text-black"
-                        placeholder="Password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button type="submit">Sign up</button>
-                </form>
-            </div>
-        </div>
-    )
+  return (
+    <div className="LogIn flex flex-col items-center justify-center">
+      <div className="Main-cntr flex flex-col items-center justify-center">
+        <form onSubmit={handleSubmit}>
+          <h1 className="title1">Welcome!</h1>
+          <div className="input-cntr">
+            <input 
+                className="text-black"
+                placeholder="Username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+            />
+            <input 
+                className="text-black"
+                placeholder="Email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+            />
+            <input 
+                className="text-black"
+                placeholder="Password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Sign up</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

@@ -3,26 +3,34 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register controllers
+builder.Services.AddControllers();
+
 // To Use MySql
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
-
 // CORS Config
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNextJS",
+    options.AddPolicy("AllowLocalhost",
         builder => builder
             .WithOrigins("http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
 
-app.UseCors("AllowNextJS");
+builder.Services.AddScoped<UserService>(); // User Service
+
+var app = builder.Build();
+
+app.UseCors("AllowLocalhost");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,7 +39,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Enable routing and controllers
+app.UseRouting();
+app.UseAuthorization();
+app.MapControllers();
+
+// ---------FOR TEST RUN SERVER
 
 var summaries = new[]
 {

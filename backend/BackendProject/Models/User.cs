@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BackendProject.Models
 {
+    [Table("users")]
     public class User
     {
         [Key]
@@ -10,15 +12,15 @@ namespace BackendProject.Models
         [Required]
         [EmailAddress]
         [StringLength(100)]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         [Required]
         [StringLength(20)]

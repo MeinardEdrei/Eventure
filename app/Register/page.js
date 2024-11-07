@@ -7,14 +7,13 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // const [role, setRole] = useState('');
-    // const [approved, setApproved] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        // POST to localhost of dotnet
         try {
-            const res = await axios.post('https://localhost:5001/api/Auth/register', { username, email, password}, {
+            const res = await axios.post('http://localhost:5000/api/auth/register', { username, email, password}, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

@@ -4,8 +4,8 @@ using BackendProject.Models;
 using BackendProject.Data;
 using BCrypt.Net;
 
-// namespace BackendProject.Controllers
-// {
+namespace BackendProject.Controllers
+{
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -49,4 +49,4 @@ using BCrypt.Net;
             return Ok(new { message = "User registered successfully." });
         }
     }
-// }
+}

@@ -1,14 +1,31 @@
 'use client';
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 const Header = () => {
     const [dropDownOpen, setDropDownOpen] = useState(false);
+    const dropDownRef = useRef(null);
 
     const toggleDropDown = () => {
         setDropDownOpen(!dropDownOpen);
     }
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
+                setDropDownOpen(false); // Close dropdown if click is outside
+            }
+        };
+
+        // Attach event listener on mount
+        document.addEventListener('mousedown', handleClickOutside); // mousedoen for every click anywhere on the dom
+
+        // Before a re-run, return to remove the event to cleanup
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
   return (
     <div>
@@ -28,7 +45,7 @@ const Header = () => {
                     <Image src='/profile.png' width={30} height={30} alt='logo' />
                 </button>
             {dropDownOpen && (
-                <div className='absolute right-0 w-48 bg-white z-10 mt-2 rounded-md'>
+                <div ref={dropDownRef} className='absolute right-0 w-48 bg-white z-10 mt-2 rounded-md'>
                     <Link href='' className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Profile</Link>
                     <Link href='/Login' className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Login</Link>
                 </div>

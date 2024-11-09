@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-*{
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+/* @import "@react-aria/example-theme"; for the drop down function */
+
+* {
   margin: 0;
   padding: 0;
-  font-family: 'Montserrat', 'Nunito';
+  font-family: "Montserrat", "Nunito";
   /* overflow: hidden; */
 }
 
@@ -11,7 +13,6 @@
 .LogIn {
   height: 90vh;
 }
-
 .Main-cntr {
   background-color: #2e113e;
   height: auto;
@@ -22,23 +23,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center; */
-  padding: 3rem; 
+  padding: 3rem;
 }
-
 .Main-cntr .title1 {
   text-align: center;
   margin-bottom: 1.5rem; /* Adds space below the title */
   font-size: 2.5em;
   font-weight: bolder;
 }
-
 .input-cntr {
   display: flex;
   flex-direction: column;
-  gap: 1rem; 
+  gap: 1rem;
   width: 100%;
 }
-
 .input-cntr input {
   background-color: transparent;
   color: rgb(255, 255, 255);
@@ -49,16 +47,17 @@
   outline: none;
 }
 .input-cntr input:focus {
-  background-color: #350054;
-  border: 2px solid #9d63d3;
+  /* background-color: rgb(59 7 100); */ /*much darker bg*/
+  background-color: rgb(107 33 168);
+  border: 2px solid rgb(168 85 247);
 }
-.input-cntr input::placeholder{
+.input-cntr input::placeholder {
   color: #ffffff;
   opacity: 0.5;
 }
-
+/* SignUp Button: */
 .input-cntr button {
-  margin-top: 15px;
+  margin-top: 20px;
   padding: 0.75rem;
   background-color: #ffffff;
   color: #000000;
@@ -66,36 +65,88 @@
   border-radius: 10px;
   cursor: pointer;
 }
-
 .input-cntr p {
   margin-top: 0rem;
   text-align: right;
   font-size: 0.8em;
 }
 
+/* Usertype Choices: */
+.usertype-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.textUsertype{
+  font-size: 1em;
+  font-weight: 500;
+  color: #ffffff;
+  opacity: 0.5;
+}
+.radio-group {
+  display: flex;
+  flex-direction: column;
+}
+.userOptions-container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+.users-options {
+  background-color: rgba(255, 255, 255, 0);
+  position: relative;
+  display: flex;
+  cursor: default;
+  border-radius: 0.5rem;
+  padding: 0.35rem 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  outline: none;
+  background-clip: padding-box;
+  border: 1px solid rgb(168 85 247);
+}
+.users-options.focus-visible {
+  ring: 2px;
+  background-color: #a855f7;
+  ring-offset: 1px;
+  ring-offset-color: rgba(255, 255, 255, 0.8);
+}
+.users-options.selected {
+  background-color: #a855f7;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.users-options.pressed:not(.selected) {
+  background-color: #eff6ff;
+}
+.radio-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 10.1em;
+}
+/* .icon-container {
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #006eff;
+} */
+.users-options.selected .icon-container {
+  color: white;
+}
+.text-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.option-text {
+  font-size: 1em;
+  color: #ffffff;
+  opacity: 0.5;
+  text-align: center;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
+.users-options.selected .option-text {
+  color: white;
+  opacity: 1;
+  font-weight: bold;
+}

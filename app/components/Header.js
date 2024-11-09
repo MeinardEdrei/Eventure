@@ -35,7 +35,7 @@ const Header = () => {
                 <Link href='/'><Image src='/logo.png' width={30} height={30} alt='logo' /></Link>
             </div>
             <div className='flex justify-between w-[40%]'>
-                <Link href=''>Events</Link>
+                <Link href='\Events'>Events</Link>
                 <Link href=''>Calendar</Link>
                 <Link href=''>Notifications</Link>
             </div>

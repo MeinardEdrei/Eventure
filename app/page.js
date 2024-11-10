@@ -7,8 +7,7 @@ import { useState } from "react";
 export default function Home() {
   const { data: session } = useSession();
   const [selected, setSelected] = useState("upcoming");
-
-  console.log(session);
+  
   return (
     <>
       <div className="main-container">

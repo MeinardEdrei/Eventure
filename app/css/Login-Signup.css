@@ -8,6 +8,9 @@
   font-family: "Montserrat", "Nunito";
   /* overflow: hidden; */
 }
+body{
+    overflow: hidden;
+}
 
 /* Login.css */
 .LogIn {

@@ -4,9 +4,6 @@ import "../css/Login-Signup.css";
 // import for radio buttons 
 import { Label, Radio, RadioGroup } from "react-aria-components"; 
 import CheckCircleIcon from "@spectrum-icons/workflow/CheckmarkCircle";
-// import for dropdown
-// import {Button, Label, ListBox, ListBoxItem, Popover, Select, SelectValue} from 'react-aria-components';
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 

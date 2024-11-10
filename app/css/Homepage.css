@@ -11,6 +11,10 @@ body {
     overflow-x: hidden;
 }
 
+html {
+    overflow-y: scroll;
+}
+
 .main-container {
     display: flex;
     flex-direction: column; 

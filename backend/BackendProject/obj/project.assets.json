@@ -4366,19 +4366,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Meinard Edrei\\.nuget\\packages\\": {}
+    "C:\\Users\\Jayson Huub Partido\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\BackendProject.csproj",
+      "projectUniqueName": "C:\\Users\\Jayson Huub Partido\\source\\repos\\eventure\\backend\\BackendProject\\BackendProject.csproj",
       "projectName": "BackendProject",
-      "projectPath": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\BackendProject.csproj",
-      "packagesPath": "C:\\Users\\Meinard Edrei\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\obj\\",
+      "projectPath": "C:\\Users\\Jayson Huub Partido\\source\\repos\\eventure\\backend\\BackendProject\\BackendProject.csproj",
+      "packagesPath": "C:\\Users\\Jayson Huub Partido\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Jayson Huub Partido\\source\\repos\\eventure\\backend\\BackendProject\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Meinard Edrei\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Jayson Huub Partido\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4467,7 +4467,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

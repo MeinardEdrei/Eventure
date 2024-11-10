@@ -48,8 +48,11 @@ namespace BackendProject.Controllers
                 Username = userDto.Username,
                 Email = userDto.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                Role = "attendee",  // Default role
-                Status = "pending"  // Default status
+                Role = userDto.Status, 
+                Status = "Pending",  // Default status
+                Profile_Image = userDto.Profile_Image,
+                Attended_Events = userDto.Attended_Events,
+                Created_Events = userDto.Created_Events
             };
 
             _context.Users.Add(user);

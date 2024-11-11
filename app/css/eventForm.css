@@ -1,0 +1,108 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.form {
+    display: flex;
+    flex-direction: row;
+}
+.formImage img {
+    padding: 0;
+    width: 15rem;
+    border-radius: 5px;
+    margin: 0 1rem 0 1rem;
+}
+.formDetails {
+    display: flex;
+    justify-content: center;    
+    flex-direction: column;
+}
+.formDetails h1 {
+    font-weight: 800;
+    font-size: 30px;
+}
+.formHeader{
+    height: 11rem;
+    width: 100%;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+hr {
+    opacity: 50%;
+    margin: 1rem 0 1rem 0;
+}
+
+.formContainer h1 {
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 1rem;
+}
+.formContainer input {
+    border-radius: 10px;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    margin: 0.5rem 0 0.5rem 0;
+    height: 2rem;
+    width: 100%;
+    padding: 1rem;
+}
+ .doubleColumn {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+} 
+.doubleColumn .col input{
+    border-radius: 10px;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    margin: 0.5rem 0 0.5rem 0;
+    height: 2rem;
+    width: 100%;
+    padding: 1rem;
+}
+.submitButton {
+    height: 2.5rem;
+    margin-top: 0.50rem;
+    width: 100%;
+    background-color: var(--color3);
+    border-radius: 10px;
+    font-weight: 500;
+    color: var(--color5);
+    transition: all ease-in-out 200ms;
+    cursor: pointer;
+}
+.submitButton:hover {
+    color: var(--color3);
+    background-color: var(--color5);
+    border: var(--borderColor);
+}

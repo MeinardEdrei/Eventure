@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.eventTitle {
+    font-weight: 900;
+    font-size: 40px;
+}
+.eventDescription {
+    opacity: 50%;
+    margin-bottom: 2rem;
+}
+
+.cardContainer {    
+    background-color: var(--color5);
+    width: 24rem;
+    height: 32rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    border: 0.25px solid hsl(0, 0%, 50%);
+}
+.parentContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.cardImage {
+    width: 22rem;
+    height: 15rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0.5rem auto 0;
+}
+.cardImage img {
+    border-radius: 5px;
+}
+.cardTitle {
+    font-weight: 600;
+    font-size: 21px;
+    margin: 0 1.5rem 0;
+    line-height: 1.5rem;
+} 
+.cardDetails {
+    opacity: 75%;
+    margin: 0 1.5rem 0;
+    line-height: 1rem;
+}
+.cardContainer hr {
+    opacity: 59%;
+    width: 90%;
+    margin: 0 1.5rem;
+}
+.cardDescription {
+    width: 22rem;
+    margin: 0 1.5rem;
+    opacity: 50%;
+}
+

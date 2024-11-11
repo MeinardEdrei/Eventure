@@ -42,7 +42,7 @@ const Header = () => {
                 <Link href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
                     <>
-                        <Link href=''>Create Event</Link>
+                        <Link href='/Create-Event'>Create Event</Link>
                         <Link href=''>My Events</Link>
                     </>
                 ) : (

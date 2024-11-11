@@ -1,4 +1,5 @@
 'use client';
+import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState, useRef } from 'react'
@@ -6,6 +7,9 @@ import React, { useEffect, useState, useRef } from 'react'
 const Header = () => {
     const [dropDownOpen, setDropDownOpen] = useState(false);
     const dropDownRef = useRef(null);
+    const { data: session } = useSession();
+
+    // console.log("session header: ", session);
 
     const toggleDropDown = () => {
         setDropDownOpen(!dropDownOpen);
@@ -36,18 +40,36 @@ const Header = () => {
             </div>
             <div className='flex justify-between w-[40%]'>
                 <Link href='\Events'>Events</Link>
-                <Link href=''>Calendar</Link>
-                <Link href=''>Notifications</Link>
+                {session?.user?.role === 'Organizer' ? (
+                    <>
+                        <Link href='/Create-Event'>Create Event</Link>
+                        <Link href=''>My Events</Link>
+                    </>
+                ) : (
+                    <>
+                        <Link href=''>Calendar</Link>
+                        <Link href=''>Notifications</Link>
+                    </>
+                )}
             </div>
+            
             <div className='relative'>
                 <button
                     onClick={toggleDropDown}>
                     <Image src='/profile.png' width={30} height={30} alt='logo' />
                 </button>
+
             {dropDownOpen && (
                 <div ref={dropDownRef} className='absolute right-0 w-48 bg-white z-10 mt-2 rounded-md'>
                     <Link href='' className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Profile</Link>
-                    <Link href='/Login' className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Login</Link>
+                    {session ? (
+                        <>
+                        <button onClick={() => signOut()} className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Sign out</button>
+                        </>
+                    ) : (
+                        <Link href='/Login' className='block text-gray-700 text-sm hover:bg-gray-100 px-4 py-2 hover:rounded-md'>Login</Link>
+                    )}
+                    
                 </div>
             )}
                 

@@ -11,13 +11,14 @@ export default function Register() {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [status, setStatus] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         // POST to localhost of dotnet
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', { username, email, password}, {
+            const res = await axios.post('http://localhost:5000/api/auth/register', { username, email, password, status }, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -50,10 +51,11 @@ export default function Register() {
             <input
               className="text-black"
               placeholder="Password"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <RadioGroupExample />
+            <RadioGroupExample status={status} setStatus={setStatus}/>
             <button type="submit">Sign up</button>
           </div>
         </form>
@@ -61,15 +63,18 @@ export default function Register() {
     </div>
   );
 
-function RadioGroupExample() {
+function RadioGroupExample({ status, setStatus }) {
   return (
     <div className="usertype-container">
       <Label className="textUsertype">User Type:</Label>
-      <RadioGroup className="radio-group">
+      <RadioGroup 
+        className="radio-group"
+        value={status}
+        onChange={setStatus}
+      >
         <div className="userOptions-container">
           <UserOptions name="Student" />
           <UserOptions name="Organizer" />
-          {/* <UserOptions name="Admin" /> */}
         </div>
       </RadioGroup>
     </div>

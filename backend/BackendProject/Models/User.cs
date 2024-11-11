@@ -24,10 +24,20 @@ namespace BackendProject.Models
 
         [Required]
         [StringLength(20)]
-        public string Role { get; set; } = "attendee"; // Default Role until Approval
+        public required string Role { get; set; }
 
         [Required]
         [StringLength(10)]
-        public string Status { get; set; } = "pending"; // Default Status until Approval
+        public required string Status { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public required string Profile_Image { get; set; }
+
+        [Required]
+        public required int Attended_Events { get; set; }
+        
+        [Required]
+        public required int Created_Events { get; set; }
     }
 }

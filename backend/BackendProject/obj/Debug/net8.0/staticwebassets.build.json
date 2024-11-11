@@ -1,11 +1,58 @@
 {
   "Version": 1,
-  "Hash": "R2wfb1gI+XJqksZ+zY9dGyUSBUenpSlISlsc3UD+CZA=",
+  "Hash": "oP04tN2z+I9VUSRER4ZO6jgM8RWAbqtQNCtKyYFJomA=",
   "Source": "BackendProject",
   "BasePath": "_content/BackendProject",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "BackendProject\\wwwroot",
+      "Source": "BackendProject",
+      "ContentRoot": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\",
+      "BasePath": "_content/BackendProject",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\uploads\\Screenshot 2024-09-19 221714.png",
+      "SourceId": "BackendProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\",
+      "BasePath": "_content/BackendProject",
+      "RelativePath": "uploads/Screenshot 2024-09-19 221714.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\Screenshot 2024-09-19 221714.png"
+    },
+    {
+      "Identity": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\uploads\\Screenshot 2024-09-20 001024.png",
+      "SourceId": "BackendProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\",
+      "BasePath": "_content/BackendProject",
+      "RelativePath": "uploads/Screenshot 2024-09-20 001024.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\Screenshot 2024-09-20 001024.png"
+    }
+  ]
 }

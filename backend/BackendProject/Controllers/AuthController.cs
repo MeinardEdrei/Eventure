@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BackendProject.Models;
 using BackendProject.Data;
 using BCrypt.Net;
+using System.IO; // File Manipulation
 
 //JWT using
 using System.IdentityModel.Tokens.Jwt;
@@ -17,13 +18,15 @@ namespace BackendProject.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _context; // database holder
+        private readonly IConfiguration _configuration; // for JWT configurations
+        private readonly IWebHostEnvironment _hostingEnvironment; // IWebHostEnvironment to handle file uploads
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _hostingEnvironment = hostingEnvironment; 
         }
 
         // ----------------POST api/auth/register------------------- 
@@ -48,8 +51,11 @@ namespace BackendProject.Controllers
                 Username = userDto.Username,
                 Email = userDto.Email,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                Role = "attendee",  // Default role
-                Status = "pending"  // Default status
+                Role = userDto.Status, 
+                Status = "Pending",  // Default status
+                Profile_Image = userDto.Profile_Image,
+                Attended_Events = userDto.Attended_Events,
+                Created_Events = userDto.Created_Events
             };
 
             _context.Users.Add(user);
@@ -94,7 +100,102 @@ namespace BackendProject.Controllers
             });
         }
 
-        private string GenerateJwtToken(User user)
+        // ----------------POST api/auth/create------------------- 
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)
+        {
+            // ----------------------VALIDATION--------------------------------
+            if (string.IsNullOrEmpty(eventsDto.Title) ||
+                string.IsNullOrEmpty(eventsDto.Description) ||
+                string.IsNullOrEmpty(eventsDto.Date) ||
+                string.IsNullOrEmpty(eventsDto.Start) ||
+                string.IsNullOrEmpty(eventsDto.End) ||
+                string.IsNullOrEmpty(eventsDto.Location) ||
+                eventsDto.Organizer_Id <= 0)
+            {
+                return BadRequest(new { message = "All fields are required." });
+            }
+
+            if (eventsDto == null) {
+                return BadRequest(new { message = "All fields are required." });
+            }
+
+            if (eventsDto.Event_Image == null || eventsDto.Event_Image.Length == 0)
+            {
+                return BadRequest(new { message = "Event image is required." });
+            }
+
+            // Validate file type
+            var allowedTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(eventsDto.Event_Image.FileName).ToLowerInvariant();
+            if (!allowedTypes.Contains(extension))
+            {
+                return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
+            }
+
+            // ----------------------END OF VALIDATION--------------------------------
+
+            // ----------------------HANDLE FILE UPLOAD--------------------------------
+            var file = eventsDto.Event_Image;
+            string fileName = null;
+
+            if (file != null && file.Length > 0)
+            {
+                fileName = file.FileName; // Store the filename
+
+                // Define the uploads folder path
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+            }
+            // ----------------------END OF HANDLE FILE UPLOAD-------------------------------- 
+
+            // ----------------------CREATE NEW EVENT--------------------------------
+            var newEvent = new Event
+            {
+                Title = eventsDto.Title,
+                Description = eventsDto.Description,
+                Date = eventsDto.Date,
+                Start = eventsDto.Start,
+                End = eventsDto.End,
+                Location = eventsDto.Location,
+                Max_Capacity = eventsDto.Max_Capacity,
+                Event_Image = fileName,
+                Created_At = DateTime.Now, // Storing as ISO 8601 timestamp
+                Organizer_Id = eventsDto.Organizer_Id,
+                Status = eventsDto.Status, // Default to "Pending"
+                Attendees_Count = 0 // Default count
+            };
+
+            _context.Events.Add(newEvent); // Save to database
+            await _context.SaveChangesAsync();
+
+            // ----------------------INCREMENT CREATED_EVENTS FOR ORGANIZER--------------------------------
+            var organizer = await _context.Users.FindAsync(eventsDto.Organizer_Id);
+            if (organizer != null)
+            {   
+                organizer.Created_Events += 1; // Increment the count
+                _context.Users.Update(organizer); // Mark the user as modified
+                await _context.SaveChangesAsync(); // Save changes to the database
+            }
+            // ----------------------END OF INCREMENT-------------------------------- 
+
+            return Ok(new { message = "Event created successfully." });
+        }
+
+        private string GenerateJwtToken(User user) // JWT for Session
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

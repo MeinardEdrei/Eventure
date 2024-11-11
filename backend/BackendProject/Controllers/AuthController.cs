@@ -182,6 +182,16 @@ namespace BackendProject.Controllers
             _context.Events.Add(newEvent); // Save to database
             await _context.SaveChangesAsync();
 
+            // ----------------------INCREMENT CREATED_EVENTS FOR ORGANIZER--------------------------------
+            var organizer = await _context.Users.FindAsync(eventsDto.Organizer_Id);
+            if (organizer != null)
+            {   
+                organizer.Created_Events += 1; // Increment the count
+                _context.Users.Update(organizer); // Mark the user as modified
+                await _context.SaveChangesAsync(); // Save changes to the database
+            }
+            // ----------------------END OF INCREMENT-------------------------------- 
+
             return Ok(new { message = "Event created successfully." });
         }
 

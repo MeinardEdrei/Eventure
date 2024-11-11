@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "u4Sj6Zy4RFDTa0u1U8LOeigqHfUSoTlGb8Iw2bMVL2k=",
+  "Hash": "oP04tN2z+I9VUSRER4ZO6jgM8RWAbqtQNCtKyYFJomA=",
   "Source": "BackendProject",
   "BasePath": "_content/BackendProject",
   "Mode": "Default",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\uploads\\Screenshot 2024-09-19 221714.png",
+      "SourceId": "BackendProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\",
+      "BasePath": "_content/BackendProject",
+      "RelativePath": "uploads/Screenshot 2024-09-19 221714.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\Screenshot 2024-09-19 221714.png"
+    },
     {
       "Identity": "C:\\Users\\Meinard Edrei\\source\\repos\\eventure\\backend\\BackendProject\\wwwroot\\uploads\\Screenshot 2024-09-20 001024.png",
       "SourceId": "BackendProject",

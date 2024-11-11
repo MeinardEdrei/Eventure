@@ -51,6 +51,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+app.UseStaticFiles(); // file handling
 app.UseCors("AllowLocalhost"); // CORS
 
 // HTTP request pipeline config

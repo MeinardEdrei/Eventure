@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using BackendProject.Models;
 using BackendProject.Data;
 using BCrypt.Net;
+using System.IO; // File Manipulation
 
 //JWT using
 using System.IdentityModel.Tokens.Jwt;
@@ -19,11 +20,13 @@ namespace BackendProject.Controllers
     {
         private readonly ApplicationDbContext _context; // database holder
         private readonly IConfiguration _configuration; // for JWT configurations
+        private readonly IWebHostEnvironment _hostingEnvironment; // IWebHostEnvironment to handle file uploads
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
+            _hostingEnvironment = hostingEnvironment; 
         }
 
         // ----------------POST api/auth/register------------------- 
@@ -95,6 +98,93 @@ namespace BackendProject.Controllers
                     role = user.Role
                 }
             });
+        }
+
+        // ----------------POST api/auth/create------------------- 
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)
+        {
+            if (eventsDto == null)
+            {
+                return BadRequest(new { message = "No data provided." });
+            }
+
+            if (string.IsNullOrEmpty(eventsDto.Title) ||
+                string.IsNullOrEmpty(eventsDto.Description) ||
+                string.IsNullOrEmpty(eventsDto.Date) ||
+                string.IsNullOrEmpty(eventsDto.Start) ||
+                string.IsNullOrEmpty(eventsDto.End) ||
+                string.IsNullOrEmpty(eventsDto.Location) ||
+                eventsDto.Organizer_Id <= 0)
+            {
+                return BadRequest(new { message = "All fields are required." });
+            }
+
+            if (eventsDto.Event_Image == null || eventsDto.Event_Image.Length == 0)
+            {
+                return BadRequest(new { message = "Event image is required." });
+            }
+
+            // Validate file type
+            var allowedTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(eventsDto.Event_Image.FileName).ToLowerInvariant();
+            if (!allowedTypes.Contains(extension))
+            {
+                return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
+            }
+            
+            // Handle file upload
+            var file = eventsDto.Event_Image;
+            string fileName = null;
+
+            if (file != null && file.Length > 0)
+            {
+                fileName = file.FileName; // Store the filename
+
+                // Define the uploads folder path
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+            }
+
+            if (eventsDto == null)
+            {
+                return BadRequest(new { message = "All fields are required." });
+            }
+
+            // Create a new event
+            var newEvent = new Event
+            {
+                Title = eventsDto.Title,
+                Description = eventsDto.Description,
+                Date = eventsDto.Date,
+                Start = eventsDto.Start,
+                End = eventsDto.End,
+                Location = eventsDto.Location,
+                Max_Capacity = eventsDto.Max_Capacity,
+                Event_Image = fileName,
+                Created_At = DateTime.UtcNow.ToString("o"), // Storing as ISO 8601 timestamp
+                Organizer_Id = eventsDto.Organizer_Id,
+                Status = "Pending", // Default to "Pending"
+                Attendees_Count = 0 // Default count
+            };
+
+            _context.Events.Add(newEvent);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event created successfully." });
         }
 
         private string GenerateJwtToken(User user)

@@ -1,0 +1,52 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BackendProject.Models
+{
+    [Table("events")]
+    public class Event
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public required string Title { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public required string Description { get; set; }
+
+        [Required]
+        public required string Date { get; set; }
+
+        [Required]
+        public required string Start { get; set; }
+
+        [Required]
+        public required string End { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        public required string Location { get; set; }
+
+        [Required]
+        public required int Max_Capacity { get; set; }
+        
+        [Required]
+        [StringLength(255)]
+        public required string Event_Image { get; set; }
+
+        [Required]
+        public required string Created_At { get; set; }
+
+        [Required]
+        public required int Organizer_Id { get; set; }
+
+        [Required]
+        public required string Status { get; set; }
+
+        [Required]
+        public required int Attendees_Count { get; set; }
+    }
+}

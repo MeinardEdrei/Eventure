@@ -35,11 +35,9 @@ namespace BackendProject.Models
         public required string Profile_Image { get; set; }
 
         [Required]
-        [StringLength(10)]
         public required int Attended_Events { get; set; }
         
         [Required]
-        [StringLength(10)]
         public required int Created_Events { get; set; }
     }
 }

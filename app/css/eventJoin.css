@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.eventTitle {
+    font-weight: 900;
+    font-size: 40px;
+}
+.eventDescription {
+    opacity: 50%;
+    margin-bottom: 2rem;
+}
+
+.user {
+    display: flex;
+    flex-direction: row;
+}
+.userImage {
+    margin: 1rem;
+}
+.userDetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.userName {
+    font-weight: 700;
+}
+.userPublished {
+    opacity: 50%;
+    font-size: 14px;
+}
+.eventContainer {
+    background-color: var(--color5);
+    width: 50rem;
+    height: 17.5rem;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    border: 0.25px solid hsl(0, 0%, 50%);
+}
+.eventImage img {
+    width: 25rem;
+    border-radius: 25px;
+    padding: 1rem;
+    box-sizing: border-box; 
+}
+.eventDate, .eventPlace {
+    display: flex;
+    flex-direction: row;
+    margin: 0.25rem;    
+    gap: .5rem;
+    opacity: 50%;
+    font-size: 15px;
+}
+.eventHeader {
+    font-weight: 700;
+    font-size: 40px;
+    margin-top: 1.5rem;
+}
+.eventRegister {
+    background-color: var(--color6);
+    width: 10rem;
+    height: 2.5rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 14rem;
+    margin-top: 5rem;
+    font-weight: 600;
+    transition: all ease-in-out 200ms;
+}
+.eventRegister:hover {
+    background-color: var(--color3);
+    color: var(--color5);
+}
+hr {
+    opacity: 50%;
+    margin: 1rem 0 1rem 0;
+}
+.aboutEvent h1 {
+    font-weight: 600;
+}
+.aboutEvent p {
+    margin: 1rem;
+}

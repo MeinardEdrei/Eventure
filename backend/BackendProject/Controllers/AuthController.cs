@@ -104,11 +104,7 @@ namespace BackendProject.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)
         {
-            if (eventsDto == null)
-            {
-                return BadRequest(new { message = "No data provided." });
-            }
-
+            // ----------------------VALIDATION--------------------------------
             if (string.IsNullOrEmpty(eventsDto.Title) ||
                 string.IsNullOrEmpty(eventsDto.Description) ||
                 string.IsNullOrEmpty(eventsDto.Date) ||
@@ -117,6 +113,10 @@ namespace BackendProject.Controllers
                 string.IsNullOrEmpty(eventsDto.Location) ||
                 eventsDto.Organizer_Id <= 0)
             {
+                return BadRequest(new { message = "All fields are required." });
+            }
+
+            if (eventsDto == null) {
                 return BadRequest(new { message = "All fields are required." });
             }
 
@@ -132,8 +132,10 @@ namespace BackendProject.Controllers
             {
                 return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
             }
-            
-            // Handle file upload
+
+            // ----------------------END OF VALIDATION--------------------------------
+
+            // ----------------------HANDLE FILE UPLOAD--------------------------------
             var file = eventsDto.Event_Image;
             string fileName = null;
 
@@ -158,13 +160,9 @@ namespace BackendProject.Controllers
                     await file.CopyToAsync(fileStream);
                 }
             }
+            // ----------------------END OF HANDLE FILE UPLOAD-------------------------------- 
 
-            if (eventsDto == null)
-            {
-                return BadRequest(new { message = "All fields are required." });
-            }
-
-            // Create a new event
+            // ----------------------CREATE NEW EVENT--------------------------------
             var newEvent = new Event
             {
                 Title = eventsDto.Title,
@@ -175,19 +173,19 @@ namespace BackendProject.Controllers
                 Location = eventsDto.Location,
                 Max_Capacity = eventsDto.Max_Capacity,
                 Event_Image = fileName,
-                Created_At = DateTime.UtcNow.ToString("o"), // Storing as ISO 8601 timestamp
+                Created_At = DateTime.Now, // Storing as ISO 8601 timestamp
                 Organizer_Id = eventsDto.Organizer_Id,
-                Status = "Pending", // Default to "Pending"
+                Status = eventsDto.Status, // Default to "Pending"
                 Attendees_Count = 0 // Default count
             };
 
-            _context.Events.Add(newEvent);
+            _context.Events.Add(newEvent); // Save to database
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event created successfully." });
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(User user) // JWT for Session
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

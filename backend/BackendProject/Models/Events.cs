@@ -38,7 +38,7 @@ namespace BackendProject.Models
         public required string Event_Image { get; set; }
 
         [Required]
-        public required string Created_At { get; set; }
+        public required DateTime Created_At { get; set; }
 
         [Required]
         public required int Organizer_Id { get; set; }

@@ -41,6 +41,12 @@ const Page = () => {
     }
   };
 
+  useEffect(() => {
+    if (session?.user?.id) {
+      setOrganizerId(session.user.id);
+    }
+  }, [session]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,20 +57,24 @@ const Page = () => {
     }
 
     try {
-      setOrganizerId(session?.user?.id);
+      const validOrganizerId = parseInt(organizerId);
+      if (isNaN(validOrganizerId)) { // To counter NaN error
+        alert("Invalid Organizer ID");
+        return;
+      }
 
       const formData = new FormData(); // Using FormData to handle file uploads
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('date', date);
-      formData.append('start', start);
-      formData.append('end', end);
-      formData.append('location', location);
-      formData.append('max_capacity', parseInt(maxCapacity));
-      formData.append('event_image', selectedFile);
-      formData.append('organizer_id', parseInt(organizerId));
-      formData.append('created_at', new Date().toISOString());
-      formData.append('status', 'Pending');
+
+      formData.append('Title', title);
+      formData.append('Description', description);
+      formData.append('Date', date);
+      formData.append('Start', start);
+      formData.append('End', end);
+      formData.append('Location', location);
+      formData.append('Max_Capacity', parseInt(maxCapacity));
+      formData.append('Event_Image', selectedFile);
+      formData.append('Organizer_Id', validOrganizerId);
+      formData.append('Status', 'Pending');
 
       const res = await axios.post('http://localhost:5000/api/auth/create', formData, {
         headers: {

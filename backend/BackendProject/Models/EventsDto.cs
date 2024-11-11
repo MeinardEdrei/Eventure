@@ -31,9 +31,6 @@ namespace BackendProject.Models
         public required IFormFile Event_Image { get; set; }
 
         [Required]
-        public string Created_At { get; set; } = string.Empty;
-
-        [Required]
         public int Organizer_Id { get; set; }
 
         [Required]

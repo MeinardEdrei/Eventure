@@ -107,9 +107,6 @@ namespace BackendProject.Controllers
             // ----------------------VALIDATION--------------------------------
             if (string.IsNullOrEmpty(eventsDto.Title) ||
                 string.IsNullOrEmpty(eventsDto.Description) ||
-                string.IsNullOrEmpty(eventsDto.Date) ||
-                string.IsNullOrEmpty(eventsDto.Start) ||
-                string.IsNullOrEmpty(eventsDto.End) ||
                 string.IsNullOrEmpty(eventsDto.Location) ||
                 eventsDto.Organizer_Id <= 0)
             {
@@ -193,6 +190,37 @@ namespace BackendProject.Controllers
             // ----------------------END OF INCREMENT-------------------------------- 
 
             return Ok(new { message = "Event created successfully." });
+        }
+
+        [HttpGet("events")]
+        public async Task<IActionResult> Events()
+        {
+            var events = await _context.Events.ToListAsync();
+
+            // Check if there are any events
+            if (events == null || events.Count == 0)
+            {
+                return NotFound(new { message = "No events found." });
+            }
+
+            // Return the list of events as a JSON response
+            return Ok(events);
+        }
+
+        [HttpGet("uploads/{filename}")]
+        public IActionResult GetImage(string filename)
+        {
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", filename);
+            
+            if (System.IO.File.Exists(filePath))
+            {
+                byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+                return File(imageBytes, "image/jpeg");
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         private string GenerateJwtToken(User user) // JWT for Session

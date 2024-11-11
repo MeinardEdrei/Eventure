@@ -13,13 +13,13 @@ namespace BackendProject.Models
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public string Date { get; set; } = string.Empty;
+        public DateTime Date { get; set; }
 
         [Required]
-        public string Start { get; set; } = string.Empty;
+        public TimeSpan Start { get; set; }
 
         [Required]
-        public string End { get; set; } = string.Empty;
+        public TimeSpan End { get; set; }
 
         [Required]
         public string Location { get; set; } = string.Empty;

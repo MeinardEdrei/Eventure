@@ -18,13 +18,13 @@ namespace BackendProject.Models
         public required string Description { get; set; }
 
         [Required]
-        public required string Date { get; set; }
+        public required DateTime Date { get; set; }
 
         [Required]
-        public required string Start { get; set; }
+        public required TimeSpan Start { get; set; }
 
         [Required]
-        public required string End { get; set; }
+        public required TimeSpan End { get; set; }
 
         [Required]
         [StringLength(255)]

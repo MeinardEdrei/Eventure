@@ -38,17 +38,17 @@ function eventPost () {
             <div className="aboutEvent">
                 <h1>About the Event</h1>
                 <p>𝐀𝐭𝐭𝐞𝐧𝐭𝐢𝐨𝐧 𝐔𝐌𝐚𝐤 𝐉𝐚𝐦𝐦𝐞𝐫𝐬! 🎶 𝐉𝐨𝐢𝐧 𝐮𝐬 𝐟𝐨𝐫 𝐚 𝐧𝐢𝐠𝐡𝐭 𝐨𝐟 𝐦𝐮𝐬𝐢𝐜 𝐚𝐧𝐝 𝐠𝐢𝐯𝐢𝐧𝐠! 🎸🎤
-Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
-<br/><br/>
-⋆🌟° Event Details:
-Date: November 20, 2024
-Time: 5:00 - 9:00 PM
-Venue: HPSB, 11th Floor Cafeteria
-Admission: Donate what you can! All proceeds will go to our chosen charitable foundation, helping provide resources for underserved communities.
-<br/><br/>
-⋆🌟° Highlights: 🎶 Open Stage: UMak’s finest bands and solo artists are invited to perform. 🎶 Audience Participation: Sing along, cheer on your friends, and spread the love! 🎶 Special Raffle: With every donation, get a chance to win cool prizes throughout the night.
-<br/><br/>
-Let’s jam, give, and create positive change together. Don’t miss out on the chance to make a meaningful impact while enjoying an unforgettable musical experience. See you there, Jammers! 🎸💖</p>
+                Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
+                <br/><br/>
+                ⋆🌟° Event Details:
+                Date: November 20, 2024
+                Time: 5:00 - 9:00 PM
+                Venue: HPSB, 11th Floor Cafeteria
+                Admission: Donate what you can! All proceeds will go to our chosen charitable foundation, helping provide resources for underserved communities.
+                <br/><br/>
+                ⋆🌟° Highlights: 🎶 Open Stage: UMak’s finest bands and solo artists are invited to perform. 🎶 Audience Participation: Sing along, cheer on your friends, and spread the love! 🎶 Special Raffle: With every donation, get a chance to win cool prizes throughout the night.
+                <br/><br/>
+                Let’s jam, give, and create positive change together. Don’t miss out on the chance to make a meaningful impact while enjoying an unforgettable musical experience. See you there, Jammers! 🎸💖</p>
             </div>
         </div>
         </>

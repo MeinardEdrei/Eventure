@@ -1,9 +1,29 @@
+'use client';
+
+import axios from 'axios';
 import '../css/eventDashboard.css'
 import Image from 'next/image'
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 
 function eventsDashboard () {
+    const [ event, setEvent ] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const res = await axios.get('http://localhost:5000/api/auth/events');
+            setEvent(res.data);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        
+        fetchData();
+        
+      }, [])
+
     return (
         <>
         <div className="container">
@@ -11,72 +31,30 @@ function eventsDashboard () {
             <div className="eventDescription">
                 Explore popular events near you, browse by category, or check out some of the great community calendars.
             </div>
-            <div className="parentContainer">
-            <Link href='\EventPost'>
-                <div className="cardContainer">
-                    <div className="cardImage">
-                        <img src="/heronsNight.jpg" alt="Heron's Night Event" />
-                    </div>
-                    <div className="cardTitle">UMak Jammers' Concert for a Cause</div>
-                    <div className="cardDetails">
-                        <p>UMak Oval</p>
-                        <p>November 5, 2024 - 3:00 PM</p>
-                    </div>
-                    <hr />
-                    <div className="cardDescription">
-                        Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
-                    </div>
+            {event.map((event) => (
+                <div className="parentContainer" key={event.id}>
+                    <Link href='\EventPost'>
+                        <div className="cardContainer">
+                            <div className="cardImage">
+                                <img 
+                                    src={`http://localhost:5000/api/auth/uploads/${event.event_Image}`}
+                                    alt={event.title}
+                            />
+                            </div>
+                            <div className="cardTitle">{event.title}</div>
+                            <div className="cardDetails">
+                                <p>{event.location}</p>
+                                <p>{new Date(event.date).toLocaleDateString()} - {event.start}</p>
+                            </div>
+                            <hr />
+                            <div className="cardDescription">
+                                {event.description}
+                            </div>
+                        </div>
+                    </Link>
                 </div>
-            </Link>
-            <Link href='\EventPost'>
-                <div className="cardContainer">
-                    <div className="cardImage">
-                        <img src="/heronsNight.jpg" alt="Heron's Night Event" />
-                    </div>
-                    <div className="cardTitle">UMak Jammers' Concert for a Cause</div>
-                    <div className="cardDetails">
-                        <p>UMak Oval</p>
-                        <p>November 5, 2024 - 3:00 PM</p>
-                    </div>
-                    <hr />
-                    <div className="cardDescription">
-                        Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
-                    </div>
-                </div>
-            </Link>
-            <Link href='\EventPost'>
-                <div className="cardContainer">
-                    <div className="cardImage">
-                        <img src="/heronsNight.jpg" alt="Heron's Night Event" />
-                    </div>
-                    <div className="cardTitle">UMak Jammers' Concert for a Cause</div>
-                    <div className="cardDetails">
-                        <p>UMak Oval</p>
-                        <p>November 5, 2024 - 3:00 PM</p>
-                    </div>
-                    <hr />
-                    <div className="cardDescription">
-                        Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
-                    </div>
-                </div>
-            </Link>
-            <Link href='\EventPost'>
-                <div className="cardContainer">
-                    <div className="cardImage">
-                        <img src="/heronsNight.jpg" alt="Heron's Night Event" />
-                    </div>
-                    <div className="cardTitle">UMak Jammers' Concert for a Cause</div>
-                    <div className="cardDetails">
-                        <p>UMak Oval</p>
-                        <p>November 5, 2024 - 3:00 PM</p>
-                    </div>
-                    <hr />
-                    <div className="cardDescription">
-                        Get ready to make a difference with every beat! We're hosting "Jam for a Cause," where music meets charity to help those in need.
-                    </div>
-                </div>
-            </Link>
-            </div>
+            ))}
+            
         </div>
 
         

@@ -25,15 +25,14 @@ function eventsDashboard () {
       }, [])
 
     return (
-        <>
         <div className="container">
             <div className="eventTitle">Events</div>
             <div className="eventDescription">
                 Explore popular events near you, browse by category, or check out some of the great community calendars.
             </div>
-            {event.map((event) => (
-                <div className="parentContainer" key={event.id}>
-                    <Link href='\EventPost'>
+            <div className="parentContainer">
+                {event.map((event) => (
+                    <Link href='\EventPost' key={event.id}>
                         <div className="cardContainer">
                             <div className="cardImage">
                                 <img 
@@ -52,13 +51,9 @@ function eventsDashboard () {
                             </div>
                         </div>
                     </Link>
-                </div>
-            ))}
-            
+                ))}
+            </div>
         </div>
-
-        
-        </>
     );
 }
 

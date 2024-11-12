@@ -25,7 +25,9 @@ export default function Login() {
           
             if (res?.error) {
                 setError('Invalid email or password');
-            } else {
+            } 
+            
+            if (res.ok) {
                 router.push('/');
                 router.refresh();
             }

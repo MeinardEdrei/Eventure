@@ -6,8 +6,10 @@ import { Label, Radio, RadioGroup } from "react-aria-components";
 import CheckCircleIcon from "@spectrum-icons/workflow/CheckmarkCircle";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+    const router = useRouter();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,7 +25,11 @@ export default function Register() {
                     'Content-Type': 'application/json',
                 },
             });
-            alert(res.data.message); 
+            
+            if (res.ok) {
+              alert(res.data.message); 
+              router.push('/Login');
+            }
         } catch (error) {
             console.error(error);
             alert(error.response?.data?.message || "Registration failed");

@@ -170,7 +170,7 @@ namespace BackendProject.Controllers
                 Location = eventsDto.Location,
                 Max_Capacity = eventsDto.Max_Capacity,
                 Event_Image = fileName,
-                Created_At = DateTime.Now, // Storing as ISO 8601 timestamp
+                Created_At = DateTime.Now, 
                 Organizer_Id = eventsDto.Organizer_Id,
                 Status = eventsDto.Status, // Default to "Pending"
                 Attendees_Count = 0 // Default count
@@ -191,6 +191,10 @@ namespace BackendProject.Controllers
 
             return Ok(new { message = "Event created successfully." });
         }
+
+
+
+        // ----------------------FETCH EVENTS--------------------------------
 
         [HttpGet("events")]
         public async Task<IActionResult> GetEvents()
@@ -233,6 +237,48 @@ namespace BackendProject.Controllers
             {
                 return NotFound();
             }
+        }
+
+        // ----------------------END OF FETCH EVENTS--------------------------------
+
+        // ----------------------REGISTRATION FORM--------------------------------
+        [HttpPost("join")]
+        public async Task<IActionResult> JoinEvent([FromForm] RFormDto rformDto)
+        {
+            
+            if (rformDto == null) {
+                return BadRequest(new { message = "All fields are required." });
+            }
+            
+            var eventToJoin = await _context.Events.FindAsync(rformDto.Event_Id);
+            if (eventToJoin == null){
+                return NotFound(new { message = "No Event Found" });
+            }
+
+            if (eventToJoin.Attendees_Count > eventToJoin.Max_Capacity) {
+                return BadRequest(new { message = "Event is full. Cannot join." });
+            }
+
+            var attendee = new RForm
+            {
+                User_Id = rformDto.User_Id,
+                Event_Id = rformDto.Event_Id,
+                Name = rformDto.Name,
+                Email = rformDto.Email, 
+                School_Id = rformDto.School_Id,  
+                Section = rformDto.Section,
+                Status = "Joined"
+            };
+
+            _context.RForms.Add(attendee);
+            await _context.SaveChangesAsync();
+
+            // +1 to Attendees
+            eventToJoin.Attendees_Count += 1; 
+            _context.Events.Update(eventToJoin); 
+            await _context.SaveChangesAsync(); 
+
+            return Ok(new { message = "Joined the Event Successfully." });
         }
 
         private string GenerateJwtToken(User user) // JWT for Session

@@ -41,3 +41,11 @@ next-env.d.ts
 
 # Ignore build artifacts
 backend/BackendProject/obj/
+
+# .NET Core / .NET 5+ build artifacts
+**/bin/
+**/obj/
+*.dll
+*.exe
+*.pdb
+*.cache+

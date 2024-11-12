@@ -6,9 +6,12 @@ import Image from 'next/image'
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 function eventPost () {
+    const router = useRouter();
+    const { data: session } = useSession();
     const { id } = useParams();
     const [ post, setPost ] = useState([]);
 
@@ -26,6 +29,20 @@ function eventPost () {
         fetchData();
         
       }, [])
+
+    const handleJoinEvent = async (e) => {
+        e.preventDefault();
+
+        if (session?.user?.role === 'Student') {
+            router.push(`/Event-Form/${post.id}`);
+        }else if (session?.user?.role === 'Organizer') {
+            // THIS USER CANT JOIN EVENT
+        }else if (session?.user?.role === 'Admin') {
+            // THIS USER CANT JOIN EVENT
+        }else{
+            router.push(`/Login`);
+        }
+    }
 
     return (
         <>
@@ -50,9 +67,9 @@ function eventPost () {
                         <img src="/Location.png" width={25}alt="Location" />
                         <p>{post.location}</p>
                     </div>
-                    <Link className="eventRegister" href={`/Event-Form/${post.id}`}>
+                    <div className="eventRegister" onClick={handleJoinEvent}>
                         <button>Join Event</button>
-                    </Link>
+                    </div>
                 </div>
             </div>
 

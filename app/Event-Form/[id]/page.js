@@ -32,7 +32,7 @@ function eventForm () {
         e.preventDefault();
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/events', {
+            const res = await axios.post('http://localhost:5000/api/auth/form', {
                 Name: name,
                 Email: email,
                 School_Id: schoolId,

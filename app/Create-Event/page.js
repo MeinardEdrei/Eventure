@@ -49,7 +49,7 @@ const Page = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    console.log("Form submitted");
     // Form validation
     if (!title || !description || !date || !start || !end || !location || !maxCapacity || !selectedFile) {
       alert("Please fill in all fields and select an image");
@@ -62,6 +62,18 @@ const Page = () => {
         alert("Invalid Organizer ID");
         return;
       }
+
+      console.log('Sending form data:', {
+        Title: title,
+        Description: description,
+        Date: date,
+        Start: start,
+        End: end,
+        Location: location,
+        Max_Capacity: maxCapacity,
+        Organizer_Id: validOrganizerId,
+        Status: 'Pending'
+      });
 
       const formData = new FormData(); // Using FormData to handle file uploads
 
@@ -81,12 +93,15 @@ const Page = () => {
           'Content-Type': 'multipart/form-data', 
         },
       });
-
-        alert(res.data.message); 
+      console.log('Response received:', res.data);
+      alert(res.data.message); 
     } catch (error) {
-      console.error(error);
-      console.error(error.response);
-      alert(error.response?.data?.message || "Registration failed");
+      console.error('Error details:', error);
+      if (error.response) {
+        console.error('Response error:', error.response.data);
+        console.error('Status code:', error.response.status);
+      }
+      alert(error.response?.data?.message || "Event creation failed: " + error.message);
     }
   }
 

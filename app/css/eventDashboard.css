@@ -83,5 +83,12 @@
     width: 22rem;
     margin: 0 1.5rem;
     opacity: 50%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Number of lines you want to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5rem;
+    min-height: 4.5rem;
 }
 

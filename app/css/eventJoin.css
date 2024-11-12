@@ -64,6 +64,10 @@
     overflow: hidden;
     border: 0.25px solid hsl(0, 0%, 50%);
 }
+.eventImage {
+    width: 100%;
+    display: flex;
+}
 .eventImage img {
     width: 25rem;
     border-radius: 25px;
@@ -83,6 +87,12 @@
     font-size: 40px;
     margin-top: 1.5rem;
 }
+.event {
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between; 
+    width: 100%;
+}
 .eventRegister {
     background-color: var(--color6);
     width: 10rem;
@@ -91,8 +101,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 14rem;
-    margin-top: 5rem;
+    place-self: end;
+    margin-right: 1.5em;
+    margin-top: auto;
+    margin-bottom: 1em;
     font-weight: 600;
     transition: all ease-in-out 200ms;
 }

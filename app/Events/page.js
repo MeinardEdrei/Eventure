@@ -32,7 +32,7 @@ function eventsDashboard () {
             </div>
             <div className="parentContainer">
                 {event.map((event) => (
-                    <Link href='\EventPost' key={event.id}>
+                    <Link href={`/Event-Post/${event.id}`} key={event.id}>
                         <div className="cardContainer">
                             <div className="cardImage">
                                 <img 

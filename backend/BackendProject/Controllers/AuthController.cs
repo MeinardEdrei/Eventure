@@ -193,7 +193,7 @@ namespace BackendProject.Controllers
         }
 
         [HttpGet("events")]
-        public async Task<IActionResult> Events()
+        public async Task<IActionResult> GetEvents()
         {
             var events = await _context.Events.ToListAsync();
 
@@ -205,6 +205,18 @@ namespace BackendProject.Controllers
 
             // Return the list of events as a JSON response
             return Ok(events);
+        }
+
+        [HttpGet("events{id}")]
+        public async Task<IActionResult> GetEvent(int id)
+        {
+            var @event = await _context.Events.FindAsync(id);
+
+            if (@event == null)
+            {
+                return NotFound(new { message = $"Event with ID {id} not found." });
+            }
+            return Ok(@event);
         }
 
         [HttpGet("uploads/{filename}")]

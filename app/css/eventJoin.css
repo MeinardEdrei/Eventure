@@ -122,3 +122,189 @@ hr {
 .aboutEvent p {
     margin: 1rem;
 }
+
+
+
+/* Modal styles with theme */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(12, 12, 12, 0.8); /* Using --color1 with opacity */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--gradient);
+    padding: 20px;
+    border-radius: 10px;
+    width: 50rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: var(--borderColor);
+    color: var(--color3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 1rem;
+}
+
+.modal-header h2 {
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--color3);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0 8px;
+    color: var(--color3);
+    transition: all ease-in-out 200ms;
+}
+
+.close-button:hover {
+    color: var(--color4);
+}
+
+.modal-content {
+    padding: 0 1rem;
+}
+
+/* Form styles - keeping your existing styles */
+.formHeader {
+    height: 11rem;
+    width: 100%;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: row;
+}
+
+.formImage img {
+    padding: 0;
+    width: 15rem;
+    border-radius: 5px;
+    margin: 0 1rem 0 1rem;
+}
+
+.formDetails {
+    display: flex;
+    justify-content: center;    
+    flex-direction: column;
+}
+
+.formDetails h1 {
+    font-weight: 800;
+    font-size: 30px;
+}
+
+hr {
+    opacity: 50%;
+    margin: 1rem 0 1rem 0;
+}
+
+.formContainer h1 {
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 1rem;
+}
+
+.formContainer input {
+    border-radius: 10px;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    margin: 0.5rem 0 0.5rem 0;
+    height: 2rem;
+    width: 100%;
+    padding: 1rem;
+    color: var(--color3);
+}
+
+.doubleColumn {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.doubleColumn .col {
+    flex: 1;
+    min-width: 200px;
+}
+
+.doubleColumn .col input {
+    border-radius: 10px;
+    background-color: var(--color5);
+    border: var(--borderColor);
+    margin: 0.5rem 0 0.5rem 0;
+    height: 2rem;
+    width: 100%;
+    padding: 1rem;
+    color: var(--color3);
+}
+
+.submitButton {
+    height: 2.5rem;
+    margin-top: 0.50rem;
+    width: 100%;
+    background-color: var(--color3);
+    border-radius: 10px;
+    font-weight: 500;
+    color: var(--color5);
+    transition: all ease-in-out 200ms;
+    cursor: pointer;
+}
+
+.submitButton:hover {
+    color: var(--color3);
+    background-color: var(--color5);
+    border: var(--borderColor);
+}
+
+/* Prevent body scrolling when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Input placeholder color */
+.modal input::placeholder {
+    color: var(--color6);
+}
+
+/* Custom scrollbar for modal */
+.modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+    background: var(--color5);
+    border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+    background: var(--color6);
+    border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+    background: var(--color4);
+}

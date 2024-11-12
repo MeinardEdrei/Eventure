@@ -1,70 +1,201 @@
-'use client';
+"use client";
 
-import axios from 'axios';
-import '../../css/eventJoin.css'
-import Image from 'next/image'
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import axios from "axios";
+import "../../css/eventJoin.css";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
+function EventPost() {
+  const { id } = useParams();
+  const [post, setPost] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    schoolId: "",
+    section: "",
+  });
 
-function eventPost () {
-    const { id } = useParams();
-    const [ post, setPost ] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/auth/events${id}`
+        );
+        setPost(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const res = await axios.get(`http://localhost:5000/api/auth/events${id}`);
-            setPost(res.data);
-            console.log(res.data);
-          } catch (error) {
-            console.error(error);
-          }
-        }
-        
-        fetchData();
-        
-      }, [])
+    fetchData();
+  }, [id]);
 
-    return (
-        <>
-        <div className="container">
-            <div className="user">
-                <div className="userImage"><Image src='/profile.png' width={35} height={35} alt='logo' /></div>
-                <div className="userDetails">
-                    <div className="userName"><p>UMak Jammers</p></div>
-                    <div className="userPublished"><p>{post.created_At}</p></div>
-                </div>
-            </div>
-            
-            <div className="eventContainer">
-                <div className="eventImage"><img src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`} alt={post.title} /></div>
-                <div className="event">
-                    <div className="eventHeader">{post.title}</div>
-                    <div className="eventDate">
-                        <img src="/Date.png" width={25} alt="Date" />
-                        <p>{new Date(post.date).toLocaleDateString()} - {post.start}</p>
-                    </div>
-                    <div className="eventPlace">
-                        <img src="/Location.png" width={25}alt="Location" />
-                        <p>{post.location}</p>
-                    </div>
-                    <Link className="eventRegister" href={`/Event-Form/${post.id}`}>
-                        <button>Join Event</button>
-                    </Link>
-                </div>
-            </div>
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-            <hr />
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/events", {
+        Name: formData.name,
+        Email: formData.email,
+        School_Id: formData.schoolId,
+        Section: formData.section,
+      });
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
 
-            <div className="aboutEvent">
-                <h1>About the Event</h1>
-                <p>{post.description}</p>
-            </div>
+  const EventForm = () => (
+    <form onSubmit={handleSubmit}>
+      <div className="formHeader">
+        <div className="form">
+          <div className="formImage">
+            <img
+              src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
+              alt="Event Image"
+            />
+          </div>
+          <div className="formDetails">
+            <h1>{post.title}</h1>
+            <p>{post.location}</p>
+            <p>{new Date(post.date).toLocaleDateString()}</p>
+          </div>
         </div>
-        </>
-    );
+      </div>
+      <hr />
+      <div className="formContainer">
+        <h1>Register</h1>
+        <div className="form-group">
+          <p>Name</p>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            placeholder="Juan Dela Cruz"
+          />
+        </div>
+        <div className="form-group">
+          <p>Email</p>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="jdelacruz.k12135002@umak.edu.ph"
+          />
+        </div>
+      </div>
+      <div className="doubleColumn">
+        <div className="col">
+          <p>School ID</p>
+          <input
+            type="text"
+            name="schoolId"
+            value={formData.schoolId}
+            onChange={handleInputChange}
+            placeholder="K12135002"
+          />
+        </div>
+        <div className="col">
+          <p>Program and Section</p>
+          <input
+            type="text"
+            name="section"
+            value={formData.section}
+            onChange={handleInputChange}
+            placeholder="II - BCSAD"
+          />
+        </div>
+      </div>
+      <input type="submit" value="Submit" className="submitButton" />
+    </form>
+  );
+
+  return (
+    <>
+      <div className="container">
+        <div className="user">
+          <div className="userImage">
+            <Image src="/profile.png" width={35} height={35} alt="logo" />
+          </div>
+          <div className="userDetails">
+            <div className="userName">
+              <p>UMak Jammers</p>
+            </div>
+            <div className="userPublished">
+              <p>{post.created_At}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="eventContainer">
+          <div className="eventImage">
+            <img
+              src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
+              alt={post.title}
+            />
+          </div>
+          <div className="event">
+            <div className="eventHeader">{post.title}</div>
+            <div className="eventDate">
+              <img src="/Date.png" width={25} alt="Date" />
+              <p>
+                {new Date(post.date).toLocaleDateString()} - {post.start}
+              </p>
+            </div>
+            <div className="eventPlace">
+              <img src="/Location.png" width={25} alt="Location" />
+              <p>{post.location}</p>
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="eventRegister"
+            >
+              Join Event
+            </button>
+          </div>
+        </div>
+
+        <hr />
+
+        <div className="aboutEvent">
+          <h1>About the Event</h1>
+          <p>{post.description}</p>
+        </div>
+      </div>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>Event Registration</h2>
+              <button
+                className="close-button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-content">
+              <EventForm />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
-export default eventPost
+export default EventPost;

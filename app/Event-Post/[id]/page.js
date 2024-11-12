@@ -1,13 +1,18 @@
 "use client";
 
-import axios from "axios";
-import "../../css/eventJoin.css";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import axios from 'axios';
+import '../../css/eventJoin.css'
+import Image from 'next/image'
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 function EventPost() {
   const { id } = useParams();
+  const router = useRouter();
+  const { data: session } = useSession();
   const [post, setPost] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({

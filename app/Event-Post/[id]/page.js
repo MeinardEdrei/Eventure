@@ -50,9 +50,9 @@ function eventPost () {
                         <img src="/Location.png" width={25}alt="Location" />
                         <p>{post.location}</p>
                     </div>
-                    <div className="eventRegister">
-                    <Link href='\EventForm'><button>Join Event</button></Link>
-                    </div>
+                    <Link className="eventRegister" href={`/Event-Form/${post.id}`}>
+                        <button>Join Event</button>
+                    </Link>
                 </div>
             </div>
 

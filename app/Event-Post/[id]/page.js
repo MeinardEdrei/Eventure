@@ -60,6 +60,19 @@ function EventPost() {
     return <div>Loading...</div>;
   }
 
+  function Clear() {
+    // Reset form and close modal
+    setIsModalOpen(false);
+    setFormData({
+        name: '',
+        email: '',
+        schoolId: '',
+        section: '',
+        eventId: '',
+        eventTitle: ''
+    });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -76,64 +89,54 @@ function EventPost() {
         const res = await axios.post('http://localhost:5000/api/auth/join', formPayload);
 
         if (res.status === 200) {
-            alert('Joined Event!');
-
+            if (res.data.status === 'Pending') {
+              alert('Event is full. You have been added to the waitlist.');
+              Clear();
+              return;
+            }
+            
             // Google Sheets
             const registrationForm = await axios.get('http://localhost:5000/api/auth/form');
-            
-            const sheetsData = registrationForm.data
-            .filter(item => // Check each if it exists
-              item && 
-              item.name && 
-              item.email && 
-              item.school_Id && 
-              item.section
-            )
-            .map(item => ({
-              name: item.name || 'N/A',
-              email: item.email || 'N/A',
-              schoolId: item.school_Id || 'N/A',
-              section: item.section || 'N/A',
-              eventId: (item.event_Id || item.event_id || '').toString(),
-              eventTitle: item.event_Title || item.event_title || 'N/A'
-            }));
-            
-            try {
-              const response = await axios.post(
-                'http://localhost:5000/api/auth/sheets',
-                sheetsData,  // Wrap the data in an entries property
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    timeout: 10000
-                }
-              );
+          
+            if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
+              const lastEntry = registrationForm.data[registrationForm.data.length - 1];
+              
+              const sheetsData = [{
+                name: lastEntry.name || 'N/A',
+                email: lastEntry.email || 'N/A',
+                schoolId: lastEntry.school_Id || 'N/A',
+                section: lastEntry.section || 'N/A',
+                eventId: (lastEntry.event_Id || lastEntry.event_id || '').toString(),
+                eventTitle: lastEntry.event_Title || lastEntry.event_title || 'N/A'
+              }];
 
-              if (response.status === 200) {
-                  alert('Successfully updated Google Sheets!');
+              try {
+                const response = await axios.post(
+                  'http://localhost:5000/api/auth/sheets',
+                  sheetsData,  
+                  {
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      timeout: 10000
+                  }
+                );
+              } catch (error) {
+                  console.error('Google Sheets Error:', error);
+                  alert('Failed to update Google Sheets: ' + error.message);
               }
-            } catch (error) {
-                console.error('Google Sheets Error:', error);
-                alert('Failed to update Google Sheets: ' + error.message);
-            }
 
-            // Reset form and close modal
-            setIsModalOpen(false);
-            setFormData({
-                name: '',
-                email: '',
-                schoolId: '',
-                section: '',
-                eventId: '',
-                eventTitle: ''
-            });
+              alert('Joined Event Successfully!');
+              Clear();
+            }
+        }else{
+          alert('An error occured.');
         }
     } catch (err) {
         console.error('Error:', err.response?.data?.message || err.message);
         alert(err.response?.data?.message || 'An error occurred while joining the event');
     }
-}
+  }
 
   const handleJoinEvent = async (e) => {
     e.preventDefault();

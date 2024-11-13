@@ -258,8 +258,24 @@ namespace BackendProject.Controllers
                 return NotFound(new { message = "No Event Found" });
             }
 
-            if (eventToJoin.Attendees_Count > eventToJoin.Max_Capacity) {
-                return BadRequest(new { message = "Event is full. Cannot join." });
+            if (eventToJoin.Attendees_Count == eventToJoin.Max_Capacity) {
+                var waitlisted = new RForm
+                {
+                    User_Id = rformDto.User_Id,
+                    Event_Id = rformDto.Event_Id,
+                    Event_Title = rformDto.Event_Title,
+                    Name = rformDto.Name,
+                    Email = rformDto.Email, 
+                    School_Id = rformDto.School_Id,  
+                    Section = rformDto.Section,
+                    Status = "Pending"
+                };
+                _context.RForms.Add(waitlisted);
+                await _context.SaveChangesAsync();
+                return Ok(new { 
+                    message = "Event is full. You have been added to the waitlist.", 
+                    status = "Pending" 
+                });
             }
 
             var attendee = new RForm
@@ -303,10 +319,6 @@ namespace BackendProject.Controllers
                 .Where(e => e.Status == "Approved")
                 .ToListAsync(); // Use ToListAsync to get the results as a list
                 
-            if (Form == null || !Form.Any())
-            {
-                return NotFound(new { message = "No approved attendee found." });
-            }
             return Ok(Form);
         }
 

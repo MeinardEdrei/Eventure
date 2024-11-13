@@ -11,6 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
+//Google Sheets
+using System.Net.Http;
+using System.Text.Json;
 
 namespace BackendProject.Controllers
 {
@@ -289,6 +292,67 @@ namespace BackendProject.Controllers
             await _context.SaveChangesAsync(); 
 
             return Ok(new { message = "Joined the Event Successfully." });
+        }
+
+        // ----------------------FETCH REGISTRATION FORM--------------------------------
+        [HttpGet("form")]
+        public async Task<IActionResult> GetForm()
+        {
+            var Form = await _context.RForms
+                .Where(e => e.Status == "Approved")
+                .ToListAsync(); // Use ToListAsync to get the results as a list
+                
+            if (Form == null || !Form.Any())
+            {
+                return NotFound(new { message = "No approved attendee found." });
+            }
+            return Ok(Form);
+        }
+
+        [HttpPost("sheets")]
+        public async Task<IActionResult> UpdateGoogleSheets([FromBody] List<GoogleSheetsDto> entries)
+        {
+            if (entries == null || !entries.Any())
+            {
+                return BadRequest(new { message = "No entries provided." });
+            }
+
+           foreach (var entry in entries)
+            {
+                // Validate each entry
+                if (string.IsNullOrEmpty(entry.Name) || string.IsNullOrEmpty(entry.Email) || string.IsNullOrEmpty(entry.SchoolId) || string.IsNullOrEmpty(entry.Section))
+                {
+                    return BadRequest(new { message = "All fields are required for each entry." });
+                }
+
+                // Prepare the data for Google Apps Script
+                var payload = new
+                {
+                    name = entry.Name,
+                    email = entry.Email,
+                    schoolId = entry.SchoolId,
+                    section = entry.Section
+                };
+
+                using var client = new HttpClient();
+                var content = new StringContent(
+                    JsonSerializer.Serialize(payload),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                // Your Google Apps Script URL
+                var url = "https://script.google.com/macros/s/AKfycbwM5cvfdHTjInFgV21wS5Ul8Q6FQRyEBSPAZRpPIOshu5SOAw1V6TLUMmPx5i4EeR_Z/exec";
+
+                var response = await client.PostAsync(url, content);
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    return StatusCode((int)response.StatusCode, new { message = "Failed to update Google Sheets" });
+                }
+            }
+
+            return Ok(new { message = "Successfully updated Google Sheets" });
         }
 
         private string GenerateJwtToken(User user) // JWT for Session

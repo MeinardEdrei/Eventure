@@ -66,12 +66,41 @@ function EventPost() {
 
         if (res.status === 200) {
             alert('Joined Event!');
+
+            // Google Sheets
+            const registrationForm = await axios.get('http://localhost:5000/api/auth/form');
+            
+            const sheetsData = registrationForm.data.map(item => ({
+              Name: item.name,
+              Email: item.email,
+              SchoolId: item.school_Id,
+              Section: item.section
+            }));
+            
+            const response = await axios.post(
+              'http://localhost:5000/api/auth/sheets', // To Avoid CORS
+              sheetsData, 
+              {
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  timeout: 10000
+              }
+            );
+
+            if (response.data.status === 200) {
+              alert('Successfully updated Google Sheets!');
+            } else {
+                alert('Failed to update Google Sheets');
+            }
+
+            // Reset form and close modal
             setIsModalOpen(false);
             setFormData({
-              name: '',
-              email: '',
-              schoolId: '',
-              section: ''
+                name: '',
+                email: '',
+                schoolId: '',
+                section: ''
             });
         }
     } catch (err) {

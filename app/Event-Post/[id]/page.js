@@ -13,13 +13,15 @@ function EventPost() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const [post, setPost] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ post, setPost ] = useState([]);
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    schoolId: "",
-    section: "",
+    name: '',
+    email: '',
+    schoolId: '',
+    section: '',
+    userId: '',
+    eventId: ''
   });
 
   useEffect(() => {
@@ -38,95 +40,67 @@ function EventPost() {
     fetchData();
   }, [id]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  useEffect(() => {
+    if (session) {
+      setFormData(prev => ({
+        ...prev,
+        userId: session.user.id, 
+        eventId: parseInt(id) 
+      }));
+    }
+  }, [session, id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/events", {
-        Name: formData.name,
-        Email: formData.email,
-        School_Id: formData.schoolId,
-        Section: formData.section,
-      });
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
 
-  const EventForm = () => (
-    <form onSubmit={handleSubmit}>
-      <div className="formHeader">
-        <div className="form">
-          <div className="formImage">
-            <img
-              src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
-              alt="Event Image"
-            />
-          </div>
-          <div className="formDetails">
-            <h1>{post.title}</h1>
-            <p>{post.location}</p>
-            <p>{new Date(post.date).toLocaleDateString()}</p>
-          </div>
-        </div>
-      </div>
-      <hr />
-      <div className="formContainer">
-        <h1>Register</h1>
-        <div className="form-group">
-          <p>Name</p>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            placeholder="Juan Dela Cruz"
-          />
-        </div>
-        <div className="form-group">
-          <p>Email</p>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="jdelacruz.k12135002@umak.edu.ph"
-          />
-        </div>
-      </div>
-      <div className="doubleColumn">
-        <div className="col">
-          <p>School ID</p>
-          <input
-            type="text"
-            name="schoolId"
-            value={formData.schoolId}
-            onChange={handleInputChange}
-            placeholder="K12135002"
-          />
-        </div>
-        <div className="col">
-          <p>Program and Section</p>
-          <input
-            type="text"
-            name="section"
-            value={formData.section}
-            onChange={handleInputChange}
-            placeholder="II - BCSAD"
-          />
-        </div>
-      </div>
-      <input type="submit" value="Submit" className="submitButton" />
-    </form>
-  );
+    try {
+        const formPayload = new FormData();
+        formPayload.append('Name', formData.name);
+        formPayload.append('Email', formData.email);
+        formPayload.append('School_Id', formData.schoolId);
+        formPayload.append('Section', formData.section);
+        formPayload.append('User_Id', formData.userId);
+        formPayload.append('Event_Id', formData.eventId)
+
+        const res = await axios.post('http://localhost:5000/api/auth/join', formPayload);
+
+        if (res.status === 200) {
+            alert('Joined Event!');
+            setIsModalOpen(false);
+            setFormData({
+              name: '',
+              email: '',
+              schoolId: '',
+              section: ''
+            });
+        }
+    } catch (err) {
+        console.error('Error:', err.response?.data?.message || err.message);
+        alert(err.response?.data?.message || 'An error occurred while joining the event');
+    }
+}
+
+  const handleJoinEvent = async (e) => {
+    e.preventDefault();
+
+    if (session?.user?.role === 'Student') {
+        setIsModalOpen(true);
+    }else if (session?.user?.role === 'Organizer') {
+        // THIS USER CANT JOIN EVENT
+    }else if (session?.user?.role === 'Admin') {
+        // THIS USER CANT JOIN EVENT
+    }else{
+        router.push(`/Login`);
+    }
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <>
@@ -165,7 +139,7 @@ function EventPost() {
               <p>{post.location}</p>
             </div>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={handleJoinEvent}
               className="eventRegister"
             >
               Join Event
@@ -194,7 +168,70 @@ function EventPost() {
               </button>
             </div>
             <div className="modal-content">
-              <EventForm />
+              <form onSubmit={handleSubmit}>
+                <div className="formHeader">
+                  <div className="form">
+                    <div className="formImage">
+                      <img
+                        src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
+                        alt="Event Image"
+                      />
+                    </div>
+                    <div className="formDetails">
+                      <h1>{post.title}</h1>
+                      <p>{post.location}</p>
+                      <p>{new Date(post.date).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div className="formContainer">
+                  <h1>Register</h1>
+                  <div className="form-group">
+                    <p>Name</p>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Juan Dela Cruz"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <p>Email</p>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="jdelacruz.k12135002@umak.edu.ph"
+                    />
+                  </div>
+                </div>
+                <div className="doubleColumn">
+                  <div className="col">
+                    <p>School ID</p>
+                    <input
+                      type="text"
+                      name="schoolId"
+                      value={formData.schoolId}
+                      onChange={handleInputChange}
+                      placeholder="K12135002"
+                    />
+                  </div>
+                  <div className="col">
+                    <p>Program and Section</p>
+                    <input
+                      type="text"
+                      name="section"
+                      value={formData.section}
+                      onChange={handleInputChange}
+                      placeholder="II - BCSAD"
+                    />
+                  </div>
+                </div>
+                <input type="submit" className="submitButton" />
+              </form>
             </div>
           </div>
         </div>

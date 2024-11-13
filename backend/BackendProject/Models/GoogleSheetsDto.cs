@@ -10,5 +10,7 @@ namespace BackendProject.Models
     public required string Email { get; set; }
     public required string SchoolId { get; set; }
     public required string Section { get; set; }
+    public required string EventId { get; set; }
+    public required string EventTitle { get; set; }
     }
 }

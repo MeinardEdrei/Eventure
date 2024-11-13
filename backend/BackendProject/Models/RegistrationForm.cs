@@ -16,6 +16,9 @@ namespace BackendProject.Models
         public required int Event_Id { get; set; }
 
         [Required]
+        public required string Event_Title { get; set; }
+
+        [Required]
         public required string Name { get; set; }
 
         [Required]

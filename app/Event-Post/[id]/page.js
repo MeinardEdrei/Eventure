@@ -13,20 +13,23 @@ function EventPost() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const [ post, setPost ] = useState([]);
+  const [ post, setPost ] = useState({});
   const [ isModalOpen, setIsModalOpen ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     schoolId: '',
     section: '',
     userId: '',
-    eventId: ''
+    eventId: '',
+    eventTitle: ''
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const res = await axios.get(
           `http://localhost:5000/api/auth/events${id}`
         );
@@ -34,6 +37,8 @@ function EventPost() {
         console.log(res.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -41,14 +46,19 @@ function EventPost() {
   }, [id]);
 
   useEffect(() => {
-    if (session) {
+    if (session && !isLoading) {
       setFormData(prev => ({
         ...prev,
         userId: session.user.id, 
-        eventId: parseInt(id) 
+        eventId: parseInt(id), 
+        eventTitle: post.title || ''
       }));
     }
-  }, [session, id]);
+  }, [session, id, post]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,6 +71,7 @@ function EventPost() {
         formPayload.append('Section', formData.section);
         formPayload.append('User_Id', formData.userId);
         formPayload.append('Event_Id', formData.eventId)
+        formPayload.append('Event_Title', formData.eventTitle || post.title || '')
 
         const res = await axios.post('http://localhost:5000/api/auth/join', formPayload);
 
@@ -70,28 +81,41 @@ function EventPost() {
             // Google Sheets
             const registrationForm = await axios.get('http://localhost:5000/api/auth/form');
             
-            const sheetsData = registrationForm.data.map(item => ({
-              Name: item.name,
-              Email: item.email,
-              SchoolId: item.school_Id,
-              Section: item.section
+            const sheetsData = registrationForm.data
+            .filter(item => // Check each if it exists
+              item && 
+              item.name && 
+              item.email && 
+              item.school_Id && 
+              item.section
+            )
+            .map(item => ({
+              name: item.name || 'N/A',
+              email: item.email || 'N/A',
+              schoolId: item.school_Id || 'N/A',
+              section: item.section || 'N/A',
+              eventId: (item.event_Id || item.event_id || '').toString(),
+              eventTitle: item.event_Title || item.event_title || 'N/A'
             }));
             
-            const response = await axios.post(
-              'http://localhost:5000/api/auth/sheets', // To Avoid CORS
-              sheetsData, 
-              {
-                  headers: {
-                      'Content-Type': 'application/json'
-                  },
-                  timeout: 10000
-              }
-            );
+            try {
+              const response = await axios.post(
+                'http://localhost:5000/api/auth/sheets',
+                sheetsData,  // Wrap the data in an entries property
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    timeout: 10000
+                }
+              );
 
-            if (response.data.status === 200) {
-              alert('Successfully updated Google Sheets!');
-            } else {
-                alert('Failed to update Google Sheets');
+              if (response.status === 200) {
+                  alert('Successfully updated Google Sheets!');
+              }
+            } catch (error) {
+                console.error('Google Sheets Error:', error);
+                alert('Failed to update Google Sheets: ' + error.message);
             }
 
             // Reset form and close modal
@@ -100,7 +124,9 @@ function EventPost() {
                 name: '',
                 email: '',
                 schoolId: '',
-                section: ''
+                section: '',
+                eventId: '',
+                eventTitle: ''
             });
         }
     } catch (err) {

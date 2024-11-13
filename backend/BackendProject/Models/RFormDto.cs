@@ -4,6 +4,7 @@ namespace BackendProject.Models
     {
         public int User_Id { get; set; } 
         public int Event_Id { get; set; } 
+        public string Event_Title { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string  School_Id { get; set; } = string.Empty;

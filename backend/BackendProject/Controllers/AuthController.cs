@@ -266,11 +266,12 @@ namespace BackendProject.Controllers
             {
                 User_Id = rformDto.User_Id,
                 Event_Id = rformDto.Event_Id,
+                Event_Title = rformDto.Event_Title,
                 Name = rformDto.Name,
                 Email = rformDto.Email, 
                 School_Id = rformDto.School_Id,  
                 Section = rformDto.Section,
-                Status = "Joined"
+                Status = "Approved"
             };
 
             _context.RForms.Add(attendee);
@@ -320,7 +321,10 @@ namespace BackendProject.Controllers
            foreach (var entry in entries)
             {
                 // Validate each entry
-                if (string.IsNullOrEmpty(entry.Name) || string.IsNullOrEmpty(entry.Email) || string.IsNullOrEmpty(entry.SchoolId) || string.IsNullOrEmpty(entry.Section))
+                if (string.IsNullOrEmpty(entry.Name) || 
+                    string.IsNullOrEmpty(entry.Email) || 
+                    string.IsNullOrEmpty(entry.SchoolId) || 
+                    string.IsNullOrEmpty(entry.Section))
                 {
                     return BadRequest(new { message = "All fields are required for each entry." });
                 }
@@ -331,7 +335,9 @@ namespace BackendProject.Controllers
                     name = entry.Name,
                     email = entry.Email,
                     schoolId = entry.SchoolId,
-                    section = entry.Section
+                    section = entry.Section,
+                    eventId = entry.EventId,
+                    eventTitle = entry.EventTitle
                 };
 
                 using var client = new HttpClient();
@@ -342,7 +348,7 @@ namespace BackendProject.Controllers
                 );
 
                 // Your Google Apps Script URL
-                var url = "https://script.google.com/macros/s/AKfycbwM5cvfdHTjInFgV21wS5Ul8Q6FQRyEBSPAZRpPIOshu5SOAw1V6TLUMmPx5i4EeR_Z/exec";
+                var url = "https://script.google.com/macros/s/AKfycbxw2ohrlJK9ihNqTMdieH3Mb3BOlsodBaOic4SOEfWgZ4hMxzIyXEi7GUixBM5gAygs/exec";
 
                 var response = await client.PostAsync(url, content);
                 

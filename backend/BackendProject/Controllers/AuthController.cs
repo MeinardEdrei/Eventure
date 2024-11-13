@@ -278,6 +278,16 @@ namespace BackendProject.Controllers
             _context.Events.Update(eventToJoin); 
             await _context.SaveChangesAsync(); 
 
+            // Insert to user_events
+            var userEvent = new UEvent
+            {
+                User_Id = rformDto.User_Id,
+                Event_Id = rformDto.Event_Id,
+                Status = "Joined"
+            };
+            _context.UEvents.Add(userEvent);
+            await _context.SaveChangesAsync(); 
+
             return Ok(new { message = "Joined the Event Successfully." });
         }
 

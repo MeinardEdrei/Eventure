@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+    --transition: all ease-in-out 200ms;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.eventTitle {
+    font-weight: 900;
+    font-size: 40px;
+}
+.eventDescription {
+    opacity: 50%;
+    margin-bottom: 2rem;
+}
+.pendingContainer {
+    display: flex;
+    flex-direction: rows;
+    justify-content: space-between;
+    align-items: center;
+}
+.pendingApproval {
+    font-weight: 700;
+    font-size: 22px;
+}
+/*Toggle Button*/
+.toggle-container {
+    display: flex;
+    background: rgba(71, 58, 83, 0.8);
+    padding: 4px;
+    border-radius: 50px;
+    width: fit-content;
+    position: relative; 
+    border: var(--borderColor);
+}
+
+.toggle-button {
+    padding: 8px 24px;
+    min-width: 100px; /* Added minimum width to prevent shifting */
+    border: none;
+    background: transparent;
+    color: #F7F0FF;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    font-family: "Montserrat", sans-serif;
+    position: relative; 
+}
+.toggle-button:focus {
+    outline: none;
+    font-weight: bold;
+}
+.toggle-button.active {
+    background: rgb(91, 71, 110);
+}
+.toggle-button:not(.active) {
+    opacity: 0.4;
+}
+.eventsBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #F7F0FF;
+    font-size: 1.2em;
+    padding: 10px 0; /* Removed horizontal padding */
+    border-radius: 10px;
+}
+.pendingHold{
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+.pendingBox {
+    height: 13rem;
+    background-color: var(--color5);
+    width: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border: var(--borderColor);
+}
+.pendingImage img{
+    width: 11rem;
+    height: 11rem;
+    border-radius: 100%;
+    margin: 1rem;
+}
+.pendingDetails {
+    margin: 1rem .5rem;
+    width: 29rem;
+}
+.pendingDetails h1 {
+    font-weight: 700;
+    font-size: 20px;
+}
+.pendingDetails p {
+    opacity: 50%;
+}
+.pendingButton {
+    background-color: var(--color3);
+    font-weight: 700;
+    border-radius: 10px;
+    height: 2.5rem;
+    width: 10rem;
+    color: var(--color5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--borderColor);
+    transition: var(--transition);
+    cursor: pointer;
+    margin-left: 22rem;
+    margin-top: 5.2rem;
+}
+.pendingButton:hover {
+    color: var(--color3);
+    background-color: var(--color5);
+}

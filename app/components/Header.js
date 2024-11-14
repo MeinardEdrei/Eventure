@@ -41,9 +41,14 @@ const Header = () => {
             <div className='flex justify-between w-[40%]'>
                 <Link href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
+                <>
+                    <Link href='/Create-Event'>Create Event</Link>
+                    <Link href=''>My Events</Link>
+                </>
+                ) : session?.user?.role === 'Admin' ? (
                     <>
-                        <Link href='/Create-Event'>Create Event</Link>
-                        <Link href=''>My Events</Link>
+                        <Link href='/EventApproval'>Event Approval</Link>
+                        <Link href='/UserApproval'>User Approval</Link>
                     </>
                 ) : (
                     <>
@@ -51,6 +56,7 @@ const Header = () => {
                         <Link href=''>Notifications</Link>
                     </>
                 )}
+
             </div>
             
             <div className='relative'>

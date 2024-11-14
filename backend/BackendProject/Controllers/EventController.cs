@@ -22,7 +22,7 @@ namespace BackendProject.Controllers
         public EventController(ApplicationDbContext context,
             IWebHostEnvironment hostingEnvironment) {
 
-            _context = _context;
+            _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
 

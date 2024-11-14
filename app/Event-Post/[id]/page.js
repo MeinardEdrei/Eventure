@@ -96,7 +96,7 @@ function EventPost() {
             }
             
             // Google Sheets
-            const registrationForm = await axios.get('http://localhost:5000/registration/auth/form');
+            const registrationForm = await axios.get('http://localhost:5000/api/registration/form');
           
             if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
               const lastEntry = registrationForm.data[registrationForm.data.length - 1];

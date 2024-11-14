@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Register controllers
 builder.Services.AddControllers();
 
+// Register Email Service
+builder.Services.AddScoped<EmailService>();
+
 // Connect to the MySQL Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(

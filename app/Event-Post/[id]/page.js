@@ -31,7 +31,7 @@ function EventPost() {
       try {
         setIsLoading(true);
         const res = await axios.get(
-          `http://localhost:5000/api/auth/events${id}`
+          `http://localhost:5000/api/event/events${id}`
         );
         setPost(res.data);
         console.log(res.data);
@@ -86,7 +86,7 @@ function EventPost() {
         formPayload.append('Event_Id', formData.eventId)
         formPayload.append('Event_Title', formData.eventTitle || post.title || '')
 
-        const res = await axios.post('http://localhost:5000/api/auth/join', formPayload);
+        const res = await axios.post('http://localhost:5000/api/registration/join', formPayload);
 
         if (res.status === 200) {
             if (res.data.status === 'Pending') {
@@ -96,7 +96,7 @@ function EventPost() {
             }
             
             // Google Sheets
-            const registrationForm = await axios.get('http://localhost:5000/api/auth/form');
+            const registrationForm = await axios.get('http://localhost:5000/registration/auth/form');
           
             if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
               const lastEntry = registrationForm.data[registrationForm.data.length - 1];
@@ -112,7 +112,7 @@ function EventPost() {
 
               try {
                 const response = await axios.post(
-                  'http://localhost:5000/api/auth/sheets',
+                  'http://localhost:5000/api/registration/sheets',
                   sheetsData,  
                   {
                       headers: {
@@ -180,7 +180,7 @@ function EventPost() {
         <div className="eventContainer">
           <div className="eventImage">
             <img
-              src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
+              src={`http://localhost:5000/api/event/uploads/${post.event_Image}`}
               alt={post.title}
             />
           </div>
@@ -231,7 +231,7 @@ function EventPost() {
                   <div className="form">
                     <div className="formImage">
                       <img
-                        src={`http://localhost:5000/api/auth/uploads/${post.event_Image}`}
+                        src={`http://localhost:5000/api/event/uploads/${post.event_Image}`}
                         alt="Event Image"
                       />
                     </div>

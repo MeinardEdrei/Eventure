@@ -13,7 +13,7 @@ function eventsDashboard () {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const res = await axios.get('http://localhost:5000/api/auth/events');
+            const res = await axios.get('http://localhost:5000/api/event/events');
             setEvent(res.data);
           } catch (error) {
             console.error(error);
@@ -36,7 +36,7 @@ function eventsDashboard () {
                         <div className="cardContainer">
                             <div className="cardImage">
                                 <img 
-                                    src={`http://localhost:5000/api/auth/uploads/${event.event_Image}`}
+                                    src={`http://localhost:5000/api/event/uploads/${event.event_Image}`}
                                     alt={event.title}
                             />
                             </div>

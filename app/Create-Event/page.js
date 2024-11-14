@@ -88,7 +88,7 @@ const Page = () => {
       formData.append('Organizer_Id', validOrganizerId);
       formData.append('Status', 'Pending');
 
-      const res = await axios.post('http://localhost:5000/api/auth/create', formData, {
+      const res = await axios.post('http://localhost:5000/api/event/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', 
         },

@@ -15,10 +15,12 @@ namespace BackendProject.Controllers
     public class RegistrationController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        public RegistrationController(ApplicationDbContext context)
+        public RegistrationController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // ----------------------REGISTRATION FORM--------------------------------
@@ -145,6 +147,14 @@ namespace BackendProject.Controllers
                 {
                     return StatusCode((int)response.StatusCode, new { message = "Failed to update Google Sheets" });
                 }
+
+                // Email Service
+                // string email = entry.Email;
+                // string emailSubject = "Registration Approved for " + entry.EventTitle;
+                // string emailBody = "You've got a spot at " + entry.EventTitle;
+                // string firstName = entry.Name;
+
+                // string result = _emailService.sendEmail(email, emailSubject, emailBody, firstName);
             }
 
             return Ok(new { message = "Successfully updated Google Sheets" });

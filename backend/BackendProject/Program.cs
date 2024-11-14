@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using DotEnv.Core;
+
+new EnvLoader().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -127,9 +127,14 @@
     transition: var(--transition);
     cursor: pointer;
     margin-left: 19.5rem;
-    margin-top: 3.9rem;
+    margin-top: 4rem;
 }
 .pendingButton:hover {
     color: var(--color3);
     background-color: var(--color5);
+}
+.pendingHold {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }

@@ -34,7 +34,7 @@ namespace BackendProject.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserDto userDto)
         {
-            if (userDto == null || string.IsNullOrEmpty(userDto.Email) || string.IsNullOrEmpty(userDto.Username) || string.IsNullOrEmpty(userDto.Password))
+            if (userDto == null || string.IsNullOrEmpty(userDto.Email) || string.IsNullOrEmpty(userDto.Username) || string.IsNullOrEmpty(userDto.Student_Number) || string.IsNullOrEmpty(userDto.Department) || string.IsNullOrEmpty(userDto.Password))
             {
                 return BadRequest(new { message = "All fields are required." });
             }
@@ -51,9 +51,11 @@ namespace BackendProject.Controllers
             {
                 Username = userDto.Username,
                 Email = userDto.Email,
+                Student_Number = userDto.Student_Number,
+                Department = userDto.Department,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                Role = userDto.Status, 
-                Status = "Pending",  // Default status
+                Role = userDto.Role, 
+                Status = userDto.Status, 
                 Profile_Image = userDto.Profile_Image,
                 Attended_Events = userDto.Attended_Events,
                 Created_Events = userDto.Created_Events

@@ -15,6 +15,12 @@ namespace BackendProject.Models
         public required string Email { get; set; }
 
         [Required]
+        public required string Student_Number { get; set; }
+
+        [Required]
+        public required string Department { get; set; }
+
+        [Required]
         [StringLength(50)]
         public required string Username { get; set; }
 

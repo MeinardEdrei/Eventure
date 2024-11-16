@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 export default function userApproval () {
     const { data: session } = useSession();
-    const [selected, setSelected] = useState("upcoming");
+    const [selected, setSelected] = useState("pending");
 
     return (
         <div className="container">

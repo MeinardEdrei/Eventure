@@ -1,5 +1,10 @@
 "use client";
+
 import "../css/Login-Signup.css";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, Check } from "lucide-react";
 import {
   ComboBox,
   Label,
@@ -9,18 +14,14 @@ import {
   ListBox,
   ListBoxItem,
 } from "react-aria-components";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronDown, Check } from "lucide-react";
 
 const departments = [
-  { id: "ccis", name: "CCIS - College of Computing and Information Sciences" },
-  { id: "cthm", name: "CTHM - College of Tourism and Hospitality Management" },
-  { id: "ion", name: "ION - Institute of Nursing" },
-  { id: "cite", name: "CITE - College of Information Technology Education" },
-  { id: "chk", name: "CHK - College of Human Kinetics" },
-  { id: "hsu", name: "HSU - Higher School ng UMak" },
+  { id: "CCIS", name: "CCIS - College of Computing and Information Sciences" },
+  { id: "CTHM", name: "CTHM - College of Tourism and Hospitality Management" },
+  { id: "ION", name: "ION - Institute of Nursing" },
+  { id: "CITE", name: "CITE - College of Information Technology Education" },
+  { id: "CHK", name: "CHK - College of Human Kinetics" },
+  { id: "HSU", name: "HSU - Higher School ng UMak" },
 ];
 
 export default function Register() {
@@ -28,8 +29,10 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
+  const [role, setRole] = useState("Student");
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Approved");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,7 +41,7 @@ export default function Register() {
     try {
       const res = await axios.post(
         "http://localhost:5000/api/auth/register",
-        { username, email, password, status, department: selectedDepartment },
+        { username, email, password, student_number: studentNumber, status, role, department: selectedDepartment },
         { headers: { "Content-Type": "application/json" } }
       );
       if (res.status === 200) {
@@ -68,11 +71,19 @@ export default function Register() {
             <input
               className="text-black"
               placeholder="Email"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              pattern="[a-zA-Z0-9._%+-]+@umak\.edu\.ph"
+              title="Please use your UMAK email"
             />
             <div>
-              <input className="text-black" placeholder="Student Number" />
+              <input 
+                className="text-black" 
+                placeholder="Student Number" 
+                value={studentNumber}
+                onChange={(e) => setStudentNumber(e.target.value)}
+              />
             </div>
             <div className="password-container">
               <input

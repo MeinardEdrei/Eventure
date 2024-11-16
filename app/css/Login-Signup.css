@@ -1,156 +1,317 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
-/* @import "@react-aria/example-theme"; for the drop down function */
 
 * {
   margin: 0;
   padding: 0;
   font-family: "Montserrat", "Nunito";
-  /* overflow: hidden; */
-}
-body{
-    overflow: hidden;
 }
 
-/* Login.css */
+body {
+  overflow: hidden;
+}
+
+/* Login Page */
 .LogIn {
   height: 90vh;
 }
+
 .Main-cntr {
   background-color: #2e113e;
   height: auto;
   width: auto;
   border-radius: 25px;
-  border: 0.5px solid #6c6c6c;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; */
-  padding: 3rem;
+  border: 0.5px solid #aeaeae;
+  padding: 2rem 2.5rem;
 }
+
 .Main-cntr .title1 {
   text-align: center;
-  margin-bottom: 1.5rem; /* Adds space below the title */
-  font-size: 2.5em;
+  margin-bottom: 1.5rem;
+  font-size: 1.5em;
   font-weight: bolder;
 }
+
 .input-cntr {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
 }
+
 .input-cntr input {
   background-color: transparent;
   color: rgb(255, 255, 255);
   padding: 0.75rem;
   border: 1px solid #ad63d8;
   border-radius: 8px;
-  width: 25rem;
+  width: 20rem;
   outline: none;
+  font-size: 0.8rem;
 }
+
 .input-cntr input:focus {
-  /* background-color: rgb(59 7 100); */ /*much darker bg*/
-  background-color: rgb(107 33 168);
-  border: 2px solid rgb(168 85 247);
+  background-color: #6b21a8;
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
 }
+
 .input-cntr input::placeholder {
   color: #ffffff;
   opacity: 0.5;
 }
-/* SignUp Button: */
-.input-cntr button {
-  margin-top: 20px;
-  padding: 0.75rem;
-  background-color: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-.input-cntr p {
-  margin-top: 0rem;
-  text-align: right;
-  font-size: 0.8em;
+
+
+/* Password Container Styles */
+.password-container {
+  position: relative;
+  width: 100%;
 }
 
-/* Registration */
-/* Usertype Choices: */
-.usertype-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.password-input {
+  padding-right: 40px !important; /* Make room for the icon */
 }
-.textUsertype{
-  font-size: 1em;
+
+/* Password Toggle Styles */
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.password-toggle input {
+  display: none;
+}
+
+.toggle-icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.toggle-icon::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' /%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' /%3E%3C/svg%3E");
+  background-size: contain;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.password-toggle:hover .toggle-icon::before {
+  opacity: 1;
+}
+
+/* Show the crossed-out eye when checkbox is checked */
+.password-toggle input:checked + .toggle-icon::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' /%3E%3C/svg%3E");
+}
+
+/* Show password when checkbox is checked */
+.password-toggle input:checked ~ input[type="password"] {
+  -webkit-text-security: none;
+  text-security: none;
+  -moz-text-security: none;
+  text-security: none;
+}
+
+/* Add this JavaScript to handle the password toggle */
+.password-toggle input:checked ~ .password-input {
+  -webkit-text-security: none;
+  text-security: none;
+  -moz-text-security: none;
+  text-security: none;
+}
+
+
+
+/* SignUp Button */
+.signup-btn {
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.5rem;
+  background-color: #663483;
+  opacity: 0.7;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
   font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.signup-btn:hover {
+  background-color: #9333ea;
+  opacity: 1;
+  font-weight: bold;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+}
+
+.signup-btn:active {
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
+}
+
+.signup-btn:focus {
+  outline: none;
+  opacity: 1;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.4);
+}
+.underline {
+  text-align: right;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+.underline:hover {
+  opacity: 1;
+}
+
+/* Registration Page */
+/* ComboBox Container */
+.dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Input and Button Container */
+.input-button-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-button-container input {
+  font-size: 8rem;
+}
+
+/* Chevron Button */
+.chevron-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px;
+  color: rgb(216, 180, 254);
+  transition: color 0.2s, transform 0.2s;
+}
+.chevron-button:hover {
+  color: rgb(243, 232, 255);
+}
+.chevron-button.rotate {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Check Icon */
+.check-icon {
+  width: 16px;
+  height: 16px;
+  color: rgb(123, 0, 255);
+}
+
+/* React Aria ComboBox Styles */
+.react-aria-ComboBox {
+  position: relative;
+  width: 100%;
+}
+
+.react-aria-ComboBox label {
+  color: #001eff;
+  opacity: 0.5;
+  font-size: 1rem;
+}
+
+.react-aria-ComboBox input {
+  background-color: transparent;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ad63d8;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.react-aria-ComboBox input:focus {
+  background-color: #6b21a8;
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.4);
+}
+
+.react-aria-ComboBox input::placeholder {
   color: #ffffff;
   opacity: 0.5;
 }
-.radio-group {
-  display: flex;
-  flex-direction: column;
+
+/* Popover Styles */
+.react-aria-Popover {
+  position: absolute;
+  width: 20.8%;
+  margin-top: 4px;
+  background-color: #2e113e;
+  border: 1px solid rgba(216, 180, 254, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 10;
 }
-.userOptions-container {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
+
+/* ListBox Styles */
+.react-aria-ListBox {
+  max-height: 180px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 4px;
+  margin: 0;
 }
-.users-options {
-  background-color: rgba(255, 255, 255, 0);
-  position: relative;
-  display: flex;
-  cursor: default;
-  border-radius: 0.5rem;
-  padding: 0.35rem 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  outline: none;
-  background-clip: padding-box;
-  border: 1px solid rgb(168 85 247);
-}
-.users-options.focus-visible {
-  ring: 2px;
-  background-color: #a855f7;
-  ring-offset: 1px;
-  ring-offset-color: rgba(255, 255, 255, 0.8);
-}
-.users-options.selected {
-  background-color: #a855f7;
-  border-color: rgba(255, 255, 255, 0.3);
-}
-.users-options.pressed:not(.selected) {
-  background-color: #eff6ff;
-}
-.radio-button {
+
+/* ListBox Item Styles */
+.react-aria-ListBoxItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 10.1em;
-}
-/* .icon-container {
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  color: #006eff;
-} */
-.users-options.selected .icon-container {
-  color: white;
-}
-.text-container {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-.option-text {
-  font-size: 1em;
-  color: #ffffff;
+  padding: 8px 16px;
+  margin: 2px 0;
+  border-radius: 6px;
+  color: rgb(243, 232, 255);
+  font-size: 0.8rem;
+  cursor: pointer;
   opacity: 0.5;
-  text-align: center;
-
+  transition: background-color 0.2s;
 }
-.users-options.selected .option-text {
-  color: white;
-  opacity: 1;
+
+.react-aria-ListBoxItem:hover {
+  background-color: rgba(107, 33, 168, 0.8);
   font-weight: bold;
+  opacity: 1;
+}
+.react-aria-ListBoxItem[data-focused] {
+  background-color: rgba(147, 51, 234, 0.5);
+  outline: none;
+}
+.react-aria-ListBoxItem[data-selected] {
+  background-color: rgb(147, 51, 234);
+  color: white;
+}
+
+/* Scrollbar Styles for ListBox */
+.react-aria-ListBox::-webkit-scrollbar {
+  width: 10px;
+}
+.react-aria-ListBox::-webkit-scrollbar-track {
+  background: rgba(216, 180, 254, 0.1);
+  border-radius: 4px;
+}
+.react-aria-ListBox::-webkit-scrollbar-thumb {
+  background: rgba(216, 180, 254, 0.3);
+  border-radius: 4px;
+}
+.react-aria-ListBox::-webkit-scrollbar-thumb:hover {
+  background: rgba(216, 180, 254, 0.5);
 }

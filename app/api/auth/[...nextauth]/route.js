@@ -38,8 +38,16 @@ const handler = NextAuth({
           
                     return null; // Return null if no user or token
                 } catch (error) {
-                console.error('Auth error:', error);
-                throw new Error(error.response?.data?.message || 'Authentication failed');
+                  if (error.response) {
+                    if (error.response.status === 400) {
+                        throw new Error(error.response.data.message || 'Email and Password are required.');
+                    } else if (error.response.status === 404) {
+                        throw new Error(error.response.data.message || 'Invalid email.');
+                    } else if (error.response.status === 401) {
+                        throw new Error(error.response.data.message || 'Invalid password.');
+                    }
+                }
+                throw new Error('Authentication failed');
                 }
             }
         }),

@@ -5,12 +5,6 @@ using BackendProject.Data;
 using BCrypt.Net;
 using System.IO; // File Manipulation
 
-//JWT using
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using System.Text;
-
 //Google Sheets
 using System.Net.Http;
 using System.Text.Json;
@@ -73,27 +67,22 @@ namespace BackendProject.Controllers
         {
             if (loginDto == null || string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
             {
-                return BadRequest(new { message = "Email and password are required." });
+                return BadRequest(new { message = "Email and Password are required." }); // 400
             }
 
             // Find user by email
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                return BadRequest(new { message = "Invalid email or password." });
-            }
-
-            // Verify password
-            if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+                return NotFound(new { message = "Invalid email." }); // 404
+                
+            }else if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
             {
-                return BadRequest(new { message = "Invalid email or password." });
+                return Unauthorized(new { message = "Invalid password." }); // 401
             }
 
-            // Generate JWT token
-            var token = GenerateJwtToken(user);
-
-            return Ok(new { 
-                token = token,
+            return Ok(new 
+            { 
                 user = new { 
                     id = user.Id,
                     username = user.Username,
@@ -101,28 +90,6 @@ namespace BackendProject.Controllers
                     role = user.Role
                 }
             });
-        }
-
-        private string GenerateJwtToken(User user) // JWT for Session
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim("id", user.Id.ToString()),
-                new Claim("role", user.Role),
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddHours(1),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

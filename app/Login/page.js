@@ -24,14 +24,17 @@ export default function Login() {
         redirect: false,
       });
 
-      if (res?.error) {
-        setError("Invalid email or password");
-      }
-
-      if (res.ok) {
+      if (res.status === 200) {
         router.push("/");
         router.refresh();
+      }else if (res.status == 400) {
+        alert('Enter credentials')
+      }else if (res.status == 404) {
+        alert('No user found');
+      }else if (res.status == 401) {
+        alert('Invalid password');
       }
+
     } catch (err) {
       console.error("Login error:", err);
       setError("An error occurred during login");

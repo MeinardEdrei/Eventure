@@ -33,12 +33,13 @@ const Header = () => {
 
   return (
     <div>
-      <section className='p-5' style={{ boxShadow: '0px 1px 1px rgba(255, 255, 255, 0.3)' }}>
-        <div className='flex justify-between'>
-            <div>
+      <section className='p-5 flex justify-center'>
+        <div className='w-[90%] p-5 bg-[#190E1E] bg-opacity-50' style={{ border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '20px' }}>
+        <div className='flex justify-between items-center'>
+            <div className='w-[10%] ml-5'>
                 <Link href='/'><Image src='/logo.png' width={30} height={30} alt='logo' /></Link>
             </div>
-            <div className='flex justify-between w-[40%]'>
+            <div className='justify-between w-[40%] hidden lg:flex 2xl:flex'>
                 <Link href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
                 <>
@@ -59,7 +60,7 @@ const Header = () => {
 
             </div>
             
-            <div className='relative'>
+            <div className='relative w-[75%] flex justify-end mr-5'>
                 <button
                     onClick={toggleDropDown}>
                     <Image src='/profile.png' width={30} height={30} alt='logo' />
@@ -80,6 +81,7 @@ const Header = () => {
             )}
                 
             </div>
+        </div>
         </div>
       </section>
     </div>

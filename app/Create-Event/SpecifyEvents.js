@@ -14,7 +14,7 @@ const EventSettingsPanel = () => {
   const [requireTicket, setRequireTicket] = useState(false);
   const [departmentsDropDown, setDepartmentsDropDown] = useState(true);
   const { data: session } = useSession();
-
+  
   const departments = [
     "CCIS - College of Computing and Information Sciences",
     "CTHM - College of Tourism and Hospitality Management",
@@ -23,6 +23,16 @@ const EventSettingsPanel = () => {
     "CHK - College of Human Kinetics",
     "HSU - Higher School ng UMak",
   ] || [];
+  const departmentMap = {
+    CCIS: "College of Computing and Information Sciences",
+    CTHM: "College of Tourism and Hospitality Management",
+    ION: "Institute of Nursing",
+    CITE: "College of Information Technology Education",
+    CHK: "College of Human Kinetics",
+    HSU: "Higher School ng UMak",
+  };
+  
+  const userDept = Object.keys(departmentMap);
 
   const handleDepartmentToggle = (dept) => {
     setSelectedDepartments((prev) =>
@@ -38,10 +48,15 @@ const EventSettingsPanel = () => {
 
   useEffect(() => {
     if (visibilityType === "Private") {
-      setSelectedDepartments(["CCIS muna"]);
+      const shortcutName = session?.user?.department;
+      if (shortcutName && userDept.includes(shortcutName)) {
+        // Use the full department name from the departmentMap
+        const fullDepartmentName = `${shortcutName} - ${departmentMap[shortcutName]}`;
+        setSelectedDepartments([fullDepartmentName]);
+      }
       setDepartmentsDropDown(false);
     }else{
-        setDepartmentsDropDown(true);
+      setDepartmentsDropDown(true);
     }
   }, [visibilityType]);
 

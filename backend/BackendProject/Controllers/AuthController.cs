@@ -87,6 +87,7 @@ namespace BackendProject.Controllers
                     id = user.Id,
                     username = user.Username,
                     email = user.Email,
+                    department = user.Department,
                     role = user.Role
                 }
             });

@@ -31,6 +31,7 @@ const handler = NextAuth({
                         email: user.email,
                         username: user.username,
                         role: user.role,
+                        department: user.department,
                         status: user.status,
                         accessToken: token 
                       };
@@ -53,27 +54,29 @@ const handler = NextAuth({
         }),
     ],
     callbacks: {
+        async jwt({ token, user }) {
+          if (user) {
+              token.id = user.id;
+              token.accessToken = user.accessToken;
+              token.username = user.username;
+              token.email = user.email;
+              token.role = user.role;
+              token.department = user.department;
+              token.status = user.status;
+          }
+          return token;
+        },
         async session({ session, token }) {
           session.user = session.user || {};
           session.user.id = token.id;
           session.user.username = token.username;
           session.user.email = token.email;
           session.user.role = token.role;
+          session.user.department = token.department;
           session.user.status = token.status;
           session.accessToken = token.accessToken;
           return session;
         },
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-                token.accessToken = user.accessToken;
-                token.username = user.username;
-                token.email = user.email;
-                token.role = user.role;
-                token.status = user.status;
-            }
-            return token;
-            }
       },
       pages: {
         signIn: '/login',

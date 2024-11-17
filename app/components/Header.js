@@ -80,7 +80,7 @@ const Header = () => {
                     <FontAwesomeIcon className='text-2xl lg:hidden sm:flex' icon={faBars} />
                 </button>
             {dropDownOpen && (
-                <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 z-10 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
+                <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
                     {session ? (
                         <>
                             <div className='flex justify-center items-center mb-2 p-2'>

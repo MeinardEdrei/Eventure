@@ -80,7 +80,7 @@ const Header = () => {
                     <FontAwesomeIcon className='text-2xl lg:hidden sm:flex' icon={faBars} />
                 </button>
             {dropDownOpen && (
-                <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 z-10 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw]'>
+                <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 z-10 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
                     {session ? (
                         <>
                             <div className='flex justify-center items-center mb-2 p-2'>
@@ -97,6 +97,12 @@ const Header = () => {
                             <hr className='border-t border-white/30 my-0' />
                             <div className='p-2'>
                                 <Link onClick={() => setDropDownOpen(false)} href='' className='block text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
+                                <div className='pb-2 md:block lg:hidden'>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
+                                </div>
+                                <hr className='lg:hidden border-t border-white/30 my-0' />
                                 <button onClick={() => { signOut(); setDropDownOpen(false) }} className='flex text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md w-full'>Sign out</button>
                             </div>
                         </>

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./SpecifyEvents.css";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { useSession } from "next-auth/react";
 
 const EventSettingsPanel = () => {
   const [venue, setVenue] = useState("");
@@ -11,6 +12,8 @@ const EventSettingsPanel = () => {
   const [capacity, setCapacity] = useState("");
   const [requireApproval, setRequireApproval] = useState(false);
   const [requireTicket, setRequireTicket] = useState(false);
+  const [departmentsDropDown, setDepartmentsDropDown] = useState(true);
+  const { data: session } = useSession();
 
   const departments = [
     "CCIS - College of Computing and Information Sciences",
@@ -19,7 +22,7 @@ const EventSettingsPanel = () => {
     "CITE - College of Information Technology Education",
     "CHK - College of Human Kinetics",
     "HSU - Higher School ng UMak",
-  ];
+  ] || [];
 
   const handleDepartmentToggle = (dept) => {
     setSelectedDepartments((prev) =>
@@ -32,6 +35,15 @@ const EventSettingsPanel = () => {
       prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
     );
   };
+
+  useEffect(() => {
+    if (visibilityType === "Private") {
+      setSelectedDepartments(["CCIS muna"]);
+      setDepartmentsDropDown(false);
+    }else{
+        setDepartmentsDropDown(true);
+    }
+  }, [visibilityType]);
 
   return (
     <div className="specify-event-mnc">
@@ -65,25 +77,32 @@ const EventSettingsPanel = () => {
             <span>College Departments</span>
           </label>
           <div className="tags-container">
-            {selectedDepartments.map((dept) => (
-              <span key={dept} className="tag">
-                {dept}
-                <button
-                  className="tag-remove"
-                  onClick={() => handleDepartmentToggle(dept)}
-                >
-                  ×
-                </button>
-              </span>
-            ))}
+            {visibilityType === "Public" && (
+              <>
+                {selectedDepartments.map((dept) => (
+                  <span key={dept} className="tag">
+                    {dept}
+                    <button
+                      className="tag-remove"
+                      onClick={() => handleDepartmentToggle(dept)}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </>
+            )}
           </div>
           <select
             className="select"
             onChange={(e) => handleDepartmentToggle(e.target.value)}
             value=""
+            disabled={!departmentsDropDown}
           >
             <option value="" disabled>
-              Select Departments...
+              {visibilityType === "Public"
+                ? "Select Departments..."
+                : selectedDepartments}
             </option>
             {departments
               .filter((dept) => !selectedDepartments.includes(dept))
@@ -172,42 +191,6 @@ const EventSettingsPanel = () => {
               Private
             </label>
           </div>
-
-          {visibilityType === "Public" && (
-            <>
-              <div className="tags-container">
-                {visibilityDepartments.map((dept) => (
-                  <span key={dept} className="tag green">
-                    {dept}
-                    <button
-                      className="tag-remove"
-                      onClick={() => handleVisibilityDepartmentToggle(dept)}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <select
-                className="select"
-                onChange={(e) =>
-                  handleVisibilityDepartmentToggle(e.target.value)
-                }
-                value=""
-              >
-                <option value="" disabled>
-                  Select departments to include...
-                </option>
-                {departments
-                  .filter((dept) => !visibilityDepartments.includes(dept))
-                  .map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept}
-                    </option>
-                  ))}
-              </select>
-            </>
-          )}
         </div>
 
         {/* Ticket */}

@@ -4,19 +4,43 @@ import { Calendar, Clock } from "lucide-react";
 import "../css/Create-Event.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { ChevronDown, Check } from "lucide-react";
+import {
+  ComboBox,
+  Label,
+  Input,
+  Button,
+  Popover,
+  ListBox,
+  ListBoxItem,
+} from "react-aria-components";
+import EventSettingsPanel from "./SpecifyEvents";
+
+const departments = [
+  { id: "CCIS", name: "CCIS - College of Computing and Information Sciences" },
+  { id: "CTHM", name: "CTHM - College of Tourism and Hospitality Management" },
+  { id: "ION", name: "ION - Institute of Nursing" },
+  { id: "CITE", name: "CITE - College of Information Technology Education" },
+  { id: "CHK", name: "CHK - College of Human Kinetics" },
+  { id: "HSU", name: "HSU - Higher School ng UMak" },
+];
 
 const Page = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [ title, setTitle ] = useState('');
-  const [ description, setDescription ] = useState('');
-  const [ date, setDate ] = useState('');
-  const [ start, setStart ] = useState('');
-  const [ end, setEnd ] = useState('');
-  const [ location, setLocation ] = useState('');
-  const [ maxCapacity, setMaxCapacity ] = useState('');
-  const [ organizerId, setOrganizerId ] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [location, setLocation] = useState("");
+  const [maxCapacity, setMaxCapacity] = useState("");
+  const [organizerId, setOrganizerId] = useState("");
   const { data: session } = useSession();
+
+  // import from registration
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -51,19 +75,29 @@ const Page = () => {
     e.preventDefault();
     console.log("Form submitted");
     // Form validation
-    if (!title || !description || !date || !start || !end || !location || !maxCapacity || !selectedFile) {
+    if (
+      !title ||
+      !description ||
+      !date ||
+      !start ||
+      !end ||
+      !location ||
+      !maxCapacity ||
+      !selectedFile
+    ) {
       alert("Please fill in all fields and select an image");
       return;
     }
 
     try {
       const validOrganizerId = parseInt(organizerId);
-      if (isNaN(validOrganizerId)) { // To counter NaN error
+      if (isNaN(validOrganizerId)) {
+        // To counter NaN error
         alert("Invalid Organizer ID");
         return;
       }
 
-      console.log('Sending form data:', {
+      console.log("Sending form data:", {
         Title: title,
         Description: description,
         Date: date,
@@ -72,38 +106,45 @@ const Page = () => {
         Location: location,
         Max_Capacity: maxCapacity,
         Organizer_Id: validOrganizerId,
-        Status: 'Pending'
+        Status: "Pending",
       });
 
       const formData = new FormData(); // Using FormData to handle file uploads
 
-      formData.append('Title', title);
-      formData.append('Description', description);
-      formData.append('Date', date);
-      formData.append('Start', start);
-      formData.append('End', end);
-      formData.append('Location', location);
-      formData.append('Max_Capacity', parseInt(maxCapacity));
-      formData.append('Event_Image', selectedFile);
-      formData.append('Organizer_Id', validOrganizerId);
-      formData.append('Status', 'Pending');
+      formData.append("Title", title);
+      formData.append("Description", description);
+      formData.append("Date", date);
+      formData.append("Start", start);
+      formData.append("End", end);
+      formData.append("Location", location);
+      formData.append("Max_Capacity", parseInt(maxCapacity));
+      formData.append("Event_Image", selectedFile);
+      formData.append("Organizer_Id", validOrganizerId);
+      formData.append("Status", "Pending");
 
-      const res = await axios.post('http://localhost:5000/api/event/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', 
-        },
-      });
-      console.log('Response received:', res.data);
-      alert(res.data.message); 
+      const res = await axios.post(
+        "http://localhost:5000/api/event/create",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Response received:", res.data);
+      alert(res.data.message);
     } catch (error) {
-      console.error('Error details:', error);
+      console.error("Error details:", error);
       if (error.response) {
-        console.error('Response error:', error.response.data);
-        console.error('Status code:', error.response.status);
+        console.error("Response error:", error.response.data);
+        console.error("Status code:", error.response.status);
       }
-      alert(error.response?.data?.message || "Event creation failed: " + error.message);
+      alert(
+        error.response?.data?.message ||
+          "Event creation failed: " + error.message
+      );
     }
-  }
+  };
 
   return (
     <div className="createEvent-mnc">
@@ -118,71 +159,78 @@ const Page = () => {
         <div className="input-containers">
           <div className="event-name">
             <label>Event Name</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-          <div className="event-name">
-            <label>Location</label>
-            <input 
-              type="text" 
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </div>
-          <div className="event-name">
-            <label>Maximum Capacity</label>
-            <input 
-              type="text" 
-              value={maxCapacity}
-              onChange={(e) => setMaxCapacity(e.target.value)}
-            />
-          </div>
           <div className="description">
             <label>Description</label>
-            <textarea 
-              rows="5" 
+            <textarea
+              rows="5"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div className="schedule">
-            <div className="date">
-              <label>Date</label>
-              <div className="input-with-icon">
-                <Calendar className="input-icon" />
-                <input 
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)} 
-                />
-              </div>
-            </div>
-            <div className="start">
+            {/* Start of Event */}
+            <div className="start-DT">
               <label>Start</label>
-              <div className="input-with-icon">
-                <Clock className="input-icon" />
-                <input 
-                  type="time" 
-                  value={start}
-                  onChange={(e) => setStart(e.target.value)}
-                />
+              <div className="date-time">
+                <div className="date">
+                  <div className="input-with-icon">
+                    <Calendar className="input-icon" />
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="time">
+                  <div className="input-with-icon">
+                    <Clock className="input-icon" />
+                    <input
+                      type="time"
+                      value={start}
+                      onChange={(e) => setStart(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="end">
+
+            {/* End of Event */}
+            <div className="start-DT">
               <label>End</label>
-              <div className="input-with-icon">
-                <Clock className="input-icon" />
-                <input 
-                  type="time" 
-                  value={end}
-                  onChange={(e) => setEnd(e.target.value)}
-                />
+              <div className="date-time">
+                <div className="date">
+                  <div className="input-with-icon">
+                    <Calendar className="input-icon" />
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="time">
+                  <div className="input-with-icon">
+                    <Clock className="input-icon" />
+                    <input
+                      type="time"
+                      value={end}
+                      onChange={(e) => setEnd(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          {/* Eventt's Detail and Option */}
+          <EventSettingsPanel />
+
           <div className="input-image">
             <label>Choose Image</label>
             <div
@@ -214,9 +262,9 @@ const Page = () => {
                       <p className="selected-file">{selectedFile.name}</p>
                       <div className="w-full flex justify-center">
                         <div className="relative w-full max-w-xs aspect-video">
-                          <img 
-                            src={URL.createObjectURL(selectedFile)} 
-                            alt="Selected preview" 
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Selected preview"
                             className="absolute inset-0 w-full h-full object-contain"
                           />
                         </div>

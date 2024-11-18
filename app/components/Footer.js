@@ -9,7 +9,7 @@ import React from 'react'
 const Footer = () => {
   return (
     <div className=''>
-        <div className='flex flex-col mx-[9%] my-[5%] mb-[15%]'>
+        <div className='flex flex-col mx-[9%] mt-[5%]'>
             {/* <hr className='border-neutral-700' /> */}
             <div className='flex my-2 justify-between items-center border border-neutral-700 p-4 rounded-lg'>
                 <Link className='text-sm underline' href=''>ABOUT US</Link>

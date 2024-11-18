@@ -44,9 +44,9 @@ const Header = () => {
         <div className='w-[90%] p-5 bg-[#190E1E] bg-opacity-50' style={{ border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '20px' }}>
         <div className='flex justify-between items-center'>
             
-            <Link className='ml-5 mr-7' href='/'><Image src='/logo.png' width={38} height={38} alt='logo' /></Link>
+            <div className='flex xl:min-w-[7.6%] lg:min-w-[12%]'><Link className='ml-5 mr-12' href='/'><Image src='/logo.png' width={38} height={38} alt='logo' /></Link></div>
         
-            <div className='justify-between w-[40%] md:ml-5 md:hidden max-sm:hidden lg:flex 2xl:flex'>
+            <div className='justify-between w-[45%] max-md:w-[60%] md:ml-5 md:hidden max-sm:hidden lg:flex 2xl:flex'>
                 <Link className='xl:flex lg:flex' href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
                 <>
@@ -67,7 +67,7 @@ const Header = () => {
 
             </div>
             
-            <div className='relative w-[75%] flex justify-end mr-5'>
+            <div className='relative xl:w-[75%] lg:w-[50%] flex justify-end mr-5'>
                 <button
                     className='hidden md:hidden lg:flex'
                     ref={profileButtonRef}
@@ -104,7 +104,11 @@ const Header = () => {
                                     <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
                                 </div>
                                 <hr className='lg:hidden border-t border-white/30 my-0' />
-                                <button onClick={() => { signOut(); setDropDownOpen(false); router.push('/'); }} className='flex text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md w-full'>Sign out</button>
+                                <button onClick={() => { 
+                                    signOut({callbackUrl: '/'}); 
+                                    setDropDownOpen(false); 
+                                }} className='flex text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md w-full'
+                                >Sign out</button>
                             </div>
                         </>
                     ) : (

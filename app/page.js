@@ -42,6 +42,7 @@ export default function Home() {
               rounded-[50px]"
               src="/kokoko.jpg"
             />
+            <div className="absolute inset-0 rounded-[50px] bg-gradient-to-b from-[#000000] to-transparent opacity-70 z-10" />
             <div
               name="top-left"
               className="absolute xl:top-[-1.9%] xl:right-[24%] lg:top-[-2%] lg:right-[36%]
@@ -89,8 +90,8 @@ export default function Home() {
             
             {/* ---------OVERLAY TEXTS AND BUTTONS--------- */}
             
-            <div className="flex justify-center absolute bg-white px-4 py-2 w-52 lg:top-[7%] left-[7%] rounded-full
-              lg:w-64 lg:left-[7%] md:top-[7%] max-sm:bottom-[6%] max-sm:w-40 max-sm:left-[10%]">
+            <div className="flex justify-center absolute bg-white/80 px-4 py-2 w-52 lg:top-[7%] left-[7%] rounded-full
+              lg:w-64 lg:left-[7%] md:top-[7%] max-sm:bottom-[6%] max-sm:w-40 max-sm:left-[10%] z-10">
               <p className="text-black text-sm font-medium
               lg:text-lg max-sm:text-xs">November 30, 2023</p>
             </div>
@@ -99,7 +100,7 @@ export default function Home() {
               lg:text-3xl lg:bottom-[7%] lg:left-[3%] md:text-2xl max-sm:text-sm"
               >The long awaited concert this 2023 with UMAK Jammers</p>
             </div>
-            <div className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-white w-48 rounded-full 
+            <div className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-slate-300 w-48 rounded-full 
               lg:px-3 lg:py-1 md:right-[5%] max-sm:w-36 max-sm:top-[42%]">
               <Link href='/Events' className="text-black text-sm font-medium mx-3
               lg:text-sm max-sm:text-xs">See all events</Link>

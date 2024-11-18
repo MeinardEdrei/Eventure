@@ -4,14 +4,20 @@ import "./SpecifyEvents.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useSession } from "next-auth/react";
 
-const EventSettingsPanel = () => {
-  const [venue, setVenue] = useState("");
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
-  const [visibilityType, setVisibilityType] = useState("Public");
-  const [visibilityDepartments, setVisibilityDepartments] = useState([]);
-  const [capacity, setCapacity] = useState("");
-  const [requireApproval, setRequireApproval] = useState(false);
-  const [requireTicket, setRequireTicket] = useState(false);
+const EventSettingsPanel = ({ // Pass using Props
+  venue,
+  setVenue,
+  capacity,
+  setCapacity,
+  selectedDepartments,
+  setSelectedDepartments,
+  visibilityType,
+  setVisibilityType,
+  requireApproval,
+  setRequireApproval,
+  requireTicket,
+  setRequireTicket
+}) => {
   const [departmentsDropDown, setDepartmentsDropDown] = useState(true);
   const { data: session } = useSession();
   
@@ -36,12 +42,6 @@ const EventSettingsPanel = () => {
 
   const handleDepartmentToggle = (dept) => {
     setSelectedDepartments((prev) =>
-      prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
-    );
-  };
-
-  const handleVisibilityDepartmentToggle = (dept) => {
-    setVisibilityDepartments((prev) =>
       prev.includes(dept) ? prev.filter((d) => d !== dept) : [...prev, dept]
     );
   };

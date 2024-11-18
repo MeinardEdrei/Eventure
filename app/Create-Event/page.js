@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Calendar, Clock } from "lucide-react";
 import "../css/Create-Event.css";
 import axios from "axios";
@@ -16,15 +16,6 @@ import {
 } from "react-aria-components";
 import EventSettingsPanel from "./SpecifyEvents";
 
-const departments = [
-  { id: "CCIS", name: "CCIS - College of Computing and Information Sciences" },
-  { id: "CTHM", name: "CTHM - College of Tourism and Hospitality Management" },
-  { id: "ION", name: "ION - Institute of Nursing" },
-  { id: "CITE", name: "CITE - College of Information Technology Education" },
-  { id: "CHK", name: "CHK - College of Human Kinetics" },
-  { id: "HSU", name: "HSU - Higher School ng UMak" },
-];
-
 const Page = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -33,14 +24,18 @@ const Page = () => {
   const [date, setDate] = useState("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
-  const [location, setLocation] = useState("");
-  const [maxCapacity, setMaxCapacity] = useState("");
   const [organizerId, setOrganizerId] = useState("");
   const { data: session } = useSession();
 
-  // import from registration
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
+  // Import from SpecifyEvents.js
+  const [venue, setVenue] = useState("");   
+  const [capacity, setCapacity] = useState("");
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
+  const [visibilityType, setVisibilityType] = useState("Public");
+  const [requireApproval, setRequireApproval] = useState(false);
+  const [requireTicket, setRequireTicket] = useState(false);
+
+  const descriptionRef = useRef(null);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -66,6 +61,14 @@ const Page = () => {
   };
 
   useEffect(() => {
+    const textarea = descriptionRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // Reset height
+      textarea.style.height = `${textarea.scrollHeight}px`; // Set height to scrollHeight
+    }
+  }, [description]);
+
+  useEffect(() => {
     if (session?.user?.id) {
       setOrganizerId(session.user.id);
     }
@@ -73,21 +76,12 @@ const Page = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted");
+    
     // Form validation
-    if (
-      !title ||
-      !description ||
-      !date ||
-      !start ||
-      !end ||
-      !location ||
-      !maxCapacity ||
-      !selectedFile
-    ) {
+    if (!title || !description || !date || !start || !end || !venue || !capacity || !selectedFile) {
       alert("Please fill in all fields and select an image");
       return;
-    }
+  }
 
     try {
       const validOrganizerId = parseInt(organizerId);
@@ -103,8 +97,12 @@ const Page = () => {
         Date: date,
         Start: start,
         End: end,
-        Location: location,
-        Max_Capacity: maxCapacity,
+        Location: venue,
+        Max_Capacity: capacity,
+        Visibility: visibilityType,
+        Hosted_By: selectedDepartments,
+        Require_Approval: requireApproval,
+        Require_Ticket: requireTicket,
         Organizer_Id: validOrganizerId,
         Status: "Pending",
       });
@@ -116,10 +114,14 @@ const Page = () => {
       formData.append("Date", date);
       formData.append("Start", start);
       formData.append("End", end);
-      formData.append("Location", location);
-      formData.append("Max_Capacity", parseInt(maxCapacity));
+      formData.append("Location", venue);
+      formData.append("Max_Capacity", parseInt(capacity));
       formData.append("Event_Image", selectedFile);
       formData.append("Organizer_Id", validOrganizerId);
+      formData.append("Visibility", visibilityType);
+      formData.append("Require_Approval", requireApproval.toString());
+      formData.append("Require_Ticket", requireTicket.toString());
+      formData.append("Hosted_By", JSON.stringify(selectedDepartments));
       formData.append("Status", "Pending");
 
       const res = await axios.post(
@@ -169,6 +171,8 @@ const Page = () => {
             <label>Description</label>
             <textarea
               rows="5"
+              className="overflow-hidden"
+              ref={descriptionRef}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -229,7 +233,20 @@ const Page = () => {
             </div>
           </div>
           {/* Eventt's Detail and Option */}
-          <EventSettingsPanel />
+          <EventSettingsPanel 
+            venue={venue}
+            setVenue={setVenue}
+            capacity={capacity}
+            setCapacity={setCapacity}
+            selectedDepartments={selectedDepartments} 
+            setSelectedDepartments={setSelectedDepartments} 
+            visibilityType={visibilityType} 
+            setVisibilityType={setVisibilityType} 
+            requireApproval={requireApproval} 
+            setRequireApproval={setRequireApproval} 
+            requireTicket={requireTicket} 
+            setRequireTicket={setRequireTicket} 
+          />
 
           <div className="input-image">
             <label>Choose Image</label>

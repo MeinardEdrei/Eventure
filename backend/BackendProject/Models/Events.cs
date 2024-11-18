@@ -32,6 +32,18 @@ namespace BackendProject.Models
 
         [Required]
         public required int Max_Capacity { get; set; }
+
+        [Required]
+        public required string Hosted_By { get; set; }
+
+        [Required]
+        public required string Visibility { get; set; }
+
+        [Required]
+        public required bool Require_Approval { get; set; }
+
+        [Required]
+        public required bool Require_Ticket { get; set; }
         
         [Required]
         [StringLength(255)]

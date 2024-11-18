@@ -21,7 +21,7 @@ namespace BackendProject.Models
         public required string Department { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public required string Username { get; set; }
 
         [Required]

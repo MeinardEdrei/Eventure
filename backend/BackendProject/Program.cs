@@ -73,7 +73,13 @@ app.UseAuthorization(); // IMPORTANT for auth
 app.UseAuthentication(); // IMPORTANT for auth
 app.MapControllers();
 
-
+// Run migrations and hash passwords
+// FOR HASHING PASSWORDS
+// using (var scope = app.Services.CreateScope())
+// {
+//     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     await MigrateDatabaseAndHashPasswords(context);
+// }
 
 // --------- FOR TEST RUN SERVER
 
@@ -98,6 +104,32 @@ app.MapGet("/weatherforecast", () =>
 .WithOpenApi();
 
 app.Run();
+
+// FOR HASHING PASSWORDS
+// static async Task MigrateDatabaseAndHashPasswords(ApplicationDbContext context)
+// {
+//     // Ensure the database is created
+//     await context.Database.MigrateAsync();
+
+//     // Fetch all users with plain text passwords
+//     var users = await context.Users.ToListAsync();
+
+//     foreach (var user in users)
+//     {
+//         if (!string.IsNullOrEmpty(user.Password) && !user.Password.StartsWith("$2a$")) // Check if password is not hashed
+//         {
+//             // Hash the plain text password
+//             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
+//             user.Password = hashedPassword; // Update the password
+
+//             // Save changes to the database
+//             context.Users.Update(user);
+//         }
+//     }
+
+//     await context.SaveChangesAsync();
+//     Console.WriteLine("Passwords have been hashed and updated successfully.");
+// }
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {

@@ -43,9 +43,9 @@ const Header = () => {
       <section className='p-5 flex justify-center'>
         <div className='w-[90%] p-5 bg-[#190E1E] bg-opacity-50' style={{ border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '20px' }}>
         <div className='flex justify-between items-center'>
-            <div className='w-[10%] ml-5'>
-                <Link href='/'><Image src='/logo.png' width={30} height={30} alt='logo' /></Link>
-            </div>
+            
+            <Link className='ml-5 mr-7' href='/'><Image src='/logo.png' width={38} height={38} alt='logo' /></Link>
+        
             <div className='justify-between w-[40%] md:ml-5 md:hidden max-sm:hidden lg:flex 2xl:flex'>
                 <Link className='xl:flex lg:flex' href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
@@ -83,12 +83,13 @@ const Header = () => {
                 <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
                     {session ? (
                         <>
-                            <div className='flex justify-center items-center mb-2 p-2'>
-                                <div className='flex justify-center w-14'>
+                            <div className='flex mb-2 p-2'>
+                                <div className='flex justify-center items-center mr-2 ml-2 min-w-[20%]'>
                                     <Image src='/profile.png' width={35} height={35} alt='logo' />
                                 </div>
                                 <div className='flex flex-col overflow-hidden'>
-                                    <span className='text-white text-base'>{session?.user?.username}</span>
+                                    <span className='text-white text-base overflow-hidden whitespace-nowrap text-ellipsis
+                                    '>{session?.user?.username}</span>
                                     <p className='text-white/30 text-sm overflow-hidden whitespace-nowrap text-ellipsis'>
                                         {session?.user?.email}
                                     </p>

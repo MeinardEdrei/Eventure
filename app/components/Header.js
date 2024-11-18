@@ -104,7 +104,7 @@ const Header = () => {
                                     <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
                                 </div>
                                 <hr className='lg:hidden border-t border-white/30 my-0' />
-                                <button onClick={() => { signOut(); setDropDownOpen(false) }} className='flex text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md w-full'>Sign out</button>
+                                <button onClick={() => { signOut(); setDropDownOpen(false); router.push('/'); }} className='flex text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md w-full'>Sign out</button>
                             </div>
                         </>
                     ) : (

@@ -94,13 +94,13 @@ body {
   gap: 2em;
   width: 100%;
 }
-.start-DT{
+.start-DT {
   display: flex;
   flex-direction: column;
   gap: 0em;
   width: 100%;
 }
-.start-DT .date-time{
+.start-DT .date-time {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -201,6 +201,183 @@ body {
   opacity: 1;
 }
 
+/* Button: See Requirement */
+.requirements-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  /* margin: 0rem 0 1.5rem 0; */
+}
 
+.requirements-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: rgb(209, 213, 219);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.requirements-button:hover {
+  color: white;
+  /* font-weight: bold; */
+  background-color: #463951;
+}
 
+.info-icon {
+  width: 1rem;
+  height: 1rem;
+}
+/* Button: See Requirement */
+
+/* Popup Modal: Requirements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleCheck {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #5a5a5ad9; /* Darkened background */
+  backdrop-filter: blur(4px); /* Optional: adds slight blur to background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-container {
+  background-color: #463951;
+  border: 1px solid #ffffff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 28rem;
+  width: 100%;
+  margin: 1rem;
+  animation: slideIn 0.4s ease-out;
+}
+.cont {
+  margin-bottom: 2rem; /* Adds spacing between the two sections */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.close-button {
+  color: #ffffff;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.close-button:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+  transform: rotate(90deg);
+}
+
+.requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  animation: slideIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  border: 2px solid #8b5cf6;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.checkmark {
+  width: 0.75rem;
+  height: 0.75rem;
+  color: #ffffff;
+  animation: scaleCheck 0.3s ease-out;
+}
+
+.requirement-text {
+  color: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.modal-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-button {
+  padding: 0.5rem 1rem;
+  background-color: #8b5cf6;
+  color: white;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.submit-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}

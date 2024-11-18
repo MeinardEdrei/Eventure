@@ -14,7 +14,9 @@ import {
   ListBox,
   ListBoxItem,
 } from "react-aria-components";
+
 import EventSettingsPanel from "./SpecifyEvents";
+import RequirementsModal from "./SeeRequirement";
 
 const departments = [
   { id: "CCIS", name: "CCIS - College of Computing and Information Sciences" },
@@ -41,6 +43,7 @@ const Page = () => {
   // import from registration
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isRequirementsModalOpen, setIsRequirementsModalOpen] = useState(false);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -157,6 +160,7 @@ const Page = () => {
           </p>
         </div>
         <div className="input-containers">
+          {/* Input Event Name */}
           <div className="event-name">
             <label>Event Name</label>
             <input
@@ -165,6 +169,8 @@ const Page = () => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
+
+          {/* Input Event Description */}
           <div className="description">
             <label>Description</label>
             <textarea
@@ -173,6 +179,8 @@ const Page = () => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
+
+          {/* Input Event Schedule */}
           <div className="schedule">
             {/* Start of Event */}
             <div className="start-DT">
@@ -228,9 +236,11 @@ const Page = () => {
               </div>
             </div>
           </div>
-          {/* Eventt's Detail and Option */}
+
+          {/* Input Event's Detail and Option */}
           <EventSettingsPanel />
 
+          {/* Input Event Image */}
           <div className="input-image">
             <label>Choose Image</label>
             <div
@@ -283,10 +293,40 @@ const Page = () => {
               </div>
             </div>
           </div>
+
+          {/* See Requirements */}
+          <div className="requirements-wrapper">
+            <button
+              type="button"
+              className="requirements-button"
+              onClick={() => setIsRequirementsModalOpen(true)}
+            >
+              <svg
+                className="info-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              See All Requirements
+            </button>
+          </div>
+          
         </div>
         <div className="createEvent-btn">
           <button type="submit">Create Event</button>
         </div>
+        <RequirementsModal
+          isOpen={isRequirementsModalOpen}
+          onClose={() => setIsRequirementsModalOpen(false)}
+        />
       </form>
     </div>
   );

@@ -51,7 +51,7 @@ const Header = () => {
                 {session?.user?.role === 'Organizer' ? (
                 <>
                     <Link href='/Create-Event'>Create Event</Link>
-                    <Link href=''>My Events</Link>
+                    <Link href='/OrganizerEvents'>My Events</Link>
                 </>
                 ) : session?.user?.role === 'Admin' ? (
                     <>
@@ -61,7 +61,7 @@ const Header = () => {
                 ) : (
                     <>
                         <Link className='xl:flex lg:flex' href=''>Calendar</Link>
-                        <Link className='xl:flex lg:flex' href=''>Notifications</Link>
+                        <Link className='xl:flex lg:flex' href='/UserNotifications'>Notifications</Link>
                     </>
                 )}
 
@@ -96,7 +96,7 @@ const Header = () => {
                             </div>
                             <hr className='border-t border-white/30 my-0' />
                             <div className='p-2'>
-                                <Link onClick={() => setDropDownOpen(false)} href='' className='block text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
+                                <Link onClick={() => setDropDownOpen(false)} href='/UserProfile' className='block text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
                                 <div className='pb-2 md:block lg:hidden'>
                                     <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
                                     <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>

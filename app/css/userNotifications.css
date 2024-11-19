@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+    --transition: all ease-in-out 200ms;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.eventTitle {
+    font-weight: 900;
+    font-size: 40px;
+}
+.eventDescription {
+    opacity: 50%;
+    margin-bottom: 2rem;
+}
+.notificationContainer {
+    border: var(--borderColor);
+    border-radius: 10px;
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.subcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+.notificationContainer hr {
+    margin: 1rem;
+    border: var(--borderColor);
+    width: 100%;
+    opacity: 25%;
+}
+.userImage img {
+    border-radius: 100%;
+    width: 4rem;
+}
+.userPreview h6 {
+    font-weight: 600;
+}
+.userPreview p {
+    opacity: 50%;
+    line-height: 1.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; 
+}

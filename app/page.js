@@ -31,7 +31,8 @@ export default function Home() {
                 backgroundPosition: 'center'}} 
               alt="Image" 
             />
-            <div className="absolute inset-0 rounded-[70px] bg-gradient-to-b from-[#000000] to-transparent opacity-70" />
+            <div className="absolute inset-0 rounded-[70px] bg-gradient-to-b from-[#000000] to-transparent opacity-70"
+                  style={{ rotate: '180deg'}} />
             <div 
               name="gap"
               className="absolute top-0 right-0 w-[372px] h-[330px] object-cover
@@ -42,7 +43,8 @@ export default function Home() {
               rounded-[50px]"
               src="/kokoko.jpg"
             />
-            <div className="absolute inset-0 rounded-[50px] bg-gradient-to-b from-[#000000] to-transparent opacity-70 z-10" />
+            {/* <div className="absolute inset-0 rounded-[50px] bg-gradient-to-b from-[#000000] to-transparent opacity-50 z-9"
+                  style={{ rotate: '180deg'}} /> */}
             <div
               name="top-left"
               className="absolute xl:top-[-1.9%] xl:right-[24%] lg:top-[-2%] lg:right-[36%]
@@ -100,12 +102,12 @@ export default function Home() {
               lg:text-3xl lg:bottom-[7%] lg:left-[3%] md:text-2xl max-sm:text-sm"
               >The long awaited concert this 2023 with UMAK Jammers</p>
             </div>
-            <div className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-slate-300 w-48 rounded-full 
+            <Link href='/Events' className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-slate-300 w-48 rounded-full 
               lg:px-3 lg:py-1 md:right-[5%] max-sm:w-36 max-sm:top-[42%]">
-              <Link href='/Events' className="text-black text-sm font-medium mx-3
-              lg:text-sm max-sm:text-xs">See all events</Link>
+              <div className="text-black text-sm font-medium mx-3
+              lg:text-sm max-sm:text-xs">See all events</div>
               <p className="text-black lg:text-lg text-3xl max-sm:text-lg">→</p>
-            </div>
+            </Link>
             {/* <div className="absolute bg-white bottom-[8%] right-[4%] rounded-full w-12 h-12 
             flex items-center justify-center place-self-center overflow-hidden">
               <p className="text-black text-3xl font-extrabold" style={{ transform: 'rotate(-30deg)' }}>→</p>

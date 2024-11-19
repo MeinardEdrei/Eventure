@@ -1,0 +1,98 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
+    --color1: #0C0C0C;
+    --color2: #252525;
+    --color3: #fefefe;
+    --color4: #DAB7FF;
+    --color5: #4a3b55;
+    --color6: #705c7c;
+    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --font: Montserrat, Arial, Helvetica;
+    --transition: all ease-in-out 200ms;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", "Nunito";
+    /* overflow: hidden; */
+}
+.container {
+    width: 50rem;
+    margin: 3rem auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.eventTitle {
+    font-weight: 900;
+    font-size: 40px;
+}
+.eventDescription {
+    opacity: 50%;
+    margin-bottom: 2rem;
+}
+.notifContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+.notificationSub {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.notificationSub h6 {
+    font-weight: 700;
+    font-size: 22px;
+}
+.notificationSub p {
+    opacity: 50%;
+}
+.notificationHeader img {
+    border: var(--borderColor);
+    border-radius: 10px;
+    width: 10rem;
+}
+hr {
+    opacity: 25%;
+    margin: 1rem 0 1rem 0;
+}
+.notificationBox {
+    border: var(--borderColor);
+    border-radius: 10px;
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+}
+.userImage img {
+    width: 3rem;
+    border-radius: 100%;
+}
+.postDetails h6{
+    font-weight: 700;
+}
+.postDetails p {
+    opacity: 50%;
+}
+.notifImage img {
+    border-radius: 10px;
+    border: var(--borderColor);
+}
+.notifText {
+    padding: 1rem;
+}
+.closeButton button {
+    border: var(--borderColor);
+    height: 2.5rem;
+    width: 8rem;
+    border-radius: 10px;
+    transition: var(--transition);
+}
+.closeButton button:hover {
+    background-color: var(--color5);
+    font-weight: 700;
+}

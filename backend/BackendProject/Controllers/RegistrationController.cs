@@ -15,12 +15,12 @@ namespace BackendProject.Controllers
     public class RegistrationController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly EmailService _emailService;
+        // private readonly EmailService _emailService;
 
         public RegistrationController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
-            _emailService = emailService;
+            // _emailService = emailService;
         }
 
         // ----------------------REGISTRATION FORM--------------------------------

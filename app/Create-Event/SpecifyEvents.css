@@ -191,3 +191,4 @@ body {
 .toggle input:checked + .toggle-slider:before {
   transform: translateX(22px);
 }
+

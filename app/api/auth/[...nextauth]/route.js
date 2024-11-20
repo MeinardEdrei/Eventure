@@ -31,6 +31,8 @@ const handler = NextAuth({
                         email: user.email,
                         username: user.username,
                         role: user.role,
+                        student_number: user.student_number,
+                        section: user.section,
                         department: user.department,
                         status: user.status,
                         accessToken: token 
@@ -61,6 +63,8 @@ const handler = NextAuth({
               token.username = user.username;
               token.email = user.email;
               token.role = user.role;
+              token.student_number = user.student_number;
+              token.section = user.section;
               token.department = user.department;
               token.status = user.status;
           }
@@ -72,6 +76,8 @@ const handler = NextAuth({
           session.user.username = token.username;
           session.user.email = token.email;
           session.user.role = token.role;
+          session.user.student_number = token.student_number;
+          session.user.section = token.section;
           session.user.department = token.department;
           session.user.status = token.status;
           session.accessToken = token.accessToken;

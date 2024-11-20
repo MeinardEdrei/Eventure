@@ -46,6 +46,7 @@ namespace BackendProject.Controllers
                 Username = userDto.Username,
                 Email = userDto.Email,
                 Student_Number = userDto.Student_Number,
+                Section = userDto.Section,
                 Department = userDto.Department,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
                 Role = userDto.Role, 
@@ -87,6 +88,8 @@ namespace BackendProject.Controllers
                     id = user.Id,
                     username = user.Username,
                     email = user.Email,
+                    student_number = user.Student_Number,
+                    section = user.Section,
                     department = user.Department,
                     role = user.Role
                 }

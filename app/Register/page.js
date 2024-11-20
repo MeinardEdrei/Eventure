@@ -29,6 +29,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [section, setSection] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
   const [role, setRole] = useState("Student");
   const [showPassword, setShowPassword] = useState(false);
@@ -84,12 +85,34 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
+          <div className="relative group">
+              <input 
+                className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
+                placeholder="Student Number" 
+                value={studentNumber}
+                onChange={(e) => setStudentNumber(e.target.value)}
+                required
+              />
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+            </div>
+
             <div className="relative group">
               <input
                 className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
-                placeholder="Username"
+                placeholder="Full Name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+            </div>
+
+            <div className="relative group">
+              <input 
+                className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
+                placeholder="Section" 
+                value={section}
+                onChange={(e) => setSection(e.target.value)}
                 required
               />
               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
@@ -104,17 +127,6 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 pattern="[a-zA-Z0-9._%+-]+@umak\.edu\.ph"
                 title="Please use your UMAK email"
-                required
-              />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
-            </div>
-
-            <div className="relative group">
-              <input 
-                className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
-                placeholder="Student Number" 
-                value={studentNumber}
-                onChange={(e) => setStudentNumber(e.target.value)}
                 required
               />
               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />

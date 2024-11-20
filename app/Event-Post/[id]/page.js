@@ -14,13 +14,12 @@ function EventPost() {
   const router = useRouter();
   const { data: session } = useSession();
   const [ post, setPost ] = useState({});
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(true);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    schoolId: '',
-    section: '',
+    name: session?.user?.username,
+    email: session?.user?.email,
+    schoolId: session?.user?.student_number,
+    section: session?.user?.section,
     userId: '',
     eventId: '',
     eventTitle: ''
@@ -60,21 +59,13 @@ function EventPost() {
     return <div>Loading...</div>;
   }
 
-  function Clear() {
-    // Reset form and close modal
-    setIsModalOpen(false);
-    setFormData({
-        name: '',
-        email: '',
-        schoolId: '',
-        section: '',
-        eventId: '',
-        eventTitle: ''
-    });
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (session?.user?.role === 'Organizer' || session?.user?.role === 'Admin') {
+      alert("You are not allowed to join this event because you're an " + session?.user?.role);
+      return;
+    }
 
     try {
         const formPayload = new FormData();
@@ -91,7 +82,6 @@ function EventPost() {
         if (res.status === 200) {
             if (res.data.status === 'Pending') {
               alert('Event is full. You have been added to the waitlist.');
-              Clear();
               return;
             }
             
@@ -127,7 +117,7 @@ function EventPost() {
               }
 
               alert('Joined Event Successfully!');
-              Clear();
+              
             }
         }else{
           alert('An error occured.');
@@ -137,28 +127,6 @@ function EventPost() {
         alert(err.response?.data?.message || 'An error occurred while joining the event');
     }
   }
-
-  const handleJoinEvent = async (e) => {
-    e.preventDefault();
-
-    if (session?.user?.role === 'Student') {
-        setIsModalOpen(true);
-    }else if (session?.user?.role === 'Organizer') {
-        // THIS USER CANT JOIN EVENT
-    }else if (session?.user?.role === 'Admin') {
-        // THIS USER CANT JOIN EVENT
-    }else{
-        router.push(`/Login`);
-    }
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
   return (
     <>
@@ -197,7 +165,7 @@ function EventPost() {
               <p>{post.location}</p>
             </div>
             <button
-              onClick={handleJoinEvent}
+              onClick={handleSubmit}
               className="eventRegister"
             >
               Join Event

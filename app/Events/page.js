@@ -19,7 +19,10 @@ function eventsDashboard () {
             
             const res = await axios.get('http://localhost:5000/api/event/events');
             setEvent(res?.data);
-
+            
+            if (res.data.length === 0) {
+                setNoEvents(true);
+            }
           } catch (error) {
             if (error.status == 404) {
                 setNoEvents(true);
@@ -45,19 +48,16 @@ function eventsDashboard () {
             </div>
             <div className="parentContainer">
                 {noEvents ? (
-                    <>
-                        <div className="noEvents">Message: No events found</div>
-                    </>
+                    <div className="noEvents">Message: No events found</div>
                 ) : (
-                    <>
-                    {event.map((event) => (
+                    event.map((event) => (
                         <Link href={`/Event-Post/${event.id}`} key={event.id}>
                             <div className="cardContainer">
                                 <div className="cardImage">
                                     <img 
                                         src={`http://localhost:5000/api/event/uploads/${event.event_Image}`}
                                         alt={event.title}
-                                />
+                                    />
                                 </div>
                                 <div className="cardTitle">{event.title}</div>
                                 <div className="cardDetails">
@@ -70,8 +70,7 @@ function eventsDashboard () {
                                 </div>
                             </div>
                         </Link>
-                    ))}
-                    </>
+                    ))
                 )}
             </div>
         </div>

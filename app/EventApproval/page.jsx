@@ -3,79 +3,70 @@ import "../css/eventApproval.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ChevronDown } from "lucide-react";
+import axios from "axios";
+import { fetchData } from "next-auth/client/_utils";
 
 export default function EventApproval() {
   const { data: session } = useSession();
-  const [selected, setSelected] = useState("pending");
+  const [selected, setSelected] = useState("Pending");
   const [isOpen, setIsOpen] = useState(false);
-  // Add state to track events and their status
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "UMak Jammer's Concert for a cause",
-      location: "UMak Oval",
-      date: "November 5, 2024 - 3:00 PM",
-      image: "/heronsNight.jpg",
-      status: "pending"
-    },
-    {
-      id: 2,
-      title: "UMak Jammer's Concert for a cause",
-      location: "UMak Oval",
-      date: "November 5, 2024 - 3:00 PM",
-      image: "/heronsNight.jpg",
-      status: "pending"
-    }
-  ]);
+  const [events, setEvents] = useState([]);
 
-  const options = ["pending", "approved", "rejected"];
+  const options = ["Pending", "Approved", "Rejected"];
 
   const handleSelect = (option) => {
     setSelected(option);
     setIsOpen(false);
   };
 
+  const fetchData = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/event/event-approval');
+      console.log(res.data);
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [session]);
+
+  const filteredEvents = events.filter(event => event.status === selected);
+
   // Add handler functions for approve and reject actions
   const handleApprove = async (eventId) => {
     try {
-      // Here you would typically make an API call to update the event status
-      // For now, we'll just update the local state
-      setEvents(events.map(event => {
-        if (event.id === eventId) {
-          return { ...event, status: 'approved' };
-        }
-        return event;
-      }));
+      
+      const res = await axios.post(`http://localhost:5000/api/event/approve${eventId}`);
 
-      // You can add a success notification here
+      if (res.status === 200) {
+        alert("Event approved successfully"); 
+        fetchData();
+      }
+
     } catch (error) {
       console.error('Error approving event:', error);
-      // You can add error handling/notification here
     }
   };
 
   const handleReject = async (eventId) => {
     try {
-      // Here you would typically make an API call to update the event status
-      setEvents(events.map(event => {
-        if (event.id === eventId) {
-          return { ...event, status: 'rejected' };
-        }
-        return event;
-      }));
+      const res = await axios.post(`http://localhost:5000/api/event/reject${eventId}`);
 
-      // You can add a success notification here
+      if (res.status === 200) {
+        alert("Event rejected successfully"); 
+        fetchData();
+      }
+
     } catch (error) {
       console.error('Error rejecting event:', error);
-      // You can add error handling/notification here
     }
   };
-
-  // Filter events based on selected status
-  const filteredEvents = events.filter(event => event.status === selected);
 
   return (
     <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
@@ -137,8 +128,8 @@ export default function EventApproval() {
             <div key={event.id} className="indiv-box flex flex-col">
               <div className="event-image">
                 <img
-                  src={event.image}
-                  alt="Herons Night"
+                  src={`http://localhost:5000/api/event/uploads/${event.event_Image}`}
+                  alt="Image"
                   width={250}
                   height={150}
                 />
@@ -148,7 +139,7 @@ export default function EventApproval() {
                 <div className="event-text">
                   <h4>{event.title}</h4>
                   <p>{event.location}</p>
-                  <p>{event.date}</p>
+                  <p>{new Date(event.date).toLocaleDateString()}</p>
                 </div>
 
                 <div className="pressable flex flex-row justify-between">

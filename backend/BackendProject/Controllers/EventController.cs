@@ -129,6 +129,23 @@ namespace BackendProject.Controllers
         [HttpGet("events")]
         public async Task<IActionResult> GetEvents()
         {
+            var events = await _context.Events
+                .Where(e => e.Status == "Approved")
+                .ToListAsync();
+
+            // Check if there are any events
+            if (events == null || events.Count == 0)
+            {
+                return NotFound(new { message = "No events found." });
+            }
+
+            // Return the list of events as a JSON response
+            return Ok(events);
+        }
+
+        [HttpGet("event-approval")]
+        public async Task<IActionResult> GetAdminEvents()
+        {
             var events = await _context.Events.ToListAsync();
 
             // Check if there are any events
@@ -139,6 +156,36 @@ namespace BackendProject.Controllers
 
             // Return the list of events as a JSON response
             return Ok(events);
+        }
+
+        [HttpPost("approve{eventId}")]
+        public async Task<IActionResult> ApproveEvent(int eventId)
+        {
+            var eventToApprove = await _context.Events.FindAsync(eventId);
+
+            if (eventToApprove == null ) {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            eventToApprove.Status = "Approved";
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event approved." });
+        }
+
+        [HttpPost("reject{eventId}")]
+        public async Task<IActionResult> RejectEvent(int eventId)
+        {
+            var eventToReject = await _context.Events.FindAsync(eventId);
+
+            if (eventToReject == null ) {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            eventToReject.Status = "Rejected";
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event Rejected." });
         }
 
         [HttpGet("events{id}")]

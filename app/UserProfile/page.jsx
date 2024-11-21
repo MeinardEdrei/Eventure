@@ -4,9 +4,26 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 function UserProfile() {
     const [selectedSection, setSelectedSection] = useState('upcoming');
+    const [attendedEvents, setAttendedEvents] = useState([]);
+    const { data: session } = useSession();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await axios.get(`http://localhost:5000/api/auth/userEvents/${session.user.id}`);
+            setAttendedEvents(response.data);
+
+            if (response.status == 404) {
+                alert(response.message);
+            }
+        }
+        if (session) {
+            fetchData();
+        }
+    }, [session])
 
     return (
         <>
@@ -17,8 +34,9 @@ function UserProfile() {
                 </div>
 
                 <div className="userDetails">
-                    <h6>Jayson Partido</h6>
-                    <p>Attended Events: 21</p>
+                    <h6>{session?.user?.username}</h6>
+                    <p>{session?.user?.email}</p>
+                    <p>Attended Events: {session?.user?.attended_events}</p>
                     <button>Edit Profile</button>
                 </div>
             </div>
@@ -39,59 +57,49 @@ function UserProfile() {
                         Past
                     </button>
                 </div>
-
-                
             </div>
 
             <hr />
 
-            {selectedSection === 'upcoming' ? (
-                    <div className="eventSection">
-                        <div className="eventContainer">
-                            <div className="eventImage">
-                                <img src="/heronsNight.jpg" alt="" />
+            {attendedEvents.length > 0 && (
+                attendedEvents.map((event, index) => {
+                    const eventDate = new Date(event.date);
+                    const isPastEvent = eventDate < new Date();
+
+                    if (selectedSection === 'upcoming' && !isPastEvent) {
+                        return (
+                            <div key={index} className="eventSection">
+                                <div className="eventContainer">
+                                    <div className="eventImage">
+                                        <img src="/heronsNight.jpg" alt={event.title} />
+                                    </div>
+                                    <div className="eventDetails">
+                                        <div className="semiheader">{event.title}</div>
+                                        <p>{event.location}</p>
+                                        <p>{eventDate.toLocaleDateString()}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="eventDetails">
-                                <div className="semiheader">Heron's Night</div>
-                                <p>UMak Oval</p>
-                                <p>November 30, 2024</p>
+                        );
+                    } else if (selectedSection === 'past' && isPastEvent) {
+                        return (
+                            <div key={index} className="eventSection">
+                                <div className="eventContainer">
+                                    <div className="eventImage">
+                                        <img src="/heronsNight.jpg" alt={event.title} />
+                                    </div>
+                                    <div className="eventDetails">
+                                        <div className="semiheader">{event.title}</div>
+                                        <p>{event.location}</p>
+                                        <p>{eventDate.toLocaleDateString()}</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="eventContainer">
-                            <div className="eventImage">
-                                <img src="/heronsNight.jpg" alt="" />
-                            </div>
-                            <div className="eventDetails">
-                                <div className="semiheader">Heron's Night</div>
-                                <p>UMak Oval</p>
-                                <p>November 30, 2024</p>
-                            </div>
-                        </div>
-                        <div className="eventContainer">
-                            <div className="eventImage">
-                                <img src="/heronsNight.jpg" alt="" />
-                            </div>
-                            <div className="eventDetails">
-                                <div className="semiheader">Heron's Night</div>
-                                <p>UMak Oval</p>
-                                <p>November 30, 2024</p>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="eventSection">
-                        <div className="eventContainer">
-                            <div className="eventImage">
-                                <img src="/heronsNight.jpg" alt="" />
-                            </div>
-                            <div className="eventDetails">
-                                <div className="semiheader">Event Past</div>
-                                <p>UMak Oval</p>
-                                <p>November 30, 2024</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                        );
+                    }
+                    return null; 
+                })
+            )}
         </div>
         </>
     );

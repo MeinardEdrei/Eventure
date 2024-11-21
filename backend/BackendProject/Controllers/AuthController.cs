@@ -91,9 +91,28 @@ namespace BackendProject.Controllers
                     student_number = user.Student_Number,
                     section = user.Section,
                     department = user.Department,
+                    attended_events = user.Attended_Events,
+                    created_events = user.Created_Events,
                     role = user.Role
                 }
             });
+        }
+
+        [HttpGet("userEvents/{id}")]
+        public async Task<IActionResult> GetEvents(int id) 
+        {
+            var attendedEvents = await _context.UEvents
+                .Where(ue => ue.User_Id == id)
+                .Include(u => u.Event)
+                .Select(ue => ue.Event)
+                .ToListAsync();
+            
+            if (attendedEvents == null || !attendedEvents.Any())
+            {
+                return NotFound(new { message = "No events found for this user." });
+            }
+
+            return Ok(attendedEvents);
         }
     }
 }

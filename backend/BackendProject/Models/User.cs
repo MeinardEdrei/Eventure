@@ -48,5 +48,9 @@ namespace BackendProject.Models
         
         [Required]
         public required int Created_Events { get; set; }
+
+
+        // Eager Loading Navigatiion Props
+        public ICollection<UEvent> UserEvents { get; set; } = new List<UEvent>();
     }
 }

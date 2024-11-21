@@ -34,6 +34,8 @@ const handler = NextAuth({
                         student_number: user.student_number,
                         section: user.section,
                         department: user.department,
+                        attended_events: user.attended_events,
+                        created_events: user.created_events,
                         status: user.status,
                         accessToken: token 
                       };
@@ -66,6 +68,8 @@ const handler = NextAuth({
               token.student_number = user.student_number;
               token.section = user.section;
               token.department = user.department;
+              token.attended_events = user.attended_events;
+              token.created_events = user.created_events;
               token.status = user.status;
           }
           return token;
@@ -79,6 +83,8 @@ const handler = NextAuth({
           session.user.student_number = token.student_number;
           session.user.section = token.section;
           session.user.department = token.department;
+          session.user.attended_events = token.attended_events;
+          session.user.created_events = token.created_events;
           session.user.status = token.status;
           session.accessToken = token.accessToken;
           return session;

@@ -18,6 +18,9 @@ namespace BackendProject.Models
         public required string Student_Number { get; set; }
 
         [Required]
+        public required string Section { get; set; }
+
+        [Required]
         public required string Department { get; set; }
 
         [Required]
@@ -45,5 +48,9 @@ namespace BackendProject.Models
         
         [Required]
         public required int Created_Events { get; set; }
+
+
+        // Eager Loading Navigatiion Props
+        public ICollection<UEvent> UserEvents { get; set; } = new List<UEvent>();
     }
 }

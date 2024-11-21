@@ -46,6 +46,7 @@ namespace BackendProject.Controllers
                 Username = userDto.Username,
                 Email = userDto.Email,
                 Student_Number = userDto.Student_Number,
+                Section = userDto.Section,
                 Department = userDto.Department,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
                 Role = userDto.Role, 
@@ -87,10 +88,31 @@ namespace BackendProject.Controllers
                     id = user.Id,
                     username = user.Username,
                     email = user.Email,
+                    student_number = user.Student_Number,
+                    section = user.Section,
                     department = user.Department,
+                    attended_events = user.Attended_Events,
+                    created_events = user.Created_Events,
                     role = user.Role
                 }
             });
+        }
+
+        [HttpGet("userEvents/{id}")]
+        public async Task<IActionResult> GetEvents(int id) 
+        {
+            var attendedEvents = await _context.UEvents
+                .Where(ue => ue.User_Id == id)
+                .Include(u => u.Event)
+                .Select(ue => ue.Event)
+                .ToListAsync();
+            
+            if (attendedEvents == null || !attendedEvents.Any())
+            {
+                return NotFound(new { message = "No events found for this user." });
+            }
+
+            return Ok(attendedEvents);
         }
     }
 }

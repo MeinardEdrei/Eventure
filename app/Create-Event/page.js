@@ -16,6 +16,7 @@ import {
 } from "react-aria-components";
 import RequirementsModal from "./SeeRequirement";
 import EventSettingsPanel from "./SpecifyEvents";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -27,6 +28,7 @@ const Page = () => {
   const [end, setEnd] = useState("");
   const [organizerId, setOrganizerId] = useState("");
   const { data: session } = useSession();
+  const router = useRouter();
 
   // Import from SpecifyEvents.js
   const [venue, setVenue] = useState("");
@@ -145,8 +147,12 @@ const Page = () => {
           },
         }
       );
-      console.log("Response received:", res.data);
+      
       alert(res.data.message);
+
+      if (res.status == 200){
+        router.push('/Events');
+      }
     } catch (error) {
       console.error("Error details:", error);
       if (error.response) {

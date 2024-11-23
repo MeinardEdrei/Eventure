@@ -1,13 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../css/User-Management.css";
 import UserManagementTable from "./UserManagementTable";
 import AddUserModal from "./AddUserModal";
+import axios from "axios";
 
-const page = () => {
+const Page = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [userCount, setUserCount] = useState([]);
+
+  const refreshData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, [])
+
+  useEffect(() => {
+    async function fetchUserCount() {
+      try {
+        const response = await axios.get("http://localhost:5000/api/user/count");
+        console.log(response.data);
+        setUserCount(response.data);
+      } catch (error) {
+        console.error("Error fetching user count:", error);
+      }
+    }
+
+    fetchUserCount();
+  }, [refreshTrigger]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -36,7 +57,8 @@ const page = () => {
           {/* Text Container */}
           <div className="text-container flex flex-row gap-[0.5rem]">
             <h3 className="text-xl font-bold text-white">All users</h3>
-            <h4 className="text-xl font-extrabold text-white opacity-50">10</h4>
+            <h4 className="text-xl font-extrabold text-white opacity-50">
+              {userCount !== null ? userCount.count : "Loading..."}</h4>
           </div>
 
           {/* Search and Add User Container */}
@@ -81,15 +103,18 @@ const page = () => {
           </div>
         </div>
 
-        <UserManagementTable searchQuery={searchQuery} />
+        <UserManagementTable 
+          searchQuery={searchQuery} 
+          refreshTrigger={refreshTrigger}/>
       </div>
 
       <AddUserModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSuccess={refreshData}
       />
     </div>
   );
 };
 
-export default page;
+export default Page;

@@ -13,7 +13,7 @@ const handler = NextAuth({
             },
             async authorize(credentials) {
                 try {
-                    const response = await axios.post('http://localhost:5000/api/auth/login', {
+                    const response = await axios.post('http://localhost:5000/api/user/login', {
                         email: credentials.email,
                         password: credentials.password
                     });

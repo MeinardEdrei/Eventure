@@ -13,5 +13,6 @@ namespace BackendProject.Models
         public string Profile_Image { get; set; } = string.Empty;
         public int Attended_Events { get; set; }
         public int Created_Events { get; set; }
+        public DateTime Created_At { get; set; }
     }
 }

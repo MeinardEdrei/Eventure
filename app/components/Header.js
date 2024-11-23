@@ -165,7 +165,7 @@ const Header = () => {
                     ) : (
                         <div className='flex flex-col p-2'>
                             <div className='pb-2'>
-                                <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
+                                <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Events'>Events</Link>
                                 <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
                             </div>
                             <hr className='border-t border-white/30 my-0' />

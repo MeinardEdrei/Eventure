@@ -5,19 +5,27 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useRef } from 'react'
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Header = () => {
     const [dropDownOpen, setDropDownOpen] = useState(false);
+    const [settingsDropDownOpen, setSettingsDropDownOpen] = useState(false);
     const dropDownRef = useRef(null);
     const { data: session } = useSession();
     const router = useRouter();
     const barsButtonRef = useRef(null);
     const profileButtonRef = useRef(null);
+    const settingsButtonRef = useRef(null);
+    const settingsDropDownRef = useRef(null);
 
     const toggleDropDown = () => {
-        // setDropDownOpen(!dropDownOpen);
         setDropDownOpen((prev) => !prev);
+    }
+
+    const toggleSettingsDropDown = (e) => {
+        e.stopPropagation();
+        setSettingsDropDownOpen((prev) => !prev);
     }
 
     useEffect(() => {
@@ -26,6 +34,10 @@ const Header = () => {
                 && !barsButtonRef.current.contains(event.target)
                 && !profileButtonRef.current.contains(event.target)) {
                 setDropDownOpen(false); // Close dropdown if click is outside and if user clicks again on the button
+            }
+            if (settingsDropDownRef.current && !settingsDropDownRef.current.contains(event.target)
+                && !settingsButtonRef?.current?.contains(event.target)) {
+                setSettingsDropDownOpen(false);
             }
         };
 
@@ -47,24 +59,54 @@ const Header = () => {
             <div className='flex xl:min-w-[7.6%] lg:min-w-[12%]'><Link className='ml-5 mr-12' href='/'><Image src='/logo.png' width={38} height={38} alt='logo' /></Link></div>
         
             <div className='justify-between w-[45%] max-md:w-[60%] md:ml-5 md:hidden max-sm:hidden lg:flex 2xl:flex'>
-                <Link className='xl:flex lg:flex' href='\Events'>Events</Link>
                 {session?.user?.role === 'Organizer' ? (
                 <>
+                    <Link href='/Dashboard'>Dashboard</Link>
                     <Link href='/Create-Event'>Create Event</Link>
                     <Link href='/OrganizerEvents'>My Events</Link>
                 </>
                 ) : session?.user?.role === 'Admin' ? (
                     <>
-                        <Link href='/EventApproval'>Event Approval</Link>
-                        <Link href='/UserApproval'>User Approval</Link>
+                    <div className='justify-between w-[55%] md:w-[60%] md:hidden max-sm:hidden lg:flex 2xl:flex'>
+                        <Link href='/Dashboard'>Dashboard</Link>
+                        <button
+                            ref={settingsButtonRef}
+                            onClick={toggleSettingsDropDown}
+                            >Settings 
+                            <FontAwesomeIcon icon={faAngleDown} 
+                            style={{ color: 'gray', marginLeft: '.5em'}} />
+                        </button>
+                        {settingsDropDownOpen && (
+                            <div ref={settingsDropDownRef} className='absolute bg-[#070505] z-10 border border-[#343434] p-4 rounded-md lg:top-[11%] lg:left-[24%] max-md:top-[13%] top-[15%]'>
+                                <div className='flex flex-col gap-2'>
+                                <Link 
+                                    href='/Event-Management'
+                                    className='hover:bg-white/10 hover:rounded-md px-7 py-3'>
+                                    <div>
+                                        <h1 className='font-bold text-sm'>Event Management</h1>
+                                        <p className='text-sm'>review, approve, or reject event submissions from organizers.</p>
+                                    </div>
+                                </Link>
+                                <Link 
+                                    href='/User-Management'
+                                    className='hover:bg-white/10 hover:rounded-md px-7 py-3'>
+                                    <div>
+                                        <h1 className='font-bold text-sm'>User Management</h1>
+                                        <p className='text-sm'>manage user accounts for students, organizers, and other admins.</p>
+                                    </div>
+                                </Link>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     </>
                 ) : (
                     <>
+                        <Link className='xl:flex lg:flex' href='\Events'>Events</Link>
                         <Link className='xl:flex lg:flex' href=''>Calendar</Link>
                         <Link className='xl:flex lg:flex' href='/UserNotifications'>Notifications</Link>
                     </>
                 )}
-
             </div>
             
             <div className='relative xl:w-[75%] lg:w-[50%] flex justify-end mr-5'>
@@ -80,7 +122,7 @@ const Header = () => {
                     <FontAwesomeIcon className='text-2xl lg:hidden sm:flex' icon={faBars} />
                 </button>
             {dropDownOpen && (
-                <div ref={dropDownRef} className='absolute lg:right-[2%] md:right-[2%] right-[-5%] w-72 bg-slate-950 mt-2 rounded-md border-white/30 border xl:top-[2vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
+                <div ref={dropDownRef} className='absolute lg:right-[0%] md:right-[2%] right-[-5%] w-72 bg-slate-950 mt-2 rounded-md border-white/30 border xl:top-[3vw] lg:top-[5vw] md:top-[4vw] top-[12vw] z-20'>
                     {session ? (
                         <>
                             <div className='flex mb-2 p-2'>
@@ -97,11 +139,20 @@ const Header = () => {
                             </div>
                             <hr className='border-t border-white/30 my-0' />
                             <div className='p-2'>
-                                <Link onClick={() => setDropDownOpen(false)} href='/UserProfile' className='block text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
+                                {session?.user?.role != "Admin" && (
+                                    <>
+                                    <Link onClick={() => setDropDownOpen(false)} href='/UserProfile' className='block text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
+                                    <div className='pb-2 md:block lg:hidden'>
+                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
+                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
+                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
+                                    </div>
+                                    </>
+                                )}
                                 <div className='pb-2 md:block lg:hidden'>
-                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
-                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
-                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Dashboard'>Dashboard</Link>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/User-Management'>User Management</Link>
+                                    <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Event-Management'>Event Management</Link>
                                 </div>
                                 <hr className='lg:hidden border-t border-white/30 my-0' />
                                 <button onClick={() => { 

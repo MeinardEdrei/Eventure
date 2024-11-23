@@ -163,7 +163,7 @@ function EventPost() {
   return (
     <>
       <div className="container">
-        <div className="user">
+        {/* <div className="user">
           <div className="userImage">
             <Image src="/profile.png" width={35} height={35} alt="logo" />
           </div>
@@ -175,7 +175,7 @@ function EventPost() {
               <p>{post.created_At}</p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="eventContainer">
           <div className="eventImage">
@@ -187,13 +187,21 @@ function EventPost() {
           <div className="event">
             <div className="eventHeader">{post.title}</div>
             <div className="eventDate">
-              <img src="/Date.png" width={25} alt="Date" />
+              {/* <img src="/Date.png" width={25} alt="Date" /> */}
               <p>
-                {new Date(post.date).toLocaleDateString()} - {post.start}
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                  })} - {new Date(post.date).toLocaleTimeString('en-US', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                  })}
               </p>
             </div>
             <div className="eventPlace">
-              <img src="/Location.png" width={25} alt="Location" />
+              {/* <img src="/Location.png" width={25} alt="Location" /> */}
               <p>{post.location}</p>
             </div>
             <button
@@ -202,15 +210,14 @@ function EventPost() {
             >
               Join Event
             </button>
+            <div className="aboutEvent">
+              <h1>About the Event</h1>
+              <p>{post.description}</p>
+            </div>
           </div>
         </div>
-
-        <hr />
-
-        <div className="aboutEvent">
-          <h1>About the Event</h1>
-          <p>{post.description}</p>
-        </div>
+        
+        
       </div>
     </>
   );

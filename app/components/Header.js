@@ -53,7 +53,7 @@ const Header = () => {
   return (
     <div>
       <section className='p-5 flex justify-center'>
-        <div className='w-[90%] p-5 bg-[#190E1E] bg-opacity-50' style={{ border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '20px' }}>
+        <div className='w-[90%] p-3 bg-[#190E1E] bg-opacity-50' style={{ border: '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '20px' }}>
         <div className='flex justify-between items-center'>
             
             <div className='flex xl:min-w-[7.6%] lg:min-w-[12%]'><Link className='ml-5 mr-12' href='/'><Image src='/logo.png' width={38} height={38} alt='logo' /></Link></div>
@@ -63,7 +63,7 @@ const Header = () => {
                 <>
                     <Link href='/Dashboard'>Dashboard</Link>
                     <Link href='/Create-Event'>Create Event</Link>
-                    <Link href='/OrganizerEvents'>My Events</Link>
+                    <Link href='/OrganizerList'>My Events</Link>
                 </>
                 ) : session?.user?.role === 'Admin' ? (
                     <>
@@ -102,7 +102,7 @@ const Header = () => {
                     </>
                 ) : (
                     <>
-                        <Link className='xl:flex lg:flex' href='\Events'>Events</Link>
+                        <Link className='xl:flex lg:flex' href='/Events'>Events</Link>
                         <Link className='xl:flex lg:flex' href=''>Calendar</Link>
                         <Link className='xl:flex lg:flex' href='/UserNotifications'>Notifications</Link>
                     </>

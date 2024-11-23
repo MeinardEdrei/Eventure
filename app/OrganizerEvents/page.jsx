@@ -8,6 +8,7 @@
     function OrganizerEvents() {
         const [activeButton, setActiveButton] = useState('Overview');
         const textareaRef = useRef(null); // Reference to the textarea
+        const [selectedSection, setSelectedSection] = useState('upcoming');
 
         const handleButtonClick = (buttonName) => {
             setActiveButton(buttonName);
@@ -58,7 +59,7 @@
                                     </div>
                                 </div>
                                 <hr />
-                                <div className="eventHeader">
+                                <div className="organizerHeader">
                                     <h6>Event Details</h6>
                                 </div>
                                 <div className="statContainer">
@@ -67,7 +68,7 @@
                                     <p className="eventStatistic">Cancelled: 210</p>
                                 </div>
                                 <hr />
-                                <div className="eventHeader">Event Partners</div>
+                                <div className="organizerHeader">Event Partners</div>
                                 <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
                                 <div className="guestContainer">
                                     <div className="guestDetails">
@@ -82,62 +83,153 @@
                                         <p>umakjammers@umak.edu.ph</p>
                                     </div>
                                 </div>
+                                <div className="addHosts"><button>Add Hosts</button></div>
                             </>
                         )}
                         
-                        {activeButton === 'Registration' && 
+                        {activeButton === 'Registration' && (
                             <>
-                            <hr />
-                            <div className="eventHeader">Event Attendees</div>
-                                <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
-                                <div className="guestContainer">
-                                    <div className="guestDetails">
-                                        <h6>Lougie Caday</h6>
-                                        <p>lcaday.k123456789@umak.edu.ph</p> 
-                                        <div className="buttons">
-                                            <button>Approve</button>
-                                            <button>Disapprove</button>
+                                <hr />
+                                <div className="section">
+                                    <div className="sectionTitle">
+                                        <div className="organizerHeader">Pending List</div>
+                                        <div className="organizerDescription">
+                                            Manage and view participant details for streamlined event coordination.
                                         </div>
                                     </div>
-                                    <div className="smallhr">
-                                        <hr />
-                                    </div>
-                                    <div className="guestDetails">
-                                        <h6>Meinard Santos</h6>
-                                        <p>msantos.k123456789@umak.edu.ph</p>
-                                        <div className="buttons">
-                                            <button>Approve</button>
-                                            <button>Disapprove</button>
-                                        </div>
-                                    </div>
-                                    <div className="smallhr">
-                                        <hr />
-                                    </div>
-                                    <div className="guestDetails">
-                                        <h6>Jayson Huub Partido</h6>
-                                        <p>jpartido.k123456789@umak.edu.ph</p>
-                                        <div className="buttons">
-                                            <button>Approve</button>
-                                            <button>Disapprove</button>
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div className="guestDetails">
-                                        <h6>Eric Lor</h6>
-                                        <p>elor.k123456789@umak.edu.ph</p>
-                                        <div className="buttons">
-                                            <button>Approve</button>
-                                            <button>Disapprove</button>
-                                        </div>
+
+                                    {/* Toggle Button Container */}
+                                    <div className="toggleButtonContainer">
+                                        <button
+                                            className={`toggleButton ${selectedSection === 'waiting' ? 'active' : ''}`}
+                                            onClick={() => setSelectedSection('waiting')}
+                                        >
+                                            Waiting
+                                        </button>
+                                        <button
+                                            className={`toggleButton ${selectedSection === 'attending' ? 'active' : ''}`}
+                                            onClick={() => setSelectedSection('attending')}
+                                        >
+                                            Attending
+                                        </button>
                                     </div>
                                 </div>
+
+                                {/* Dynamic Content Section */}
+                                <div className="contentSection">
+                                    {selectedSection === 'waiting' && (
+                                        <div className="guestContainer">
+                                            <div className="guestDetails">
+                                                <h6>Lougie Caday</h6>
+                                                <p>lcaday.k123456789@umak.edu.ph</p>
+                                                <div className="buttons">
+                                                    <button>Approve</button>
+                                                    <button>Disapprove</button>
+                                                </div>
+                                            </div>
+                                            <div className="smallhr">
+                                                <hr />
+                                            </div>
+                                            <div className="guestDetails">
+                                                <h6>Meinard Santos</h6>
+                                                <p>msantos.k123456789@umak.edu.ph</p>
+                                                <div className="buttons">
+                                                    <button>Approve</button>
+                                                    <button>Disapprove</button>
+                                                </div>
+                                            </div>
+                                            <div className="smallhr">
+                                                <hr />
+                                            </div>
+                                            <div className="guestDetails">
+                                                <h6>Jayson Huub Partido</h6>
+                                                <p>jpartido.k123456789@umak.edu.ph</p>
+                                                <div className="buttons">
+                                                    <button>Approve</button>
+                                                    <button>Disapprove</button>
+                                                </div>
+                                            </div>
+                                            <div className="smallhr">
+                                                <hr />
+                                            </div>
+                                            <div className="guestDetails">
+                                                <h6>Eric Lor</h6>
+                                                <p>elor.k123456789@umak.edu.ph</p>
+                                                <div className="buttons">
+                                                    <button>Approve</button>
+                                                    <button>Disapprove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedSection === 'attending' && (
+                                        <div className="attendeeList">
+                                            <div className="guestContainer">
+                                                <div className="guestDetails">
+                                                    <h6>Lougie Caday</h6>
+                                                    <p>lcaday.k123456789@umak.edu.ph</p>    
+                                                    <div className="buttons">
+                                                    <button>Present</button>
+                                                    </div>
+                                                </div>
+                                                <div className="smallhr">
+                                                    <hr />
+                                                </div>
+                                                <div className="guestDetails">
+                                                    <h6>Meinard Santos</h6>
+                                                    <p>msantos.k123456789@umak.edu.ph</p>
+                                                    <div className="buttons">
+                                                    <button>Present</button>
+                                                    </div>
+                                                </div>
+                                                <div className="smallhr">
+                                                    <hr />
+                                                </div>
+                                                <div className="guestDetails">
+                                                    <h6>Jayson Huub Partido</h6>
+                                                    <p>jpartido.k123456789@umak.edu.ph</p>   
+                                                    <div className="buttons">
+                                                    <button>Present</button>
+                                                    </div> 
+                                                </div>
+                                                <div className="smallhr">
+                                                    <hr />
+                                                </div>
+                                                <div className="guestDetails">
+                                                    <h6>Eric Lor</h6>
+                                                    <p>elor.k123456789@umak.edu.ph</p>
+                                                    <div className="buttons">
+                                                    <button>Present</button>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <hr />
+                                <div className="organizerHeader">Event Attendance</div>
+                                <div className="organizerDescription">
+                                    Efficiently track attendee check-ins and monitor participation in real-time during events.
+                                </div>
+                                <div className="eventScanner">
+                                    <button>QR Scanner</button>
+                                </div>
+
+                                <hr />
+                                <div className="organizerHeader">Toggle Registration</div>
+                                <div className="organizerDescription">
+                                    Enable or disable event registration with a single click for flexible attendee management.
+                                </div>
                             </>
-                        }
+                        )}
+
 
                         {activeButton === 'Share' && 
                         <>
                         <hr />
-                            <div className="eventHeader">Send Notifications</div>
+                            <div className="organizerHeader">Send Notifications</div>
                                 <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
                                 <div className="postContainer">
                                 <textarea
@@ -157,7 +249,7 @@
                                 </div>
                                 </div>
                                 <hr />
-                                <div className="eventHeader">Share Event</div>
+                                <div className="organizerHeader">Share Event</div>
                                 <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
                                 <div className="sharebutton">
                                     <button>Facebook</button>
@@ -170,13 +262,25 @@
                         {activeButton === 'More' && 
                         <>
                         <hr />
-                        <div className="eventHeader">Cancel Event</div>
-                        <div className="organizerDescription">Cancel and permanently delete this event. This operation cannot
-                            be undone. If there are any registered guests, we will notify them that the event has been cancelled.
-                        </div>
-                        <div className="cancelButton">
-                        <button>Cancel</button>
-                        </div>
+                            <div className="organizerHeader">Report Generation</div>
+                            <div className="organizerDescription">Generate comprehensive event performance and participation reports effortlessly.</div>
+                            <div className="generateReport"><button>Generate Report</button></div>
+                        <hr />
+                            <div className="organizerHeader">Post Evaluation</div>
+                            <div className="organizerDescription">Design and distribute surveys or forms to gather feedback and assess event performance.</div>
+                            <div className="postEvaluation">
+                                <Link href="/PostEvaluation"><button>Create</button></Link>
+                                <button>Edit</button>
+                                <Link href="/EvaluationSummary"><button>View Summary</button></Link>
+                            </div>
+                        <hr />
+                            <div className="organizerHeader">Cancel Event</div>
+                            <div className="organizerDescription">Cancel and permanently delete this event. This operation cannot
+                                be undone. If there are any registered guests, we will notify them that the event has been cancelled.
+                            </div>
+                            <div className="cancelButton">
+                            <button>Cancel</button>
+                            </div>
                         </>
                         }
                     </div>

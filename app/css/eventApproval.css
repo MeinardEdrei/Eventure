@@ -32,6 +32,13 @@
   color: white;
   opacity: 0.5;
 }
+.line-container {
+  width: 100%;
+  height: auto;
+}
+.line-container hr {
+  border: 1px solid rgb(255, 255, 255, 0.5);
+}
 
 /* Dropdown Styles */
 .dropdown-container {
@@ -103,8 +110,7 @@
   background-color: #9333ea;
 }
 
-
-.process-title{
+.process-title {
   font-size: 1.3rem;
   font-weight: bold;
   color: white;

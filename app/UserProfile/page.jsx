@@ -13,7 +13,7 @@ function UserProfile() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await axios.get(`http://localhost:5000/api/auth/userEvents/${session.user.id}`);
+            const response = await axios.get(`http://localhost:5000/api/user/userEvents/${session.user.id}`);
             setAttendedEvents(response.data);
 
             if (response.status == 404) {

@@ -10,7 +10,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
       <div className="bg-[#ffffff] rounded-lg p-10 w-[500px] relative">
         <button onClick={onClose} className="absolute top-3 right-5">
           <i
-            class="fa fa-times text-[#a8a8a8] text-[0.8rem] hover:text-red-600"
+            className="fa fa-times text-[#a8a8a8] text-[0.8rem] hover:text-red-600"
             aria-hidden="true"
           ></i>
         </button>

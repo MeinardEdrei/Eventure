@@ -3,22 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using BackendProject.Models;
 using BackendProject.Data;
 using BCrypt.Net;
-using System.IO; // File Manipulation
-
-//Google Sheets
-using System.Net.Http;
-using System.Text.Json;
 
 namespace BackendProject.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context; // database holder
         private readonly IConfiguration _configuration; // for JWT configurations
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public UserController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -49,11 +44,12 @@ namespace BackendProject.Controllers
                 Section = userDto.Section,
                 Department = userDto.Department,
                 Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password),
-                Role = userDto.Role, 
-                Status = userDto.Status, 
+                Role = userDto.Role,
+                Status = userDto.Status,
                 Profile_Image = userDto.Profile_Image,
                 Attended_Events = userDto.Attended_Events,
-                Created_Events = userDto.Created_Events
+                Created_Events = userDto.Created_Events,
+                Created_At = DateTime.Now,
             };
 
             _context.Users.Add(user);
@@ -76,15 +72,17 @@ namespace BackendProject.Controllers
             if (user == null)
             {
                 return NotFound(new { message = "Invalid email." }); // 404
-                
-            }else if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
+
+            }
+            else if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
             {
                 return Unauthorized(new { message = "Invalid password." }); // 401
             }
 
-            return Ok(new 
-            { 
-                user = new { 
+            return Ok(new
+            {
+                user = new
+                {
                     id = user.Id,
                     username = user.Username,
                     email = user.Email,
@@ -99,20 +97,27 @@ namespace BackendProject.Controllers
         }
 
         [HttpGet("userEvents/{id}")]
-        public async Task<IActionResult> GetEvents(int id) 
+        public async Task<IActionResult> GetEvents(int id)
         {
             var attendedEvents = await _context.UEvents
                 .Where(ue => ue.User_Id == id)
                 .Include(u => u.Event)
                 .Select(ue => ue.Event)
                 .ToListAsync();
-            
+
             if (attendedEvents == null || !attendedEvents.Any())
             {
                 return NotFound(new { message = "No events found for this user." });
             }
 
             return Ok(attendedEvents);
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers() 
+        {
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
         }
     }
 }

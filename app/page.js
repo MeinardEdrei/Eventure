@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <>
-    {session?.user?.role == "Student" && (
+    {session?.user?.role == "Student" || !session && (
     <div className="main-container">
       <div className="w-[86%] mr-2 mt-[2%]">
         <div className="mb-9 sm:ml-[1%] ml-[5%]">

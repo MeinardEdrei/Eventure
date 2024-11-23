@@ -1,25 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
-const UserManagementTable = ({ searchQuery }) => {
+const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get('http://localhost:5000/api/user/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/user/users');
-        setUsers(response.data);
-        console.log(response.data)
-      } catch (error) {
-        console.error(error.message);
-      }
-    }
-    fetch();
-  }, []);
+    fetchUsers();
+  }, [refreshTrigger, fetchUsers]);
 
   const filteredUsers = users.filter((user) => {
     if (!searchQuery) return true;
@@ -54,6 +58,10 @@ const UserManagementTable = ({ searchQuery }) => {
     setShowDeleteModal(false);
     setUserToDelete(null);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full">

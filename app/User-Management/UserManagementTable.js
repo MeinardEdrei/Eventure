@@ -77,16 +77,36 @@ const UserManagementTable = ({ searchQuery, refreshTrigger, dateRange }) => {
     setShowDeleteModal(true);
   };
 
-  const saveEdit = () => {
-    setUsers(users.map((user) => (user.id === editingUser.id ? editingUser : user)));
-    setShowEditModal(false);
-    setEditingUser(null);
+  const saveEdit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.put(`http://localhost:5000/api/user/update/${editingUser.id}`, editingUser)
+      if (res.status === 200) {
+        alert(res.data.message);
+        setShowEditModal(false);
+        setEditingUser(null);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.log(error)
+    }
   };
 
-  const confirmDelete = () => {
-    setUsers(users.filter((user) => user.id !== userToDelete.id));
-    setShowDeleteModal(false);
-    setUserToDelete(null);
+  const confirmDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.delete(`http://localhost:5000/api/user/delete/${userToDelete.id}`, userToDelete)
+      if (res.status === 200) {
+        alert(res.data.message);
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (isLoading) {
@@ -163,24 +183,6 @@ const UserManagementTable = ({ searchQuery, refreshTrigger, dateRange }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Password</label>
-                <input
-                  type="password"
-                  className="w-full px-3 py-2 border border-[#cccccc] rounded-lg"
-                  value={editingUser?.password || ""}
-                  onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Student Number</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-[#cccccc] rounded-lg"
-                  value={editingUser?.studentNumber || ""}
-                  onChange={(e) => setEditingUser({ ...editingUser, studentNumber: e.target.value })}
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium mb-2">Role</label>
                 <select
                   className="w-full px-3 py-2 border border-[#cccccc] rounded-lg"
@@ -192,6 +194,30 @@ const UserManagementTable = ({ searchQuery, refreshTrigger, dateRange }) => {
                   <option value="Admin">Admin</option>
                 </select>
               </div>
+              {editingUser?.role === "Student" && (
+                <>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Student Number</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-[#cccccc] rounded-lg"
+                    value={editingUser?.student_Number || ""}
+                    onChange={(e) => setEditingUser({ ...editingUser, student_Number: e.target.value })}
+                    placeholder="e.g. K12345678"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Section</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-[#cccccc] rounded-lg"
+                    value={editingUser?.section || ""}
+                    onChange={(e) => setEditingUser({ ...editingUser, section: e.target.value })}
+                    placeholder="e.g. II - BCSAD"
+                  />
+                </div>
+                </>
+              )}
               <div>
                 <label className="block text-sm font-medium mb-2">Department</label>
                 <input

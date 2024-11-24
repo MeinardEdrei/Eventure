@@ -1,7 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
-const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
+import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { CalendarIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+const UserManagementTable = ({ searchQuery, refreshTrigger, dateRange }) => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -26,15 +37,34 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
   }, [refreshTrigger, fetchUsers]);
 
   const filteredUsers = users.filter((user) => {
-    if (!searchQuery) return true;
-    const searchLower = searchQuery.toLowerCase();
-    return (
+    if (!searchQuery && !dateRange?.from && !dateRange?.to) return true;
+    const searchLower = searchQuery?.toLowerCase() || "";
+
+    // Date range filter
+    let matchesDateRange = true;
+    if (dateRange?.from && dateRange?.to && user.created_At) {
+      try {
+        const userDate = parseISO(user.created_At);
+        matchesDateRange = isWithinInterval(userDate, {
+          start: startOfDay(dateRange.from),
+          end: endOfDay(dateRange.to)
+        });
+      } catch (error) {
+        console.error("Error parsing date:", error);
+        matchesDateRange = false;
+      }
+    }
+
+    // Search query filter
+    const matchesSearch = !searchQuery || (
       user.email?.toLowerCase().includes(searchLower) ||
       user.student_Number?.toLowerCase().includes(searchLower) ||
       user.role?.toLowerCase().includes(searchLower) ||
       user.department?.toLowerCase().includes(searchLower) ||
-      user.created_At?.toLowerCase().includes(searchLower)
+      (new Date(user.created_At)).toLocaleDateString().toLowerCase().includes(searchLower)
     );
+
+    return matchesSearch && matchesDateRange;
   });
 
   const handleEdit = (user) => {
@@ -65,9 +95,9 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
 
   return (
     <div className="w-full">
-      <div className="overflow-x-auto border rounded-lg shadow-lg">
+      <div className="overflow-x-auto border border-[#fff0f0b3]/50 rounded-lg shadow-lg">
         <table className="w-full table-fixed">
-          <thead className="bg-transparent border-b text-[0.8rem] text-white">
+          <thead className="bg-transparent border-b border-[#fff0f0b3]/50 text-[0.8rem] text-white">
             <tr>
               <th className="w-1/4 p-5 text-center">Email</th>
               <th className="w-1/6 p-5 text-center">Student ID</th>
@@ -79,7 +109,7 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="border-b hover:bg-white/10 text-sm">
+              <tr key={user.id} className="border-b border-[#fff0f0b3]/25 hover:bg-white/10 text-sm">
                 <td className="py-3 px-4 truncate">
                   {user.email || '-'}
                 </td>
@@ -220,3 +250,53 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
 };
 
 export default UserManagementTable;
+
+export function DatePickerWithRange({ className, onDateChange, selectedRange }) {
+  return (
+    <div className={cn("grid gap-2", className)}>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            // variant={"outline"}
+            className={cn(
+              "w-[100%] justify-start text-left font-normal bg-[#463951]/50 border border-[#fff0f0b3]/25",
+              !selectedRange && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {selectedRange?.from ? (
+              selectedRange.to ? (
+                <>
+                  {format(selectedRange.from, "LLL dd, y")} -{" "}
+                  {format(selectedRange.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(selectedRange.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date range</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0 bg-transparent border-none" align="start">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={selectedRange?.from}
+            selected={selectedRange}
+            onSelect={onDateChange}
+            numberOfMonths={2}
+            className="bg-[#0e0811] rounded-md border border-[#fff0f0b3]/25"
+            modifiersStyles={{
+              selected: {
+                backgroundColor: "#5F3284",
+                color: "white",
+              }
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}

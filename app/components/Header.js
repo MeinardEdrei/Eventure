@@ -18,6 +18,11 @@ const Header = () => {
     const profileButtonRef = useRef(null);
     const settingsButtonRef = useRef(null);
     const settingsDropDownRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    // Toggle hover state
+    const handleMouseEnter = () => setIsHovered(true);
+    const handleMouseLeave = () => setIsHovered(false);
 
     const toggleDropDown = () => {
         setDropDownOpen((prev) => !prev);
@@ -72,12 +77,17 @@ const Header = () => {
                         <button
                             ref={settingsButtonRef}
                             onClick={toggleSettingsDropDown}
+                            onMouseEnter={handleMouseEnter}
                             >Settings 
                             <FontAwesomeIcon icon={faAngleDown} 
                             style={{ color: 'gray', marginLeft: '.5em'}} />
                         </button>
-                        {settingsDropDownOpen && (
-                            <div ref={settingsDropDownRef} className='absolute bg-[#070505] z-10 border border-[#343434] p-4 rounded-md lg:top-[11%] lg:left-[24%] max-md:top-[13%] top-[15%]'>
+                        {settingsDropDownOpen || isHovered && (
+                            <div 
+                                ref={settingsDropDownRef} 
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeave}
+                                className='absolute bg-[#070505] z-10 border border-[#343434] p-4 rounded-md xl:top-[10%] lg:top-[11.5%] lg:left-[24%] md:top-[13%] top-[11%]'>
                                 <div className='flex flex-col gap-2'>
                                 <Link 
                                     href='/Event-Management'

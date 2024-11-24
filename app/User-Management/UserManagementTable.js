@@ -12,14 +12,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
+const UserManagementTable = ({ searchQuery, refreshTrigger, dateRange }) => {
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [dateRange, setDateRange] = useState({ from: null, to: null });
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -96,16 +95,9 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <DatePickerWithRange 
-          className="mb-4" 
-          onDateChange={setDateRange}
-          selectedRange={dateRange}
-        /> 
-      </div>
-      <div className="overflow-x-auto border rounded-lg shadow-lg">
+      <div className="overflow-x-auto border border-[#fff0f0b3]/50 rounded-lg shadow-lg">
         <table className="w-full table-fixed">
-          <thead className="bg-transparent border-b text-[0.8rem] text-white">
+          <thead className="bg-transparent border-b border-[#fff0f0b3]/50 text-[0.8rem] text-white">
             <tr>
               <th className="w-1/4 p-5 text-center">Email</th>
               <th className="w-1/6 p-5 text-center">Student ID</th>
@@ -117,7 +109,7 @@ const UserManagementTable = ({ searchQuery, refreshTrigger }) => {
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="border-b hover:bg-white/10 text-sm">
+              <tr key={user.id} className="border-b border-[#fff0f0b3]/25 hover:bg-white/10 text-sm">
                 <td className="py-3 px-4 truncate">
                   {user.email || '-'}
                 </td>
@@ -266,9 +258,9 @@ export function DatePickerWithRange({ className, onDateChange, selectedRange }) 
         <PopoverTrigger asChild>
           <Button
             id="date"
-            variant={"outline"}
+            // variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal bg-black",
+              "w-[100%] justify-start text-left font-normal bg-[#463951]/50 border border-[#fff0f0b3]/25",
               !selectedRange && "text-muted-foreground"
             )}
           >
@@ -287,7 +279,7 @@ export function DatePickerWithRange({ className, onDateChange, selectedRange }) 
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-black" align="start">
+        <PopoverContent className="w-auto p-0 bg-transparent border-none" align="start">
           <Calendar
             initialFocus
             mode="range"
@@ -295,7 +287,7 @@ export function DatePickerWithRange({ className, onDateChange, selectedRange }) 
             selected={selectedRange}
             onSelect={onDateChange}
             numberOfMonths={2}
-            className="bg-black rounded-md border"
+            className="bg-[#0e0811] rounded-md border border-[#fff0f0b3]/25"
             modifiersStyles={{
               selected: {
                 backgroundColor: "#5F3284",

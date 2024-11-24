@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "../css/User-Management.css";
-import UserManagementTable from "./UserManagementTable";
+import UserManagementTable, { DatePickerWithRange } from "./UserManagementTable";
 import AddUserModal from "./AddUserModal";
 import axios from "axios";
 
@@ -11,6 +11,7 @@ const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [userCount, setUserCount] = useState([]);
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
 
   const refreshData = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
@@ -83,6 +84,19 @@ const Page = () => {
               </div>
             </div>
 
+            {/* Date Picker */}
+            <div className="relative group">
+              <DatePickerWithRange 
+                className="" 
+                onDateChange={setDateRange}
+                selectedRange={dateRange}
+              /> 
+              <div
+                  className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/30 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ zIndex: -1 }}
+                />
+            </div>
+
             {/* Add User Container */}
             <div
               className="addUser-container relative group flex flex-row gap-2 items-center bg-[#463951]/70 px-4 py-[0.4rem] rounded-lg cursor-pointer"
@@ -105,7 +119,8 @@ const Page = () => {
 
         <UserManagementTable 
           searchQuery={searchQuery} 
-          refreshTrigger={refreshTrigger}/>
+          refreshTrigger={refreshTrigger}
+          dateRange={dateRange}/>
       </div>
 
       <AddUserModal

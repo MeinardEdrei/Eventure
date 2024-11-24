@@ -14,6 +14,8 @@ export default function EventApproval() {
   const [selected, setSelected] = useState("Pending");
   const [isOpen, setIsOpen] = useState(false);
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [noEvents, setNoEvents] = useState(true);
 
   const options = ["Pending", "Approved", "Rejected"];
 
@@ -24,11 +26,16 @@ export default function EventApproval() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       const res = await axios.get('http://localhost:5000/api/event/event-approval');
-      console.log(res.data);
-      setEvents(res.data);
+      if (res.status === 200) {
+        setEvents(res.data);
+        setNoEvents(false);
+      }
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,7 +45,6 @@ export default function EventApproval() {
 
   const filteredEvents = events.filter(event => event.status === selected);
 
-  // Add handler functions for approve and reject actions
   const handleApprove = async (eventId) => {
     try {
       
@@ -68,15 +74,19 @@ export default function EventApproval() {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
       {/* Header */}
       <div className="upper-maincontainer flex flex-col w-[82%] mb-10">
         <div className="text-btn-container flex flex-row justify-between mb-4">
           <div className="header-text-container flex flex-col">
-            <h2 className="event-title">Event Approval</h2>
+            <h2 className="event-title">Event Management</h2>
             <p className="event-description">
-              Review and approve upcoming events submitted by users.
+            Create events, review them, and approve upcoming submissions by users.
             </p>
           </div>
 
@@ -122,7 +132,12 @@ export default function EventApproval() {
         <div className="process-title mb-5">
           <h3 className="capitalize">{selected} Events</h3>
         </div>
-
+        
+        { noEvents && (
+          <>
+          No events found.
+          </>
+        )}
         <div className="box-container flex flex-col gap-7">
           {filteredEvents.map((event) => (
             <div key={event.id} className="indiv-box flex flex-col">

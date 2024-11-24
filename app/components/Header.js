@@ -94,7 +94,7 @@ const Header = () => {
                                     className='hover:bg-white/10 hover:rounded-md px-7 py-3'>
                                     <div>
                                         <h1 className='font-bold text-sm'>Event Management</h1>
-                                        <p className='text-sm'>review, approve, or reject event submissions from organizers.</p>
+                                        <p className='text-sm'>create events, review, approve, or reject event submissions from organizers.</p>
                                     </div>
                                 </Link>
                                 <Link 

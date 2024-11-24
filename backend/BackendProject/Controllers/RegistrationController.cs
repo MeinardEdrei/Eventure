@@ -78,9 +78,11 @@ namespace BackendProject.Controllers
             await _context.SaveChangesAsync(); 
 
             var userJoined = await _context.Users.FindAsync(rformDto.User_Id);
-            userJoined.Attended_Events += 1;
-            _context.Users.Update(userJoined);
-            await _context.SaveChangesAsync();
+            if (userJoined != null) {
+                userJoined.Attended_Events += 1;
+                _context.Users.Update(userJoined);
+                await _context.SaveChangesAsync();
+            }
 
             // Insert to user_events
             var userEvent = new UEvent

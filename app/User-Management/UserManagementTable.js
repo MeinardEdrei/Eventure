@@ -298,7 +298,7 @@ export function DatePickerWithRange({ className, onDateChange, selectedRange }) 
             className="bg-black rounded-md border"
             modifiersStyles={{
               selected: {
-                backgroundColor: "#8d46c7",
+                backgroundColor: "#5F3284",
                 color: "white",
               }
             }}

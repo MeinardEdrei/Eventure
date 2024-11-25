@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace BackendProject.Models
 {
-    public class GoogleSheetsDto
+    public class ExcelSheetsDto
     {
     public required string Name { get; set; }
     public required string Email { get; set; }
@@ -12,5 +12,6 @@ namespace BackendProject.Models
     public required string Section { get; set; }
     public required string EventId { get; set; }
     public required string EventTitle { get; set; }
+    public required DateTime RegisteredTime { get; set; }
     }
 }

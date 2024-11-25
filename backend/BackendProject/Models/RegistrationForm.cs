@@ -35,5 +35,8 @@ namespace BackendProject.Models
 
         [Required]
         public required string Status { get; set; }
+
+        [Required]
+        public required DateTime Registered_Time { get; set; }
     }
 }

@@ -8,6 +8,9 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text;
 
+//Excel
+using OfficeOpenXml;
+
 namespace BackendProject.Controllers 
 {
     [ApiController]
@@ -47,7 +50,8 @@ namespace BackendProject.Controllers
                     Email = rformDto.Email, 
                     School_Id = rformDto.School_Id,  
                     Section = rformDto.Section,
-                    Status = "Pending"
+                    Status = "Pending",
+                    Registered_Time = rformDto.Registered_Time,
                 };
                 _context.RForms.Add(waitlisted);
                 await _context.SaveChangesAsync();
@@ -66,7 +70,8 @@ namespace BackendProject.Controllers
                 Email = rformDto.Email, 
                 School_Id = rformDto.School_Id,  
                 Section = rformDto.Section,
-                Status = "Approved"
+                Status = "Approved",
+                Registered_Time = rformDto.Registered_Time,
             };
 
             _context.RForms.Add(attendee);
@@ -87,8 +92,8 @@ namespace BackendProject.Controllers
             // Insert to user_events
             var userEvent = new UEvent
             {
-                User_Id = rformDto.User_Id,
-                Event_Id = rformDto.Event_Id,
+                UserId = rformDto.User_Id,
+                EventId = rformDto.Event_Id,
                 Status = "Joined"
             };
             _context.UEvents.Add(userEvent);
@@ -109,7 +114,7 @@ namespace BackendProject.Controllers
         }
 
         [HttpPost("sheets")]
-        public async Task<IActionResult> UpdateGoogleSheets([FromBody] List<GoogleSheetsDto> entries)
+        public async Task<IActionResult> ExportToExcel([FromBody] List<ExcelSheetsDto> entries)
         {
             if (entries == null || !entries.Any())
             {
@@ -138,21 +143,47 @@ namespace BackendProject.Controllers
                     eventTitle = entry.EventTitle
                 };
 
-                using var client = new HttpClient();
-                var content = new StringContent(
-                    JsonSerializer.Serialize(payload),
-                    Encoding.UTF8,
-                    "application/json"
-                );
-
-                // Your Google Apps Script URL
-                var url = "https://script.google.com/macros/s/AKfycbxw2ohrlJK9ihNqTMdieH3Mb3BOlsodBaOic4SOEfWgZ4hMxzIyXEi7GUixBM5gAygs/exec";
-
-                var response = await client.PostAsync(url, content);
-                
-                if (!response.IsSuccessStatusCode)
+                using (var package = new ExcelPackage())
                 {
-                    return StatusCode((int)response.StatusCode, new { message = "Failed to update Google Sheets" });
+                    var worksheet = package.Workbook.Worksheets.Add("Registrations");
+
+                    // Add headers
+                    worksheet.Cells["A1"].Value = "Name";
+                    worksheet.Cells["B1"].Value = "Email";
+                    worksheet.Cells["C1"].Value = "School ID";
+                    worksheet.Cells["D1"].Value = "Section";
+                    worksheet.Cells["E1"].Value = "Event";
+                    worksheet.Cells["F1"].Value = "Registration Date";
+
+                    // Style the header row
+                    using (var range = worksheet.Cells["A1:F1"])
+                    {
+                        range.Style.Font.Bold = true;
+                        range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    }
+
+                    // Add data rows
+                    int row = 2;
+                    foreach (var item in entries)
+                    {
+                        worksheet.Cells[row, 1].Value = item.Name;
+                        worksheet.Cells[row, 2].Value = item.Email;
+                        worksheet.Cells[row, 3].Value = item.SchoolId;
+                        worksheet.Cells[row, 4].Value = item.Section;
+                        worksheet.Cells[row, 5].Value = item.RegisteredTime;
+                        row++;
+                    }
+
+                    // Auto-fit columns
+                    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                    // Generate file
+                    var content = package.GetAsByteArray();
+                    var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    var fileName = $"{entry.EventTitle}_{DateTime.Now:yyyyMMdd}.xlsx";
+
+                    return File(content, contentType, fileName);
                 }
 
                 // Email Service

@@ -100,7 +100,7 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> GetEvents(int id)
         {
             var attendedEvents = await _context.UEvents
-                .Where(ue => ue.User_Id == id)
+                .Where(ue => ue.UserId == id)
                 .Include(u => u.Event)
                 .Select(ue => ue.Event)
                 .ToListAsync();

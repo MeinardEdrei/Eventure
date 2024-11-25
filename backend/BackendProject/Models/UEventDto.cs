@@ -7,10 +7,10 @@ namespace BackendProject.Models
     public class ueventsDto
     {
         [Required]
-        public required int User_Id { get; set; }
+        public required int UserId { get; set; }
 
         [Required]
-        public required int Event_Id { get; set; }
+        public required int EventId { get; set; }
 
         [Required]
         public required string Status { get; set; } = string.Empty;

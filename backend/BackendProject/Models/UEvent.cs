@@ -10,19 +10,22 @@ namespace BackendProject.Models
         public int Id { get; set; }
 
         [Required]
-        public required int User_Id { get; set; }
+        [Column("UserId")]
+        public required int UserId { get; set; }
 
         [Required]
+        [Column("EventId")]
         [ForeignKey("Event")]
-        public required int Event_Id { get; set; }
+        public required int EventId { get; set; }
 
         [Required]
+        [Column("Status")]
         public required string Status { get; set; } = string.Empty;
 
 
         // Eager Loading Navigatiion Props
-        public User User { get; set; }
-        public Event Event { get; set; }
+        public User? User { get; set; }
+        public Event? Event { get; set; }
     }
 }
 

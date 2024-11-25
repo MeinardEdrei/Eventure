@@ -105,21 +105,21 @@ const Page = () => {
         return;
       }
 
-      console.log("Sending form data:", {
-        Title: title,
-        Description: description,
-        Date: date,
-        Start: start,
-        End: end,
-        Location: venue,
-        Max_Capacity: capacity,
-        Visibility: visibilityType,
-        Hosted_By: selectedDepartments,
-        Require_Approval: requireApproval,
-        Require_Ticket: requireTicket,
-        Organizer_Id: validOrganizerId,
-        Status: "Pending",
-      });
+      // console.log("Sending form data:", {
+      //   Title: title,
+      //   Description: description,
+      //   Date: date,
+      //   Start: start,
+      //   End: end,
+      //   Location: venue,
+      //   Max_Capacity: capacity,
+      //   Visibility: visibilityType,
+      //   Hosted_By: selectedDepartments,
+      //   Require_Approval: requireApproval,
+      //   Require_Ticket: requireTicket,
+      //   Organizer_Id: validOrganizerId,
+      //   Status: "Pending",
+      // });
 
       const formData = new FormData(); // Using FormData to handle file uploads
 

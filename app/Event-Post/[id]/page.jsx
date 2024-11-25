@@ -20,7 +20,7 @@ function EventPost() {
     email: session?.user?.email,
     schoolId: session?.user?.student_number,
     section: session?.user?.section,
-    userId: '',
+    user_id: '',
     eventId: '',
     eventTitle: ''
   });
@@ -48,7 +48,7 @@ function EventPost() {
     if (session && !isLoading) {
       setFormData(prev => ({
         ...prev,
-        userId: session.user.id, 
+        user_id: session.user.id, 
         eventId: parseInt(id), 
         eventTitle: post.title || ''
       }));
@@ -73,7 +73,7 @@ function EventPost() {
         formPayload.append('Email', formData.email);
         formPayload.append('School_Id', formData.schoolId);
         formPayload.append('Section', formData.section);
-        formPayload.append('User_Id', formData.userId);
+        formPayload.append('User_Id', formData.user_id);
         formPayload.append('Event_Id', formData.eventId)
         formPayload.append('Event_Title', formData.eventTitle || post.title || '')
 
@@ -85,7 +85,6 @@ function EventPost() {
               return;
             }
             
-            // Google Sheets
             const registrationForm = await axios.get('http://localhost:5000/api/registration/form');
           
             if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
@@ -97,24 +96,25 @@ function EventPost() {
                 schoolId: lastEntry.school_Id || 'N/A',
                 section: lastEntry.section || 'N/A',
                 eventId: (lastEntry.event_Id || lastEntry.event_id || '').toString(),
-                eventTitle: lastEntry.event_Title || lastEntry.event_title || 'N/A'
+                eventTitle: lastEntry.event_Title || lastEntry.event_title || 'N/A',
+                registeredTime: lastEntry.registered_time || lastEntry.registered_Time || 'N/A',
               }];
 
-              try {
-                const response = await axios.post(
-                  'http://localhost:5000/api/registration/sheets',
-                  sheetsData,  
-                  {
-                      headers: {
-                          'Content-Type': 'application/json'
-                      },
-                      timeout: 10000
-                  }
-                );
-              } catch (error) {
-                  console.error('Google Sheets Error:', error);
-                  alert('Failed to update Google Sheets: ' + error.message);
-              }
+              // try {
+              //   const response = await axios.post(
+              //     'http://localhost:5000/api/registration/sheets',
+              //     sheetsData,  
+              //     {
+              //         headers: {
+              //             'Content-Type': 'application/json'
+              //         },
+              //         timeout: 10000
+              //     }
+              //   );
+              // } catch (error) {
+              //     console.error('Google Sheets Error:', error);
+              //     alert('Failed to update Google Sheets: ' + error.message);
+              // }
 
               alert('Joined Event Successfully!');
               
@@ -131,20 +131,6 @@ function EventPost() {
   return (
     <>
       <div className="container">
-        {/* <div className="user">
-          <div className="userImage">
-            <Image src="/profile.png" width={35} height={35} alt="logo" />
-          </div>
-          <div className="userDetails">
-            <div className="userName">
-              <p>UMak Jammers</p>
-            </div>
-            <div className="userPublished">
-              <p>{post.created_At}</p>
-            </div>
-          </div>
-        </div> */}
-
         <div className="eventContainer">
           <div className="eventImage">
             <img
@@ -184,8 +170,6 @@ function EventPost() {
             </div>
           </div>
         </div>
-        
-        
       </div>
     </>
   );

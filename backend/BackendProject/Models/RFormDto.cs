@@ -10,5 +10,6 @@ namespace BackendProject.Models
         public string  School_Id { get; set; } = string.Empty;
         public string Section { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        public DateTime Registered_Time { get; set; }
     }
 }

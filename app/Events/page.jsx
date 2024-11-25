@@ -41,6 +41,14 @@ function eventsDashboard () {
         return <div className='text-white'>Loading...</div>;
     }
 
+    const filteredEvents = event.filter(event => {
+        const eventDate = new Date(event.date);
+        const isPastEvent = eventDate < new Date();
+
+        return (selectedSection === 'upcoming' && !isPastEvent) ||
+                (selectedSection === 'past' && isPastEvent);
+    });
+
     return (
         <div className="container">
             <div className="eventTitle">Events</div>
@@ -65,7 +73,7 @@ function eventsDashboard () {
                 {noEvents ? (
                     <div className="noEvents">Message: No events found</div>
                 ) : (
-                    event.map((event) => (
+                    filteredEvents.map((event) => (
                         <Link href={`/Event-Post/${event.id}`} key={event.id}>
                             <div className="cardContainer">
                                 <div className="cardImage">

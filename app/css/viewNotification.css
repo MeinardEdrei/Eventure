@@ -85,14 +85,19 @@ hr {
 .notifText {
     padding: 1rem;
 }
-.closeButton button {
+.closeButton a { 
     border: var(--borderColor);
     height: 2.5rem;
     width: 8rem;
     border-radius: 10px;
     transition: var(--transition);
+    display: inline-block; 
+    text-align: center;
+    line-height: 2.5rem;
+    text-decoration: none;
 }
-.closeButton button:hover {
+
+.closeButton a:hover { 
     background-color: var(--color5);
     font-weight: 700;
 }

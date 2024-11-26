@@ -54,5 +54,6 @@ namespace BackendProject.Models
 
         // Eager Loading Navigatiion Props
         public ICollection<UEvent> UserEvents { get; set; } = new List<UEvent>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

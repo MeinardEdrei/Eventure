@@ -11,6 +11,7 @@ namespace BackendProject.Models
 
         [Required]
         [Column("UserId")]
+        [ForeignKey("User")]
         public required int UserId { get; set; }
 
         [Required]

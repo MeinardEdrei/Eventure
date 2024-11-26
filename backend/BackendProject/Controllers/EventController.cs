@@ -168,6 +168,14 @@ namespace BackendProject.Controllers
             }
 
             eventToApprove.Status = "Approved";
+
+            var notifications = new Notification {
+                UserId = eventToApprove.Organizer_Id,
+                EventId = eventToApprove.Id,
+                Type = "General",
+            };
+            
+            _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event approved." });
@@ -217,5 +225,31 @@ namespace BackendProject.Controllers
         }
 
         // ----------------------END OF FETCH EVENTS--------------------------------
+
+        [HttpGet("notification")]
+        public async Task<IActionResult> GetNotification()
+        {
+            var notifications = await _context.Notifications
+                .Select(n => new NotificationsDto 
+                {
+                    Id = n.Id,
+                    UserId = n.UserId,
+                    EventId = n.EventId,
+                    Type = n.Type,
+                    UserName = n.User.Username,
+                    EventTitle = n.Event.Title,
+                    EventDesc = n.Event.Description,
+                    EventImage = n.Event.Event_Image,
+                    EventDate = n.Event.Date,
+                    EventLocation = n.Event.Location,
+                })
+                .ToListAsync();
+
+            if (notifications == null) {
+                return NotFound(new { message = "Notifications not found." });
+            }
+            
+            return Ok(notifications);
+        }
     }
 }

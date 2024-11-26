@@ -12,5 +12,6 @@ namespace BackendProject.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<RForm> RForms { get; set; }
         public DbSet<UEvent> UEvents { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
     }
 }

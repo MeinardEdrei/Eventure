@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
 
-function OrganizerList () {
+function MyEvents () {
+
+    useEffect(() => {
+        
+    }, []);
+
     return (
         <>
         <div className="container">
@@ -26,18 +31,6 @@ function OrganizerList () {
                         </div>
                     </div>
                 </div>
-                <div className="organizerEventCard">
-                    <div className="organizerImage">
-                        <img src="/heronsNight.jpg" alt="" />
-                    </div>
-                    <div className="cardDetails">
-                        <div className="cardTitle">UMak Jammers Concert for a cause</div>
-                        <div className="cardInfo">
-                            <p>UMak Oval</p>
-                            <p>November 5, 2024 - 3:00 PM</p>
-                        </div>
-                    </div>
-                </div>
             </div>
             </Link>
         </div>
@@ -45,4 +38,4 @@ function OrganizerList () {
     )
 }
 
-export default OrganizerList;
+export default MyEvents;

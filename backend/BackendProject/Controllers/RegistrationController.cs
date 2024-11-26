@@ -94,7 +94,7 @@ namespace BackendProject.Controllers
             {
                 UserId = rformDto.User_Id,
                 EventId = rformDto.Event_Id,
-                Status = "Joined"
+                Status = "Approved"
             };
             _context.UEvents.Add(userEvent);
             await _context.SaveChangesAsync(); 

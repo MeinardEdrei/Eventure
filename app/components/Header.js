@@ -68,7 +68,7 @@ const Header = () => {
                 <>
                     <Link href='/Dashboard'>Dashboard</Link>
                     <Link href='/Create-Event'>Create Event</Link>
-                    <Link href='/OrganizerList'>My Events</Link>
+                    <Link href='/My-Events'>My Events</Link>
                 </>
                 ) : session?.user?.role === 'Admin' ? (
                     <>

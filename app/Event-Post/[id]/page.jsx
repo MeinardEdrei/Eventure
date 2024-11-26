@@ -33,14 +33,13 @@ function EventPost() {
           `http://localhost:5000/api/event/events${id}`
         );
         setPost(res.data);
-        console.log(res.data);
+        console.log(formData)
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, [id]);
 

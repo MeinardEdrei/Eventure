@@ -50,6 +50,7 @@ export default function Register() {
           email, 
           password, 
           student_number: studentNumber, 
+          section: section,
           status, 
           role, 
           department: selectedDepartment 

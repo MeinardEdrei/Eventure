@@ -26,7 +26,7 @@ export default function Home() {
   return (
     <>
     {(session?.user?.role == "Student" || !session) && (
-    <div className="main-container">
+    <div className="flex flex-col items-center h-auto w-[100vw] relative">
       <div className="w-[86%] mr-2 mt-[2%]">
         <div className="mb-9 sm:ml-[1%] ml-[5%]">
           <h1 className="text-2xl font-[900] pb-4
@@ -58,8 +58,6 @@ export default function Home() {
             rounded-[50px]"
             src="/kokoko.jpg"
           />
-          {/* <div className="absolute inset-0 rounded-[50px] bg-gradient-to-b from-[#000000] to-transparent opacity-50 z-9"
-                style={{ rotate: '180deg'}} /> */}
           <div
             name="top-left"
             className="absolute xl:top-[-1.9%] xl:right-[24%] lg:top-[-2%] lg:right-[36%]
@@ -99,34 +97,31 @@ export default function Home() {
               rotate: '90deg',
             }}
           />
-          {/* <div 
-            name="cover"
-            className="bg-transparent absolute w-[6em] h-[6.1em] top-[0%] right-[28%]
-            rounded-[50%]"
-          /> */}
           
           {/* ---------OVERLAY TEXTS AND BUTTONS--------- */}
           
           <div className="flex justify-center absolute bg-white/80 px-4 py-2 w-52 lg:top-[7%] left-[7%] rounded-full
             lg:w-64 lg:left-[7%] md:top-[7%] max-sm:bottom-[6%] max-sm:w-40 max-sm:left-[10%] z-10">
             <p className="text-black text-sm font-medium
-            lg:text-lg max-sm:text-xs">November 30, 2023</p>
-          </div>
-          <div className="flex absolute px-4 py-2 w-[50%] rounded-full bottom-[14%] left-[3%] md:left-[6%] max-sm:left-[7%]">
-            <p className="text-white text-lg font-bold w-[80%] rounded-xl
-            lg:text-3xl lg:bottom-[7%] lg:left-[3%] md:text-2xl max-sm:text-sm"
-            >The long awaited concert this 2023 with UMAK Jammers</p>
+            lg:text-lg max-sm:text-xs"
+            >
+              November 30, 2023
+            </p>
           </div>
           <Link href='/Events' className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-slate-300 w-48 rounded-full 
             lg:px-3 lg:py-1 md:right-[5%] max-sm:w-36 max-sm:top-[42%]">
             <div className="text-black text-sm font-medium mx-3
-            lg:text-sm max-sm:text-xs">See all events</div>
+            lg:text-sm max-sm:text-xs"
+            >
+              See all events
+            </div>
             <p className="text-black lg:text-lg text-3xl max-sm:text-lg">→</p>
           </Link>
-          {/* <div className="absolute bg-white bottom-[8%] right-[4%] rounded-full w-12 h-12 
-          flex items-center justify-center place-self-center overflow-hidden">
-            <p className="text-black text-3xl font-extrabold" style={{ transform: 'rotate(-30deg)' }}>→</p>
-          </div> */}
+          <div className="flex absolute px-4 py-2 w-[50%] rounded-full bottom-[14%] left-[3%] md:left-[6%] max-sm:left-[7%]
+          text-lg font-bold lg:text-3xl md:text-2xl max-sm:text-sm"
+          >
+              The long awaited concert this 2023 with UMAK Jammers
+          </div>
         </section>
       </div>
     </div>

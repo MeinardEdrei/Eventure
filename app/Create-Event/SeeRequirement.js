@@ -5,18 +5,18 @@ const RequirementsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const requirements = [
-    "1. Intent Letter",
-    "2. Budget Request",
-    "3. Excuse Letter",
-    "4. Disbursement",
-    "5. Permit to Borrow",
-    "6. Permit to Transfer",
+    "1. Intent Letter.pdf",
+    "2. Budget Request.pdf",
+    "3. Excuse Letter.pdf",
+    "4. Disbursement.pdf",
+    "5. Permit to Borrow.pdf",
+    "6. Permit to Transfer.pdf",
   ];
   const options = [
-    "1. Parking Letter",
-    "2. Outsiders Letter",
-    "3. Waiver Letter",
-    "4. Letter for Guards",
+    "1. Parking Letter.pdf",
+    "2. Outsiders Letter.pdf",
+    "3. Waiver Letter.pdf",
+    "4. Letter for Guards.pdf",
 
   ];
 
@@ -34,7 +34,7 @@ const RequirementsModal = ({ isOpen, onClose }) => {
           <div className="requirements-list">
             {requirements.map((requirement, index) => (
               <div key={index} className="requirement-item">
-                <div className="checkbox">
+                {/* <div className="checkbox">
                   <svg
                     className="checkmark"
                     fill="none"
@@ -48,7 +48,7 @@ const RequirementsModal = ({ isOpen, onClose }) => {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                </div>
+                </div> */}
                 <span className="requirement-text">{requirement}</span>
               </div>
             ))}
@@ -63,7 +63,7 @@ const RequirementsModal = ({ isOpen, onClose }) => {
           <div className="requirements-list">
             {options.map((requirement, index) => (
               <div key={index} className="requirement-item">
-                <div className="checkbox">
+                {/* <div className="checkbox">
                   <svg
                     className="checkmark"
                     fill="none"
@@ -77,7 +77,7 @@ const RequirementsModal = ({ isOpen, onClose }) => {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                </div>
+                </div> */}
                 <span className="requirement-text">{requirement}</span>
               </div>
             ))}

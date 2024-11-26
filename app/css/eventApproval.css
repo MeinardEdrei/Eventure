@@ -37,7 +37,7 @@
   height: auto;
 }
 .line-container hr {
-  border: 1px solid rgb(255, 255, 255, 0.5);
+  border: 1px solid #ffffff80;
 }
 
 /* Dropdown Styles */

@@ -16,7 +16,6 @@ export default function EventApproval() {
   const [events, setEvents] = useState([]);
 
   const options = ["Pending", "Approved", "Rejected"];
-
   const handleSelect = (option) => {
     setSelected(option);
     setIsOpen(false);

@@ -134,6 +134,7 @@ hr {
 }
 .guestContainer {
     width: 100%;
+    height: auto;
     padding: 15px;
     border: var(--borderColor);
     border-radius: 10px;
@@ -201,7 +202,7 @@ hr {
 .section {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0rem;
     justify-content: center;
     align-items: center;
 }

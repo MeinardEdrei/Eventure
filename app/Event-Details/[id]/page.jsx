@@ -11,8 +11,8 @@ function OrganizerEvents() {
     const { id } = useParams();
     const [activeButton, setActiveButton] = useState('Overview');
     const textareaRef = useRef(null); // Reference to the textarea
-    const [selectedSection, setSelectedSection] = useState('upcoming');
-    const [loading, setLoading] = useState(false);
+    const [selectedSection, setSelectedSection] = useState('waiting');
+    const [loading, setLoading] = useState(true);
     const [event, setEvent] = useState([]);
     const [partners, setPartners] = useState([]);
     const [participants, setParticipants] = useState([]);
@@ -39,9 +39,8 @@ function OrganizerEvents() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
-                const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`)
-                const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`)
+                const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`);
+                const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`);
                 setParticipants(res2.data);
                 setEvent(res1.data);
             } catch (error) {
@@ -52,6 +51,11 @@ function OrganizerEvents() {
         }
         fetchData();
     }, []);
+
+    const handlePresentButton = async (email) => {
+        alert(email);
+        // const res = await axios.post(`http://localhost:5000/api/event/${id}/present`, { email });
+    }
 
     if (loading) {
         return <div>Loading...</div>;
@@ -101,13 +105,15 @@ function OrganizerEvents() {
                                 <h6>Event Details</h6>
                             </div>
                             <div className="statContainer">
-                                <p className="eventStatistic">Pending: {participants.find(p => p.status === 'Pending')?.count || 0}</p>
-                                <p className="eventStatistic">Attending: {participants.find(p => p.status === 'Approved')?.count || 0}</p>
+                                <p className="eventStatistic">Waiting: {participants.find(p => p.status === 'Waiting')?.count || 0}</p>
+                                <p className="eventStatistic">Attending: {participants.find(p => p.status === 'Going')?.count || 0}</p>
                                 <p className="eventStatistic">Cancelled: {participants.find(p => p.status === 'Cancelled')?.count || 0}</p>
                             </div>
                             <hr />
-                            <div className="organizerHeader">Event Partners</div>
-                            <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
+                            <div className=''>
+                                <div className="organizerHeader">Event Partners</div>
+                                <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
+                            </div>
                             <div className="guestContainer">
                                 <div className="guestDetails">
                                     <h6>{event.partnerships}</h6>
@@ -125,7 +131,7 @@ function OrganizerEvents() {
                         <>
                             <hr />
                             <div className="section">
-                                <div className="sectionTitle">
+                                <div className="w-[60%]">
                                     <div className="organizerHeader">Pending List</div>
                                     <div className="organizerDescription">
                                         Manage and view participant details for streamlined event coordination.
@@ -144,7 +150,13 @@ function OrganizerEvents() {
                                         className={`toggleButton ${selectedSection === 'attending' ? 'active' : ''}`}
                                         onClick={() => setSelectedSection('attending')}
                                     >
-                                        Attending
+                                        Going
+                                    </button>
+                                    <button
+                                        className={`toggleButton ${selectedSection === 'attended' ? 'active' : ''}`}
+                                        onClick={() => setSelectedSection('attended')}
+                                    >
+                                        Attended
                                     </button>
                                 </div>
                             </div>
@@ -153,90 +165,82 @@ function OrganizerEvents() {
                             <div className="contentSection">
                                 {selectedSection === 'waiting' && (
                                     <div className="guestContainer">
-                                        <div className="guestDetails">
-                                            <h6>Lougie Caday</h6>
-                                            <p>lcaday.k123456789@umak.edu.ph</p>
-                                            <div className="buttons">
-                                                <button>Approve</button>
-                                                <button>Disapprove</button>
+                                        { participants.filter(p => p.status === 'Waiting').length > 0 ? (
+                                        participants.filter(p => p.status === 'Waiting')
+                                        .map((p, index) => (
+                                            <>
+                                            <div key={index} className="guestDetails">
+                                                <h6>{p?.name}</h6>
+                                                <p>{p?.email}</p>
+                                                <div className="buttons">
+                                                    <button>Approve</button>
+                                                    <button>Disapprove</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="smallhr">
-                                            <hr />
-                                        </div>
-                                        <div className="guestDetails">
-                                            <h6>Meinard Santos</h6>
-                                            <p>msantos.k123456789@umak.edu.ph</p>
-                                            <div className="buttons">
-                                                <button>Approve</button>
-                                                <button>Disapprove</button>
+                                            <div className="smallhr">
+                                                <hr />
                                             </div>
-                                        </div>
-                                        <div className="smallhr">
-                                            <hr />
-                                        </div>
-                                        <div className="guestDetails">
-                                            <h6>Jayson Huub Partido</h6>
-                                            <p>jpartido.k123456789@umak.edu.ph</p>
-                                            <div className="buttons">
-                                                <button>Approve</button>
-                                                <button>Disapprove</button>
-                                            </div>
-                                        </div>
-                                        <div className="smallhr">
-                                            <hr />
-                                        </div>
-                                        <div className="guestDetails">
-                                            <h6>Eric Lor</h6>
-                                            <p>elor.k123456789@umak.edu.ph</p>
-                                            <div className="buttons">
-                                                <button>Approve</button>
-                                                <button>Disapprove</button>
-                                            </div>
-                                        </div>
+                                            </>
+                                        ))) : (
+                                            <>
+                                            <div>No pending attendees right now.</div>
+                                            </>
+                                        )}
                                     </div>
                                 )}
 
                                 {selectedSection === 'attending' && (
                                     <div className="attendeeList">
                                         <div className="guestContainer">
-                                            <div className="guestDetails">
-                                                <h6>Lougie Caday</h6>
-                                                <p>lcaday.k123456789@umak.edu.ph</p>    
-                                                <div className="buttons">
-                                                <button>Present</button>
+                                            {participants.find(p => p.status === 'Going')?.email.length > 0 ? (
+                                                participants.find(p => p.status === 'Going').email.map((email, index) => (
+                                                    <div key={index}>
+                                                        <div className="guestDetails">
+                                                            <h6>{participants.find(p => p.status === 'Going').name[index]}</h6>
+                                                            <p>{email}</p>    
+                                                            <div className="buttons">
+                                                                <button type='submit' onClick={() => handlePresentButton(email)}>
+                                                                    Present
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        {index < participants.find(p => p.status === 'Going').email.length - 1 && (
+                                                            <div className="smallhr">
+                                                                <hr />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div>No attendees right now.</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedSection === 'attended' && (
+                                    <div className="attendeeList">
+                                        <div className="guestContainer">
+                                            { participants.filter(p => p.status === 'Attended').length > 0 ? (
+                                            participants.filter(p => p.status === 'Attended')
+                                            .map((p, index) => (
+                                                <div key={index}>
+                                                <div className="guestDetails">
+                                                    <h6>{p?.name}</h6>
+                                                    <p>{p?.email}</p>    
+                                                    <div className="buttons">
+                                                    <button>Undo</button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="smallhr">
-                                                <hr />
-                                            </div>
-                                            <div className="guestDetails">
-                                                <h6>Meinard Santos</h6>
-                                                <p>msantos.k123456789@umak.edu.ph</p>
-                                                <div className="buttons">
-                                                <button>Present</button>
+                                                <div className="smallhr">
+                                                    <hr />
                                                 </div>
-                                            </div>
-                                            <div className="smallhr">
-                                                <hr />
-                                            </div>
-                                            <div className="guestDetails">
-                                                <h6>Jayson Huub Partido</h6>
-                                                <p>jpartido.k123456789@umak.edu.ph</p>   
-                                                <div className="buttons">
-                                                <button>Present</button>
-                                                </div> 
-                                            </div>
-                                            <div className="smallhr">
-                                                <hr />
-                                            </div>
-                                            <div className="guestDetails">
-                                                <h6>Eric Lor</h6>
-                                                <p>elor.k123456789@umak.edu.ph</p>
-                                                <div className="buttons">
-                                                <button>Present</button>
                                                 </div>
-                                            </div>  
+                                            ))) : (
+                                                <>
+                                                <div>Attendees are still in line right now.</div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 )}

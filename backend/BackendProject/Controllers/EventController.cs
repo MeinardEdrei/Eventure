@@ -276,6 +276,8 @@ namespace BackendProject.Controllers
                 .GroupBy(r => r.Status)
                 .Select(g => new {
                     Status = g.Key,
+                    Name = g.Select(n => n.Name).ToList(),
+                    Email = g.Select(m => m.Email).ToList(),
                     Count = g.Count(),
                 })
                 .ToListAsync();
@@ -283,7 +285,7 @@ namespace BackendProject.Controllers
             if (participants == null) {
                 return NotFound(new { message = "Participants not found." });
             }
-            
+
             return Ok(participants);
         }
     }

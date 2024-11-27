@@ -50,14 +50,14 @@ namespace BackendProject.Controllers
                     Email = rformDto.Email, 
                     School_Id = rformDto.School_Id,  
                     Section = rformDto.Section,
-                    Status = "Pending",
+                    Status = "Waiting",
                     Registered_Time = rformDto.Registered_Time,
                 };
                 _context.RForms.Add(waitlisted);
                 await _context.SaveChangesAsync();
                 return Ok(new { 
                     message = "Event is full. You have been added to the waitlist.", 
-                    status = "Pending" 
+                    status = "Waiting" 
                 });
             }
 
@@ -70,7 +70,7 @@ namespace BackendProject.Controllers
                 Email = rformDto.Email, 
                 School_Id = rformDto.School_Id,  
                 Section = rformDto.Section,
-                Status = "Approved",
+                Status = "Going",
                 Registered_Time = rformDto.Registered_Time,
             };
 
@@ -94,7 +94,7 @@ namespace BackendProject.Controllers
             {
                 UserId = rformDto.User_Id,
                 EventId = rformDto.Event_Id,
-                Status = "Approved"
+                Status = "Going"
             };
             _context.UEvents.Add(userEvent);
             await _context.SaveChangesAsync(); 
@@ -107,7 +107,7 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> GetForm()
         {
             var Form = await _context.RForms
-                .Where(e => e.Status == "Approved")
+                .Where(e => e.Status == "Going")
                 .ToListAsync(); // Use ToListAsync to get the results as a list
                 
             return Ok(Form);

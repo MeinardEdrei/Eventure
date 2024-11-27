@@ -66,14 +66,14 @@ const Header = () => {
             <div className='justify-between w-[45%] max-md:w-[60%] md:ml-5 md:hidden max-sm:hidden lg:flex 2xl:flex'>
                 {session?.user?.role === 'Organizer' ? (
                 <>
-                    <Link href='/Dashboard'>Dashboard</Link>
+                    <Link href='/OrganizerDashboard'>Dashboard</Link>
                     <Link href='/Create-Event'>Create Event</Link>
                     <Link href='/My-Events'>My Events</Link>
                 </>
                 ) : session?.user?.role === 'Admin' ? (
                     <>
                     <div className='justify-between w-[55%] md:w-[60%] md:hidden max-sm:hidden lg:flex 2xl:flex'>
-                        <Link href='/Dashboard'>Dashboard</Link>
+                        <Link href='/AdminDashboard'>Dashboard</Link>
                         <button
                             ref={settingsButtonRef}
                             onClick={toggleSettingsDropDown}

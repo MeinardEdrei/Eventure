@@ -129,7 +129,10 @@ const EventSettingsPanel = ({
             <div className="relative w-[100%]">
               <button
                 className="dropdown-button"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  setIsOpen(!isOpen);
+                }}
               >
                 {selected}
                 <i
@@ -247,7 +250,8 @@ const EventSettingsPanel = ({
                     onClick={() => setIsDepartmentOpen(true)}
                   />
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (departmentsDropDown) {
                         setIsDepartmentOpen(!isDepartmentOpen);
                       }
@@ -407,7 +411,10 @@ const EventSettingsPanel = ({
                     onClick={() => setIsPartnershipOpen(true)}
                   />
                   <button
-                    onClick={() => setIsPartnershipOpen(!isPartnershipOpen)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsPartnershipOpen(!isPartnershipOpen);
+                    }}
                   >
                     <i
                       className={`fas fa-chevron-down dropdown-icon ${

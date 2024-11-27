@@ -84,21 +84,6 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Form validation
-    if (
-      !title ||
-      !description ||
-      !date ||
-      !start ||
-      !end ||
-      !venue ||
-      !capacity ||
-      !selectedFile
-    ) {
-      alert("Please fill in all fields and select an image");
-      return;
-    }
-
     try {
       const validOrganizerId = parseInt(organizerId);
       if (isNaN(validOrganizerId)) {
@@ -204,6 +189,7 @@ const Page = () => {
                   onChange={handleFileSelect}
                   accept="image/*"
                   hidden
+                  required
                 />
                 <div className="dropzone-content">
                   {selectedFile ? (
@@ -245,6 +231,7 @@ const Page = () => {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                required
               />
             </div>
 
@@ -257,6 +244,7 @@ const Page = () => {
                 ref={descriptionRef}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -299,6 +287,7 @@ const Page = () => {
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -309,6 +298,7 @@ const Page = () => {
                           type="time"
                           value={start}
                           onChange={(e) => setStart(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -326,6 +316,7 @@ const Page = () => {
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -336,6 +327,7 @@ const Page = () => {
                           type="time"
                           value={end}
                           onChange={(e) => setEnd(e.target.value)}
+                          required
                         />
                       </div>
                     </div>
@@ -376,7 +368,21 @@ const Page = () => {
         {/* <button type="submit">Create Event</button> */}
         {/* </div> */}
         <Button
-          className="w-[20%] mt-5 p-3 bg-white opacity-50 border-none rounded-full text-center cursor-pointer transition-all duration-200 ease-in text-black text-xl font-bold hover:opacity-100"
+          sx={{
+            width: "20%",
+            marginTop: "1.25rem",
+            padding: "0.75rem",
+            backgroundColor: "white",
+            opacity: 0.5,
+            borderRadius: "9999px",
+            textAlign: "center",
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+            color: "black",
+            "&:hover": {
+              opacity: 1,
+            },
+          }}
           type="submit"
           variant="contained"
         >

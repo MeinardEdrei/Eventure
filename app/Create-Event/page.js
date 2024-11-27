@@ -225,7 +225,7 @@ const Page = () => {
                   ) : (
                     <>
                       <i
-                        class="fa fa-cloud-upload text-[6rem]"
+                        className="fa fa-cloud-upload text-[6rem]"
                         aria-hidden="true"
                       ></i>
                       <p>Upload from files or Drag and Drop</p>

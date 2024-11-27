@@ -15,6 +15,7 @@ function OrganizerEvents() {
     const [loading, setLoading] = useState(false);
     const [event, setEvent] = useState([]);
     const [partners, setPartners] = useState([]);
+    const [participants, setParticipants] = useState([]);
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName);
@@ -40,7 +41,8 @@ function OrganizerEvents() {
             try {
                 setLoading(true);
                 const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`)
-                // const res2 = await axios.get(`http://localhost:5000/api/event/events${id}`)
+                const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`)
+                setParticipants(res2.data);
                 setEvent(res1.data);
             } catch (error) {
                 console.log(error);
@@ -99,9 +101,9 @@ function OrganizerEvents() {
                                 <h6>Event Details</h6>
                             </div>
                             <div className="statContainer">
-                                <p className="eventStatistic">Pending: {event?.pending || 0}</p>
-                                <p className="eventStatistic">Attending: {event?.attendees_Count || 0}</p>
-                                <p className="eventStatistic">Cancelled: {event?.cancelled || 0}</p>
+                                <p className="eventStatistic">Pending: {participants.find(p => p.status === 'Pending')?.count || 0}</p>
+                                <p className="eventStatistic">Attending: {participants.find(p => p.status === 'Approved')?.count || 0}</p>
+                                <p className="eventStatistic">Cancelled: {participants.find(p => p.status === 'Cancelled')?.count || 0}</p>
                             </div>
                             <hr />
                             <div className="organizerHeader">Event Partners</div>
@@ -109,7 +111,7 @@ function OrganizerEvents() {
                             <div className="guestContainer">
                                 <div className="guestDetails">
                                     <h6>{event.partnerships}</h6>
-                                    <p>umakjammers@umak.edu.ph</p> 
+                                    <p>{event.partnershipsEmail || 'Partnership has no email'}</p> 
                                 </div>
                                 <div className="smallhr">
                                     <hr />

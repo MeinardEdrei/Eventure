@@ -267,5 +267,24 @@ namespace BackendProject.Controllers
 
             return Ok(events);
         }
+
+        [HttpGet("{id}/participants")]
+        public async Task<IActionResult> GetParticipants(int id)
+        {
+            var participants = await _context.RForms
+                .Where(r => r.Event_Id == id)
+                .GroupBy(r => r.Status)
+                .Select(g => new {
+                    Status = g.Key,
+                    Count = g.Count(),
+                })
+                .ToListAsync();
+
+            if (participants == null) {
+                return NotFound(new { message = "Participants not found." });
+            }
+            
+            return Ok(participants);
+        }
     }
 }

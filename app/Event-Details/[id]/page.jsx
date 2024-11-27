@@ -36,25 +36,71 @@ function OrganizerEvents() {
         }
     }, []);    
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`);
-                const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`);
-                setParticipants(res2.data);
-                setEvent(res1.data);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
+    // FETCH DATA FROM API
+    const fetchData = async () => {
+        try {
+            const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`);
+            const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`);
+            setParticipants(res2.data);
+            setEvent(res1.data);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         fetchData();
     }, []);
 
+    // HANDLE PRESENT BUTTON
     const handlePresentButton = async (email) => {
-        alert(email);
-        // const res = await axios.post(`http://localhost:5000/api/event/${id}/present`, { email });
+        try {
+            const res = await axios.post(`http://localhost:5000/api/event/${email}/present`);
+            if (res.status === 200) {
+                alert(res.data.message);
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    // HANDLE UNDO PRESENT BUTTON
+    const handleUndoPresent = async (email) => {
+        try {
+            const res = await axios.post(`http://localhost:5000/api/event/${email}/undo-present`);
+            if (res.status === 200) {
+                alert(res.data.message);
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    // HANDLE APPROVE PARTICIPANT BUTTON
+    const handleApproveParticipant = async (email) => {
+        try {
+            const res = await axios.post(`http://localhost:5000/api/event/${email}/approve-participant`);
+            if (res.status === 200) {
+                alert(res.data.message);
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    // HANDLE DISAPPROVE PARTICIPANT BUTTON
+    const handleDisapproveParticipant = async (email) => {
+        try {
+            const res = await axios.post(`http://localhost:5000/api/event/${email}/disapprove-participant`);
+            if (res.status === 200) {
+                alert(res.data.message);
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     if (loading) {
@@ -106,7 +152,14 @@ function OrganizerEvents() {
                             </div>
                             <div className="statContainer">
                                 <p className="eventStatistic">Waiting: {participants.find(p => p.status === 'Waiting')?.count || 0}</p>
-                                <p className="eventStatistic">Attending: {participants.find(p => p.status === 'Going')?.count || 0}</p>
+                                
+                                <p className="eventStatistic">
+                                    {/* PARTICIPANTS WITH STATUS COUNT: ATTENDING = GOING + ATTENDED */}
+                                    Attending: {['Going', 'Attended']
+                                        .map(status => participants.find(p => p.status === status)?.count || 0)
+                                        .reduce((total, count) => total + count, 0)}
+                                </p>
+
                                 <p className="eventStatistic">Cancelled: {participants.find(p => p.status === 'Cancelled')?.count || 0}</p>
                             </div>
                             <hr />
@@ -119,9 +172,12 @@ function OrganizerEvents() {
                                     <h6>{event.partnerships}</h6>
                                     <p>{event.partnershipsEmail || 'Partnership has no email'}</p> 
                                 </div>
-                                <div className="smallhr">
-                                    <hr />
-                                </div>
+                                { (event.partnerships).count > 0 && (
+                                   <div className="smallhr">
+                                        <hr />
+                                    </div> 
+                                )}
+                                
                             </div>
                             <div className="addHosts"><button>Add Hosts</button></div>
                         </>
@@ -132,7 +188,7 @@ function OrganizerEvents() {
                             <hr />
                             <div className="section">
                                 <div className="w-[60%]">
-                                    <div className="organizerHeader">Pending List</div>
+                                    <div className="organizerHeader">Attendees List</div>
                                     <div className="organizerDescription">
                                         Manage and view participant details for streamlined event coordination.
                                     </div>
@@ -165,22 +221,24 @@ function OrganizerEvents() {
                             <div className="contentSection">
                                 {selectedSection === 'waiting' && (
                                     <div className="guestContainer">
-                                        { participants.filter(p => p.status === 'Waiting').length > 0 ? (
-                                        participants.filter(p => p.status === 'Waiting')
-                                        .map((p, index) => (
-                                            <>
-                                            <div key={index} className="guestDetails">
-                                                <h6>{p?.name}</h6>
-                                                <p>{p?.email}</p>
+                                        { participants.find(p => p.status === 'Waiting')?.email.length > 0 ? (
+                                          participants.find(p => p.status === 'Waiting')
+                                          ?.email.map((email, index) => (
+                                            <div key={index}>
+                                            <div className="guestDetails">
+                                                <h6>{participants.find(p => p.status === 'Waiting').name[index]}</h6>
+                                                <p>{email}</p>
                                                 <div className="buttons">
-                                                    <button>Approve</button>
-                                                    <button>Disapprove</button>
+                                                    <button onClick={() => handleApproveParticipant(email)}>Approve</button>
+                                                    <button onClick={() => handleDisapproveParticipant(email)}>Disapprove</button>
                                                 </div>
                                             </div>
-                                            <div className="smallhr">
-                                                <hr />
+                                            { index < participants.find(p => p.status === 'Waiting').email.length - 1 && (
+                                                <div className="smallhr">
+                                                    <hr />
+                                                </div>
+                                            )}
                                             </div>
-                                            </>
                                         ))) : (
                                             <>
                                             <div>No pending attendees right now.</div>
@@ -192,8 +250,8 @@ function OrganizerEvents() {
                                 {selectedSection === 'attending' && (
                                     <div className="attendeeList">
                                         <div className="guestContainer">
-                                            {participants.find(p => p.status === 'Going')?.email.length > 0 ? (
-                                                participants.find(p => p.status === 'Going').email.map((email, index) => (
+                                            { participants.find(p => p.status === 'Going')?.email.length > 0 ? (
+                                              participants.find(p => p.status === 'Going').email.map((email, index) => (
                                                     <div key={index}>
                                                         <div className="guestDetails">
                                                             <h6>{participants.find(p => p.status === 'Going').name[index]}</h6>
@@ -221,20 +279,25 @@ function OrganizerEvents() {
                                 {selectedSection === 'attended' && (
                                     <div className="attendeeList">
                                         <div className="guestContainer">
-                                            { participants.filter(p => p.status === 'Attended').length > 0 ? (
-                                            participants.filter(p => p.status === 'Attended')
-                                            .map((p, index) => (
+                                            { participants.find(p => p.status === 'Attended')?.email.length > 0 ? (
+                                              participants.find(p => p.status === 'Attended')?.email.map((email, index) => (
                                                 <div key={index}>
-                                                <div className="guestDetails">
-                                                    <h6>{p?.name}</h6>
-                                                    <p>{p?.email}</p>    
-                                                    <div className="buttons">
-                                                    <button>Undo</button>
+                                                    <div className="guestDetails">
+                                                        <h6>{participants.find(p => p.status === 'Attended').name[index]}</h6>
+                                                        <p>{email}</p>    
+                                                        <div className="buttons">
+                                                        <button 
+                                                            onClick={() => handleUndoPresent(email)}
+                                                        >
+                                                            Undo
+                                                        </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="smallhr">
-                                                    <hr />
-                                                </div>
+                                                    { index < participants.find(p => p.status === 'Attended').email.length - 1 && (
+                                                        <div className="smallhr">
+                                                            <hr />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))) : (
                                                 <>

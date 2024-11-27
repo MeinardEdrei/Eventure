@@ -1,3 +1,5 @@
+using System.Reflection.Metadata;
+
 namespace BackendProject.Models
 {
     public class RFormDto
@@ -10,6 +12,7 @@ namespace BackendProject.Models
         public string  School_Id { get; set; } = string.Empty;
         public string Section { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        public required byte[]? Ticket { get; set; }
         public DateTime Registered_Time { get; set; }
     }
 }

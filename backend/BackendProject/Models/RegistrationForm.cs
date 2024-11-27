@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection.Metadata;
 
 namespace BackendProject.Models
 {
@@ -35,6 +36,9 @@ namespace BackendProject.Models
 
         [Required]
         public required string Status { get; set; }
+
+        [Required]
+        public required byte[]? Ticket { get; set; }
 
         [Required]
         public required DateTime Registered_Time { get; set; }

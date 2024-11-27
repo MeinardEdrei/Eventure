@@ -18,11 +18,14 @@ namespace BackendProject.Controllers
     public class RegistrationController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly QRCodeService _qrcodeService;
         // private readonly EmailService _emailService;
 
-        public RegistrationController(ApplicationDbContext context, EmailService emailService)
+        public RegistrationController(ApplicationDbContext context, EmailService emailService,
+               QRCodeService qrcodeService)
         {
             _context = context;
+            _qrcodeService = qrcodeService;
             // _emailService = emailService;
         }
 
@@ -51,6 +54,7 @@ namespace BackendProject.Controllers
                     School_Id = rformDto.School_Id,  
                     Section = rformDto.Section,
                     Status = "Waiting",
+                    Ticket = null,
                     Registered_Time = rformDto.Registered_Time,
                 };
                 _context.RForms.Add(waitlisted);
@@ -60,6 +64,11 @@ namespace BackendProject.Controllers
                     status = "Waiting" 
                 });
             }
+
+            // GENERATE QR CODE 
+            var data = rformDto.User_Id.ToString() + " | " + rformDto.Event_Id.ToString()
+                    + " | " + rformDto.Name + " | " + rformDto.Email;
+            var qrCodeImage = await _qrcodeService.GenerateQRCode(data);
 
             var attendee = new RForm
             {
@@ -71,6 +80,7 @@ namespace BackendProject.Controllers
                 School_Id = rformDto.School_Id,  
                 Section = rformDto.Section,
                 Status = "Going",
+                Ticket = qrCodeImage,
                 Registered_Time = rformDto.Registered_Time,
             };
 

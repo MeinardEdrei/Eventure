@@ -3,13 +3,34 @@ import '../css/organizerList.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function MyEvents () {
+    const { data: session } = useSession();
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        
-    }, []);
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                if (session) {
+                    const res = await axios.get(`http://localhost:5000/api/event/organizer-events/${session?.user?.id}`)
+                    setEvents(res.data);
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+       fetchData();
+    }, [session]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <>
@@ -17,22 +38,34 @@ function MyEvents () {
             <div className="eventTitle">My Events</div>
             <div className="eventDescription">A personalized dashboard to view, manage, and track all your upcoming and past events.</div>
 
-            <Link href='/OrganizerEvents'>
-            <div className="containerngmgacards">
-                <div className="organizerEventCard">
-                    <div className="organizerImage">
-                        <img src="/heronsNight.jpg" alt="" />
-                    </div>
-                    <div className="cardDetails">
-                        <div className="cardTitle">UMak Jammers Concert for a cause</div>
-                        <div className="cardInfo">
-                            <p>UMak Oval</p>
-                            <p>November 5, 2024 - 3:00 PM</p>
+            { events.map((event) => (
+                <Link key={event.id} href={`/Event-Details/${event.id}`}>
+                <div className="containerngmgacards">
+                    <div className="organizerEventCard">
+                        <div className="organizerImage">
+                            <img src={`http://localhost:5000/api/event/uploads/${event.event_Image}`} alt="" />
+                        </div>
+                        <div className="cardDetails">
+                            <div className="cardTitle">{event.title}</div>
+                            <div className="cardInfo">
+                                <p>{event.location}</p>
+                                <p>
+                                    {new Date(event.date).toLocaleDateString('en-US', {
+                                        month: 'long',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                    })} - {new Date(event.date).toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: true,
+                                    })}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            </Link>
+                </Link>
+            ))}
         </div>
         </>
     )

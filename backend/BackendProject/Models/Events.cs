@@ -43,8 +43,8 @@ namespace BackendProject.Models
         public required bool Require_Approval { get; set; }
 
         [Required]
-        public required bool Require_Ticket { get; set; }
-        
+        public required string Partnerships { get; set; }
+
         [Required]
         [StringLength(255)]
         public required string Event_Image { get; set; }

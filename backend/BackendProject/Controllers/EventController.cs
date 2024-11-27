@@ -20,13 +20,14 @@ namespace BackendProject.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
 
         public EventController(ApplicationDbContext context,
-            IWebHostEnvironment hostingEnvironment) {
+            IWebHostEnvironment hostingEnvironment)
+        {
 
             _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
 
-    // ----------------POST api/event/create------------------- 
+        // ----------------POST api/event/create------------------- 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)
         {
@@ -39,7 +40,8 @@ namespace BackendProject.Controllers
                 return BadRequest(new { message = "All fields are required." });
             }
 
-            if (eventsDto == null) {
+            if (eventsDto == null)
+            {
                 return BadRequest(new { message = "All fields are required." });
             }
 
@@ -98,9 +100,9 @@ namespace BackendProject.Controllers
                 Hosted_By = eventsDto.Hosted_By,
                 Visibility = eventsDto.Visibility,
                 Require_Approval = eventsDto.Require_Approval,
-                Require_Ticket = eventsDto.Require_Ticket,
+                Partnerships = eventsDto.Partnerships,
                 Event_Image = fileName,
-                Created_At = DateTime.Now, 
+                Created_At = DateTime.Now,
                 Organizer_Id = eventsDto.Organizer_Id,
                 Status = eventsDto.Status, // Default to "Pending"
                 Attendees_Count = 0 // Default count
@@ -112,7 +114,7 @@ namespace BackendProject.Controllers
             // ----------------------INCREMENT CREATED_EVENTS FOR ORGANIZER--------------------------------
             var organizer = await _context.Users.FindAsync(eventsDto.Organizer_Id);
             if (organizer != null)
-            {   
+            {
                 organizer.Created_Events += 1; // Increment the count
                 _context.Users.Update(organizer); // Mark the user as modified
                 await _context.SaveChangesAsync(); // Save changes to the database
@@ -163,18 +165,20 @@ namespace BackendProject.Controllers
         {
             var eventToApprove = await _context.Events.FindAsync(eventId);
 
-            if (eventToApprove == null ) {
+            if (eventToApprove == null)
+            {
                 return NotFound(new { message = "Event not found." });
             }
 
             eventToApprove.Status = "Approved";
 
-            var notifications = new Notification {
+            var notifications = new Notification
+            {
                 UserId = eventToApprove.Organizer_Id,
                 EventId = eventToApprove.Id,
                 Type = "General",
             };
-            
+
             _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync();
 
@@ -186,7 +190,8 @@ namespace BackendProject.Controllers
         {
             var eventToReject = await _context.Events.FindAsync(eventId);
 
-            if (eventToReject == null ) {
+            if (eventToReject == null)
+            {
                 return NotFound(new { message = "Event not found." });
             }
 
@@ -212,7 +217,7 @@ namespace BackendProject.Controllers
         public IActionResult GetImage(string filename)
         {
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", filename);
-            
+
             if (System.IO.File.Exists(filePath))
             {
                 byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
@@ -230,7 +235,7 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> GetNotification()
         {
             var notifications = await _context.Notifications
-                .Select(n => new NotificationsDto 
+                .Select(n => new NotificationsDto
                 {
                     Id = n.Id,
                     UserId = n.UserId,
@@ -245,11 +250,22 @@ namespace BackendProject.Controllers
                 })
                 .ToListAsync();
 
-            if (notifications == null) {
+            if (notifications == null)
+            {
                 return NotFound(new { message = "Notifications not found." });
             }
-            
+
             return Ok(notifications);
+        }
+
+        [HttpGet("organizer-events/{id}")]
+        public async Task<IActionResult> GetOrganizerEvents(int id)
+        {
+            var events = await _context.Events
+            .Where(e => e.Organizer_Id == id)
+            .ToListAsync();
+
+            return Ok(events);
         }
     }
 }

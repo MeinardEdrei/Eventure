@@ -13,8 +13,10 @@ export default function Home() {
   useEffect(() => {
     if (status !== "loading") {
       setIsLoaded(true);
-      if (session?.user?.role == "Admin" || session?.user?.role == "Organizer") {
-        router.push("/Dashboard");
+      if (session?.user?.role == "Admin") {
+        router.push("/AdminDashboard");
+      } else if (session?.user?.role == "Organizer") {
+        router.push("/OrganizerDashboard");
       }
     }
   }, [status, session, router]);

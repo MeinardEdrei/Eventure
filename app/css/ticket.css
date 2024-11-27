@@ -1,0 +1,98 @@
+.ticket-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ticket-subcontainer {
+  height: 650px;
+  width: 400px;
+  background: linear-gradient(180deg, #E6E6FA 0%, #D6EAF8 50%, #FADBD8 90%);
+  border-radius: 8px;
+  padding: 12px 20px;
+  opacity: 0.95;
+}
+
+.dotted-line {
+  border-top: 0.5px dotted #B0AFAF; /* Creates the dotted line */
+  height: 0px; /* Ensures no height for the div */
+  width: 100%; /* Full width */
+  margin: 15px 0px;
+}
+
+.ticket-text {
+  height: 20px;
+  width: 60px;
+  background: white;
+  letter-spacing: 1px;
+  color: 504E52;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+.ticket-text p {
+  color: #504E52;
+  opacity: 0.6;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.ticket-title {
+  margin: 15px 0px 12px 0px;
+}
+.ticket-title h1 {
+  color: #010101;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.ticket-date {
+  margin-bottom: 5px;
+}
+.ticket-date p, .ticket-location p {
+  color: #504E52;
+  opacity: 0.75;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.ticket-qr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* height: 250px;
+  width: 250px; */
+}
+
+.ticket-attendee {
+  display: flex;
+  align-items: center;
+  gap: 75px;
+}
+.full-name h3, .student-number h3 {
+  color: #504E52;
+  opacity: 0.5;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.full-name p, .student-number p {
+  color: #010101;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.ticket-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
+.ticket-download button {
+  height: 28px;
+  width: 100%;
+  background-color: #25152C;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}

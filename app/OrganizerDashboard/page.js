@@ -1,7 +1,7 @@
 import React from 'react'
-import "../css/dashboard.css";
+import "../css/Dashboard.css";
 
-function AdminDashboard() {
+function page() {
   return (
     <div className='dashboard-container'>
       <div className='dashboard-subcontainer'>
@@ -43,16 +43,12 @@ function AdminDashboard() {
               <h2>Additional Information</h2>
             </div>
             <div className='activities-container'>
-              <div className='additional created'>
-                <h3>Created</h3>
-                <span>0</span>
-              </div>
               <div className='additional upcoming'>
-                <h3>Upcoming</h3>
+                <h3>Upcoming Events</h3>
                 <span>0</span>
               </div>
               <div className='additional organizations'>
-                <h3>Organizations</h3>
+                <h3>Created Events</h3>
                 <span>0</span>
               </div>
             </div>
@@ -126,4 +122,4 @@ function AdminDashboard() {
   )
 }
 
-export default AdminDashboard
+export default page

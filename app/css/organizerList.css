@@ -2,67 +2,248 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
-    --color1: #0C0C0C;
-    --color2: #252525;
-    --color3: #fefefe;
-    --color4: #DAB7FF;
-    --color5: #4a3b55;
-    --color6: #705c7c;
-    --color7: #01c70b;
-    --borderColor: 0.25px solid hsl(0, 0%, 25%);
-    --font: Montserrat, Arial, Helvetica;
-    --transition: all ease-in-out 200ms;
+  --gradient: linear-gradient(180deg, #0c0c0c, #25152c);
+  --color0: transparent;
+  --color1: #0c0c0c;
+  --color2: #252525;
+  --color3: #fefefe;
+  --color4: #dab7ff;
+  --color5: #4a3b55;
+  --color6: #705c7c;
+  --color7: #01c70b;
+  --borderColor: 0.25px solid hsl(0, 0%, 25%);
+  --font: Montserrat, Arial, Helvetica;
+  --transition: all ease-in-out 200ms;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    font-family: "Montserrat", "Nunito";
-    /* overflow: hidden; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: var(--font);
 }
-.container {
-    width: 50rem;
-    margin: 2rem auto;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+
+/* body {
+    background: var(--gradient);
+    color: var(--color3);
+    font-family: var(--font);
+} */
+
+.org-list-mnc {
+  width: 87%;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
+
 .eventTitle {
-    font-weight: 900;
-    font-size: 40px;
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--color3);
 }
+
 .eventDescription {
-    opacity: 50%;
-    margin-bottom: 2rem;
+  font-size: 1rem;
+  opacity: 0.5;
+  line-height: 1.5;
 }
+
+.line-container {
+  width: 100%;
+}
+
+/* Dropdown Styles */
+.dropdown-container {
+  position: relative;
+  width: 9rem;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: #54366c;
+  font-weight: bold;
+  /* border: 1px solid  #e2e8f0; */
+  border-radius: 0.4rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+/* .dropdown-button:hover {
+  border: 2px solid #ff0000;
+} */
+
+.dropdown-icon {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+.dropdown-icon.rotate {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  margin-top: 0.4rem;
+  width: 100%;
+  background-color: #54366c;
+  /* border: 1px solid #e2e8f0; */
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1),
+    0 2px 4px -1px rgba(255, 255, 255, 0.06);
+  z-index: 10;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  text-transform: capitalize;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+.dropdown-item:hover {
+  background-color: #9333ea;
+  color: #ffffff;
+  font-weight: bold;
+  opacity: 1;
+}
+
+.dropdown-item.selected {
+  background-color: #9333ea;
+}
+
+
+.card-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--color4);
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  /* width: 70%; */
+  gap: 1rem;
+}
+
 .organizerEventCard {
-    width: 100%;
-    height: 10.5rem;
-    border: var(--borderColor);
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: var(--borderColor);
+  /* border-radius: var(--cardRadius); */
+  border-radius: 1rem 0 0 1rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  background: var(--color0);
+  transition: var(--transition);
+  /* padding: 1rem; */
 }
+
+/* .organizerEventCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+} */
+
 .organizerImage {
-    width: 16rem;
-    height: 10rem;
-    border-right: var(--borderColor);
+  width: 16rem;
+  height: auto;
+  border-right: var(--borderColor);
 }
+
+.organizerImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .cardDetails {
-    margin: 1rem;
+  padding: 1rem 1.5rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
 .cardTitle {
-    font-size: 24px;
-    font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color3);
+  margin-bottom: 0.5rem;
 }
+
 .cardInfo {
-    line-height: 1rem;
-    opacity: 50%;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  color: var(--color3);
+  opacity: 0.8;
 }
-.containerngmgacards {
-    gap: 1rem;
-    display: flex;
+
+.cardInfo p {
+  margin: 0.2rem 0;
+}
+
+.edit-button-container {
+  display: flex;
+  align-items: center;
+}
+
+.edit-button {
+  background-color: transparent;
+  color: #888;
+  font-size: 0.8rem;
+  border: 1px solid #888;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.edit-button i {
+  margin-right: 4px;
+}
+
+
+@media (max-width: 768px) {
+  .org-list-mnc {
+    width: 95%;
+  }
+
+  .eventTitle {
+    font-size: 2rem;
+  }
+
+  .organizerEventCard {
     flex-direction: column;
+    height: auto;
+  }
+
+  .organizerImage {
+    width: 100%;
+    height: 12rem;
+    border-right: none;
+    border-bottom: var(--borderColor);
+  }
+
+  .cardDetails {
+    padding: 1rem;
+  }
 }

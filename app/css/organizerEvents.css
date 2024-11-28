@@ -2,135 +2,135 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
-    --color1: #0C0C0C;
-    --color2: #252525;
-    --color3: #fefefe;
-    --color4: #DAB7FF;
-    --color5: #4a3b55;
-    --color6: #705c7c;
-    --borderColor: 0.25px solid hsl(0, 0%, 50%);
-    --font: Montserrat, Arial, Helvetica;
-    --transition: all ease-in-out 200ms;
+  --gradient: linear-gradient(180deg, #0c0c0c, #25152c);
+  --color1: #0c0c0c;
+  --color2: #252525;
+  --color3: #fefefe;
+  --color4: #dab7ff;
+  --color5: #4a3b55;
+  --color6: #705c7c;
+  --borderColor: 0.25px solid hsl(0, 0%, 50%);
+  --font: Montserrat, Arial, Helvetica;
+  --transition: all ease-in-out 200ms;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    font-family: "Montserrat", "Nunito";
-    /* overflow: hidden; */
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", "Nunito";
+  /* overflow: hidden; */
 }
 .container {
-    width: 50rem;
-    margin: 2rem auto;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+  width: 50rem;
+  margin: 2rem auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 .eventTitle {
-    font-weight: 900;
-    font-size: 40px;
+  font-weight: 900;
+  font-size: 40px;
 }
 /*Dito buttons*/
 .dashboardButtons {
-    display: flex;
-    flex-direction: row;
-    margin: .75rem 0 0 0;
-    justify-content: space-evenly;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  margin: 0.75rem 0 0 0;
+  justify-content: space-evenly;
+  gap: 0.5rem;
 }
 .dashboardButtons button {
-    border: var(--borderColor);
-    border-radius: 10px;
-    height: 3rem;
-    width: 13rem;
-    transition: var(--transition);
-    cursor: pointer;
+  border: var(--borderColor);
+  border-radius: 10px;
+  height: 3rem;
+  width: 13rem;
+  transition: var(--transition);
+  cursor: pointer;
 }
 .dashboardButtons button:hover {
-    background-color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color5);
+  font-weight: 600;
 }
 .dashboardButtons button.active {
-    background-color: var(--color5);
+  background-color: var(--color5);
 }
 hr {
-    opacity: 25%;
-    margin: 1rem 0 1rem 0;
+  opacity: 25%;
+  margin: 1rem 0 1rem 0;
 }
 .overviewContainer {
-    height: 12rem;
-    border: var(--borderColor);
-    display: flex;
-    flex-direction: row;
-    border-radius: 10px;
-    overflow: hidden;
+  height: 12rem;
+  border: var(--borderColor);
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  overflow: hidden;
 }
 .overviewContainer img {
-    width: 17rem;
-    height: 12rem;
-    border-radius: 10px;
-    border-right: var(--borderColor);
+  width: 17rem;
+  height: 12rem;
+  border-radius: 1rem 0 0 1rem;
+  border-right: var(--borderColor);
 }
 .overviewDetails {
-    width: 100%;
-    margin: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  width: 100%;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .overviewDetails h1 {
-    font-weight: 800;
-    font-size: 24px;
+  font-weight: 800;
+  font-size: 24px;
 }
 .overviewDetails p {
-    opacity: 50%;
-    margin: -3.5rem 0 0 0;
+  opacity: 50%;
+  margin: -3.5rem 0 0 0;
 }
-.overviewDetails button{
-    border: var(--borderColor);
-    background-color: none;
-    border-radius: 10px;
-    width: 10rem;
-    height: 2.5rem;
-    transition: var(--transition);
-    cursor: pointer;
-    align-self: flex-end;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.overviewDetails button {
+  border: var(--borderColor);
+  background-color: none;
+  border-radius: 10px;
+  width: 10rem;
+  height: 2.5rem;
+  transition: var(--transition);
+  cursor: pointer;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .overviewDetails button:hover {
-    background-color: var(--color3);
-    color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color3);
+  color: var(--color5);
+  font-weight: 600;
 }
 
 .organizerHeader {
-    font-size: 18px;
-    font-weight: 600;
+  font-size: 18px;
+  font-weight: 600;
 }
 .statContainer {
-    margin: .50rem 0 0 0;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    justify-content: space-between;
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
 }
 .eventStatistic {
-    border: var(--borderColor);
-    display: flex;
-    flex-direction: row;
-    border-radius: 10px;
-    width: 20rem;
-    height: 3rem;
-    align-items: center;
-    justify-content: center;
+  border: var(--borderColor);
+  display: flex;
+  flex-direction: row;
+  border-radius: 10px;
+  width: 20rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .organizerDescription {
-    margin: 0 0 .50rem 0;
-    opacity: 50%;
+  margin: 0 0 0.5rem 0;
+  opacity: 50%;
 }
 .guestContainer {
     width: 100%;
@@ -144,58 +144,58 @@ hr {
 }
 
 .guestDetails {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    gap: .75rem; 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  gap: 0.75rem;
 }
 
 .guestDetails h6 {
-    flex: 1; 
-    font-weight: 600;
-    margin: 0; 
+  flex: 1;
+  font-weight: 600;
+  margin: 0;
 }
 
 .guestDetails p {
-    flex: 2; 
-    opacity: 0.6;
-    margin: 0; 
-    word-break: break-all; 
+  flex: 2;
+  opacity: 0.6;
+  margin: 0;
+  word-break: break-all;
 }
-.eventScanner button{
-    width: 13rem;
-    height: 2.5rem;
-    border: var(--borderColor);
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: var(--transition);
+.eventScanner button {
+  width: 13rem;
+  height: 2.5rem;
+  border: var(--borderColor);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition);
 }
 .eventScanner button:hover {
-    font-weight: 700;
-    background-color: var(--color3);
-    color: var(--color5);
+  font-weight: 700;
+  background-color: var(--color3);
+  color: var(--color5);
 }
 .buttons {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .guestDetails button {
-    border: var(--borderColor);
-    border-radius: 10px;
-    width: 7rem; 
-    padding: 5px 0; 
-    transition: var(--transition);
+  border: var(--borderColor);
+  border-radius: 10px;
+  width: 7rem;
+  padding: 5px 0;
+  transition: var(--transition);
 }
 
 .guestDetails button:hover {
-    background-color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color5);
+  font-weight: 600;
 }
 
 /*button*/
@@ -207,149 +207,150 @@ hr {
     align-items: center;
 }
 .section .toggleButtonContainer {
-    display: flex;
-    height: 2.5rem;
-    width: fit-content;
-    border: var(--borderColor);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-left: auto;
+  display: flex;
+  height: 2.5rem;
+  width: fit-content;
+  border: var(--borderColor);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-left: auto;
 }
 .toggleButton {
-    flex: 1;
-    padding: 0.25rem 1rem;
-    background: transparent;
-    border-left: var(--borderColor);
-    cursor: pointer;
-    outline: none;
-    transition: var(--transition);
+  flex: 1;
+  padding: 0.25rem 1rem;
+  background: transparent;
+  border-left: var(--borderColor);
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition);
 }
 .toggleButton:hover {
-    background-color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color5);
+  font-weight: 600;
 }
 .toggleButton.active {
-    background-color: var(--color5);
-    font-weight: 600;
-    color: var(--color3);
+  background-color: var(--color5);
+  font-weight: 600;
+  color: var(--color3);
 }
 
 .smallhr hr {
-    margin: 0; /* Remove margins for a cleaner look */
-    border: var(--borderColor);
+  margin: 0; /* Remove margins for a cleaner look */
+  border: var(--borderColor);
 }
 .addHosts button {
-    border: var(--borderColor);
-    border-radius: 10px;
-    margin: 1rem 0 0 0;
-    width: 100%;
-    height: 2.5rem;
-    transition: var(--transition);
+  border: var(--borderColor);
+  border-radius: 10px;
+  margin: 1rem 0 0 0;
+  width: 100%;
+  height: 2.5rem;
+  transition: var(--transition);
 }
 .addHosts button:hover {
-    font-weight: 600;
-    color: var(--color5);
-    background-color: var(--color3);
+  font-weight: 600;
+  color: var(--color5);
+  background-color: var(--color3);
 }
 
 /*SHARE EVENT*/
 .postContainer {
-    width: 100%;
-    height: auto;
-    border: var(--borderColor);
-    border-radius: 10px;
-    overflow: hidden;
-    padding: 10px;
+  width: 100%;
+  height: auto;
+  border: var(--borderColor);
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
 }
 .postContainer textarea {
-    background: none;
-    width: 48.5rem;
-    height: auto;
-    min-height: 3rem;
-    resize: none;
-    border: none;
-    color: var(--color3);
-    outline: none;
-    overflow: hidden;
-    overflow-wrap: break-word;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+  background: none;
+  width: 48.5rem;
+  height: auto;
+  min-height: 3rem;
+  resize: none;
+  border: none;
+  color: var(--color3);
+  outline: none;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 .postButtons {
-    margin: .75rem 0 0 0;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  margin: 0.75rem 0 0 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
-.postButtons button{
-    width: 10rem;
-    height: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: var(--borderColor);
-    border-radius: 10px;
-    transition: var(--transition);
+.postButtons button {
+  width: 10rem;
+  height: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  transition: var(--transition);
 }
 .postButtons button:hover {
-    background-color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color5);
+  font-weight: 600;
 }
 .sharebutton {
-    display: flex;
-    gap: .50rem;
+  display: flex;
+  gap: 0.5rem;
 }
-.sharebutton button{
-    height: 2.5rem;
-    width: 13rem;
-    border: var(--borderColor);
-    border-radius: 10px;
-    transition: var(--transition);
+.sharebutton button {
+  height: 2.5rem;
+  width: 13rem;
+  border: var(--borderColor);
+  border-radius: 10px;
+  transition: var(--transition);
 }
 .sharebutton button:hover {
-    background-color: var(--color5);
-    font-weight: 600;
+  background-color: var(--color5);
+  font-weight: 600;
 }
 
 /*MORE FUNCTIONS*/
-.generateReport button{
-    border: var(--borderColor);
-    border-radius: 10px;
-    transition: var(--transition);
-    width: 13rem;
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.generateReport button {
+  border: var(--borderColor);
+  border-radius: 10px;
+  transition: var(--transition);
+  width: 13rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .postEvaluation {
-    display: flex;
-    flex-direction: row;
-    gap: .50rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
 }
 .postEvaluation button {
-    border: var(--borderColor);
-    border-radius: 10px;
-    transition: var(--transition);
-    width: 13rem;
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  transition: var(--transition);
+  width: 13rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.postEvaluation button:hover, .generateReport button:hover {
-    background-color: var(--color3);
-    color: var(--color5);
-    font-weight: 700;
+.postEvaluation button:hover,
+.generateReport button:hover {
+  background-color: var(--color3);
+  color: var(--color5);
+  font-weight: 700;
 }
 .cancelButton button {
-    width: 13rem;
-    height: 2.5rem;
-    background-color: red;
-    border-radius: 10px;
-    transition: var(--transition);
+  width: 13rem;
+  height: 2.5rem;
+  background-color: red;
+  border-radius: 10px;
+  transition: var(--transition);
 }
 .cancelButton button:hover {
-    font-weight: 700;
+  font-weight: 700;
 }

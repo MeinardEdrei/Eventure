@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useState, useRef, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
+import { Html5Qrcode } from 'html5-qrcode';
 
 function OrganizerEvents() {
     const { id } = useParams();
@@ -16,10 +17,110 @@ function OrganizerEvents() {
     const [event, setEvent] = useState([]);
     const [partners, setPartners] = useState([]);
     const [participants, setParticipants] = useState([]);
+    const [isScannerActive, setIsScannerActive] = useState(false);
+    const [scanMessage, setScanMessage] = useState("");
+    const html5QrCodeRef = useRef(null);
+    const hasScannedRef = useRef(false);
+    const [isScanning, setIsScanning] = useState(false);
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName);
     };
+
+    const toggleScanner = (e) => {
+        e.preventDefault();
+        
+        // Prevent multiple simultaneous toggle attempts
+        if (isScanning) return;
+
+        setScanMessage("");
+        setIsScanning(true);
+
+        const handleScannerToggle = async () => {
+            try {
+                // FOR STOPPING THE SCANNER
+                if (html5QrCodeRef.current) {
+                    await html5QrCodeRef.current.stop();
+                    html5QrCodeRef.current = null;
+                }
+
+                // Toggle the active state
+                setIsScannerActive(prevState => {
+                    const newState = !prevState;
+                    
+                    if (newState) {
+                        initializeScanner();
+                    }
+
+                    return newState; // Initialize
+                });
+            } catch (error) {
+                console.error("Error toggling scanner", error);
+            } finally {
+                setIsScanning(false);
+            }
+        };
+
+        handleScannerToggle();
+    };
+
+    const initializeScanner = async () => {
+        if (!html5QrCodeRef.current) {
+            try {
+                const html5QrCode = new Html5Qrcode("reader");
+                html5QrCodeRef.current = html5QrCode;
+
+                const qrCodeSuccessCallback = async (decodedText) => {
+                    if (hasScannedRef.current) return;
+                    hasScannedRef.current = true;
+
+                    try {
+                        const res = await axios.post(`http://localhost:5000/api/event/${decodedText}/present`);
+                        setScanMessage(
+                            res.status === 200 
+                            ? `Attendance confirmed for ${decodedText}`
+                            : res.status === 409 
+                            ? `Ticket has already been scanned for ${decodedText}`
+                            : `Error confirming attendance for ${decodedText}`
+                        );
+                        fetchData();
+                    } catch (error) {
+                        const statusCode = error?.response?.status; 
+                        setScanMessage(
+                            statusCode === 409 
+                            ? `Ticket has already been scanned for ${decodedText}` 
+                            : `Error: ${error.message || 'An unknown error occurred.'}`
+                        )
+                    } 
+                    setTimeout(() => {
+                        hasScannedRef.current = false;
+                    }, 5000);
+                };
+
+                await html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    { fps: 10, qrbox: { width: 250, height: 250 } }, 
+                    qrCodeSuccessCallback
+                );
+            } catch (err) {
+                console.error("Failed to start QR Code scanning", err);
+                setIsScannerActive(false);
+                setIsScanning(false);
+            }
+        }
+    };
+
+    // Cleanup effect
+    useEffect(() => {
+        return () => {
+            if (html5QrCodeRef.current) {
+                html5QrCodeRef.current.stop()
+                    .catch(err => console.error("Error in cleanup", err));
+                hasScannedRef.current = false;
+                html5QrCodeRef.current = null;
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const textarea = textareaRef.current;
@@ -316,8 +417,48 @@ function OrganizerEvents() {
                             <div className="organizerDescription">
                                 Efficiently track attendee check-ins and monitor participation in real-time during events.
                             </div>
+                            
+                            <div className='w-full flex flex-col justify-center items-center'>
+                                <div className='flex flex-col justify-center items-center w-[80%]'>
+                                {/* Scan Result Message */}
+                                {scanMessage && (
+                                    <div className="scanMessage flex w-full" style={{
+                                        backgroundColor: scanMessage.includes('Error') ? 'red' 
+                                                        : scanMessage.includes('scanned') ? '#B66503' 
+                                                        : 'green',
+                                        padding: '10px',
+                                        margin: '10px 0',
+                                        borderRadius: '5px'
+                                    }}>
+                                        {scanMessage}
+                                    </div>
+                                )}
+
+                                {/* QR Code Scanner Container */}
+                                <div id="reader" 
+                                    className='my-[1vw]'
+                                    style={{ 
+                                    width: '100%', 
+                                    display: isScannerActive ? 'block' : 'none' 
+                                }}></div>
+                                <style>{`
+                                    #reader video {
+                                        transform: scaleX(-1);
+                                    }
+                                `}</style>
+                                </div>
+                            </div>
+
                             <div className="eventScanner">
-                                <button>QR Scanner</button>
+                                <button
+                                 type="button"
+                                 onClick={(e) => {
+                                    toggleScanner(e); 
+                                    setSelectedSection('attending');
+                                 }}
+                                >
+                                    {isScannerActive ? "Stop Scanning" : "Start QR Scanner"}
+                                </button>
                             </div>
 
                             <hr />

@@ -297,11 +297,27 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> Present(string email)
         {
             var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email);
-            if (rForm == null){
-                return NotFound(new { message = "RForm not found." });
+            var rFormBySchoolId = await _context.RForms.FirstOrDefaultAsync(r => r.School_Id == email);
+
+            // Check if the user has already attended
+            if (rForm != null && rForm.Status == "Attended") {
+                return Conflict(new { message = "User  has already been marked as present." });
             }
-            rForm.Status = "Attended";
-            _context.RForms.Update(rForm);
+            else if (rFormBySchoolId != null && rFormBySchoolId.Status == "Attended") {
+                return Conflict(new { message = "User  has already been marked as present." });
+            }
+            
+            if (rForm != null) {
+                rForm.Status = "Attended";
+                _context.RForms.Update(rForm);
+            }
+            else if (rFormBySchoolId != null) {
+                rFormBySchoolId.Status = "Attended";
+            }
+            else {
+                return NotFound(new { message = "Attendee not found." });
+            }
+
             await _context.SaveChangesAsync();
             return Ok(new { message = "Participant has been marked as present." });
         }

@@ -18,12 +18,15 @@ const EventSettingsPanel = ({
   setVisibilityType,
   requireApproval,
   setRequireApproval,
-  requireTicket,
-  setRequireTicket,
+  selectedPartnerships,
+  setSelectedPartnerships,
+  campusType,
+  setCampusType,
+  eventType,
+  setEventType,
 }) => {
   const [departmentsDropDown, setDepartmentsDropDown] = useState(true);
   const { data: session } = useSession();
-  const [selected, setSelected] = useState("On Campus");
   const [isOpen, setIsOpen] = useState(false);
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -31,7 +34,6 @@ const EventSettingsPanel = ({
   //State for Partnership
   const [partnershipFilter, setPartnershipFilter] = useState("");
   const [isPartnershipOpen, setIsPartnershipOpen] = useState(false);
-  const [selectedPartnerships, setSelectedPartnerships] = useState([]);
 
   // const partnerships = [
   //   "Google Developer Student Clubs",
@@ -63,14 +65,14 @@ const EventSettingsPanel = ({
 
   const EventOptions = ["On Campus", "Off Campus"];
   const handleSelect = (option) => {
-    setSelected(option);
+    setCampusType(option);
     setIsOpen(false);
   };
 
   const options = [
-    { id: "curriculum", label: "Curriculum" },
-    { id: "organizational", label: "Organizational" },
-    { id: "college", label: "College" },
+    { id: "Curriculum", label: "Curriculum" },
+    { id: "Organizational", label: "Organizational" },
+    { id: "College", label: "College" },
   ];
 
   const handleDepartmentToggle = (dept) => {
@@ -134,7 +136,7 @@ const EventSettingsPanel = ({
                   setIsOpen(!isOpen);
                 }}
               >
-                {selected}
+                {campusType}
                 <i
                   className={`fas fa-chevron-down dropdown-icon ${
                     isOpen ? "rotate" : ""
@@ -148,7 +150,7 @@ const EventSettingsPanel = ({
                     <button
                       key={option}
                       className={`dropdown-item ${
-                        selected === option ? "selected" : ""
+                        campusType === option ? "selected" : ""
                       }`}
                       onClick={() => handleSelect(option)}
                     >
@@ -171,6 +173,8 @@ const EventSettingsPanel = ({
                     <input
                       type="radio"
                       id={option.id}
+                      value={option.id}
+                      onChange={(e) => setEventType(e.target.value)}
                       name="activityType"
                       className="w-3 h-3 accent-purple-500"
                     />
@@ -385,12 +389,12 @@ const EventSettingsPanel = ({
                 <span>Partnership</span>
               </label>
               <div className="tags-container">
-                {selectedPartnerships.map((departments) => (
-                  <span key={departments} className="tag">
-                    {departments}
+                {selectedPartnerships.map((departmentMap) => (
+                  <span key={departmentMap} className="tag">
+                    {departmentMap}
                     <button
                       className="tag-remove"
-                      onClick={() => handlePartnershipToggle(departments)}
+                      onClick={() => handlePartnershipToggle(departmentMap)}
                     >
                       ×
                     </button>

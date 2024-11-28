@@ -7,48 +7,57 @@ namespace BackendProject.Models
     public class EventsDto
     {
         [Required]
+        public string CampusType { get; set; } = string.Empty;
+
+        [Required]
+        public string EventType { get; set; } = string.Empty;
+
+        [Required]
         public string Title { get; set; } = string.Empty;
 
         [Required]
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime DateStart { get; set; }
 
         [Required]
-        public TimeSpan Start { get; set; }
+        public DateTime DateEnd { get; set; }
 
         [Required]
-        public TimeSpan End { get; set; }
+        public TimeSpan TimeStart { get; set; }
+
+        [Required]
+        public TimeSpan TimeEnd { get; set; }
 
         [Required]
         public string Location { get; set; } = string.Empty;
 
         [Required]
-        public int Max_Capacity { get; set; }
+        public int MaxCapacity { get; set; }
 
         [Required]
-        public required string Hosted_By { get; set; } = string.Empty;
+        public required string HostedBy { get; set; } = string.Empty;
 
         [Required]
         public required string Visibility { get; set; } = string.Empty;
 
         [Required]
-        public required bool Require_Approval { get; set; }
+        public required bool RequireApproval { get; set; }
 
         [Required]
         public required string Partnerships { get; set; }
 
         [Required]
-        public required IFormFile Event_Image { get; set; }
+        public required IFormFile EventImage { get; set; }
 
         [Required]
-        public int Organizer_Id { get; set; }
+        public int OrganizerId { get; set; }
 
         [Required]
         public string Status { get; set; } = string.Empty;
 
         [Required]
-        public int Attendees_Count { get; set; }
+        public int AttendeesCount { get; set; }
     }
 }

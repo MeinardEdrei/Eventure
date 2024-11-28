@@ -13,5 +13,16 @@ namespace BackendProject.Data
         public DbSet<RForm> RForms { get; set; }
         public DbSet<UEvent> UEvents { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.RForms)
+                .WithOne(r => r.Event)
+                .HasForeignKey(r => r.Event_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

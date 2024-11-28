@@ -50,11 +50,11 @@ function MyEvents () {
                             <div className="cardInfo">
                                 <p>{event.location}</p>
                                 <p>
-                                    {new Date(event.date).toLocaleDateString('en-US', {
+                                    {new Date(event.dateStart).toLocaleDateString('en-US', {
                                         month: 'long',
                                         day: 'numeric',
                                         year: 'numeric',
-                                    })} - {new Date(event.date).toLocaleTimeString('en-US', {
+                                    })} - {new Date(`${event.dateStart.split('T')[0]}T${event.timeStart}`).toLocaleTimeString('en-US', {
                                         hour: '2-digit',
                                         minute: '2-digit',
                                         hour12: true,

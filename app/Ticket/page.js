@@ -6,13 +6,12 @@ import axios from 'axios';
 
 function Ticket() {
   const { data: session } = useSession();
-  const [tickets, setTickets] = useState([]);
-  var id = 4;
+  const [ticketDetails, setTicketDetails] = useState([]);
 
   const fetchData = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/event/${session?.user?.email}/ticket`);
-      setTickets(res.data);
+      setTicketDetails(res.data);
     } catch (error) {
       console.log(error);
     }
@@ -22,6 +21,8 @@ function Ticket() {
     fetchData();
   }, [session])
 
+  if (!ticketDetails) return <div>Loading...</div>;
+
   return (
     <div className='ticket-container mt-[2%]'>
       <div className='ticket-subcontainer'>
@@ -30,21 +31,25 @@ function Ticket() {
           <p>TICKET</p>
         </div>
         <div className='ticket-title'>
-          <h1>CCIS Student Council and Computer Science Present: CCIS Night - Dance With Friends and Connect With Others!</h1>
+          <h1>{ticketDetails.eventTitle}</h1>
         </div>
         <div className='ticket-date'>
-          <p>December 21, 2024, 6:00 PM - 11:00 PM</p>
+          <p>{new Date(ticketDetails.eventDate).toLocaleDateString('en-us', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}, {ticketDetails.eventStart} - {ticketDetails.eventEnd}</p>
         </div>
         <div className='ticket-location'>
-          <p>Oval, University of Makati, West Rembo, Taguig, Metro Manila, Philipines</p>
+          <p>{ticketDetails.eventLocation}</p>
         </div>
 
         <div className='dotted-line'></div>
 
         {/* QR CODE */}
-        <div className='ticket-qr'>
+        <div className='ticket-qr h-[53%]'>
           <img
-            src={`data:image/png;base64,${tickets.ticket}`} 
+            src={`data:image/png;base64,${ticketDetails.ticket}`} 
             alt="Event QR Code"
             width="290"
             height="290"
@@ -57,11 +62,11 @@ function Ticket() {
         <div className='ticket-attendee'>
           <div className='full-name'>
             <h3>Guest</h3>
-            <p>{tickets.name}</p>
+            <p>{ticketDetails.name}</p>
           </div>
           <div className='student-number'>
             <h3>Student Number</h3>
-            <p>{tickets.school_Id}</p>
+            <p>{ticketDetails.schoolId}</p>
           </div>
         </div>
 
@@ -69,7 +74,7 @@ function Ticket() {
 
         {/* DOWNLOAD BUTTON */}
         <div className='ticket-download'>
-          <button >Download</button>
+          <button>Download</button>
         </div>
       </div>
     </div>

@@ -128,16 +128,16 @@ function OrganizerEvents() {
                         <>
                             <hr />
                             <div className="overviewContainer">
-                                <img src="/heronsNight.jpg" alt="Heron's Night" />
+                                <img src={`http://localhost:5000/api/event/uploads/${event.eventImage}`} alt="Heron's Night" />
                                 <div className="overviewDetails">
                                     <h1>{event.title}</h1>
                                     <p>{event.location}</p>
                                     <p>
-                                        {new Date(event.date).toLocaleDateString('en-us', {
+                                        {new Date(event.dateStart).toLocaleDateString('en-us', {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',
-                                        })} - {new Date(event.date).toLocaleTimeString('en-us', {
+                                        })} - {new Date(`${event.dateStart.split('T')[0]}T${event.timeStart}`).toLocaleTimeString('en-us', {
                                             hour: 'numeric',
                                             minute: 'numeric',
                                             hour12: true,
@@ -168,16 +168,18 @@ function OrganizerEvents() {
                                 <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
                             </div>
                             <div className="guestContainer">
-                                <div className="guestDetails">
-                                    <h6>{event.partnerships}</h6>
-                                    <p>{event.partnershipsEmail || 'Partnership has no email'}</p> 
-                                </div>
-                                { (event.partnerships).count > 0 && (
-                                   <div className="smallhr">
-                                        <hr />
-                                    </div> 
-                                )}
-                                
+                                { JSON.parse(event.partnerships).map((partner, index) => (
+                                    <div key={index}>
+                                    <div className="guestDetails">
+                                        <h6>{partner}</h6>
+                                    </div>
+                                    { index < JSON.parse(event.partnerships).length - 1 && (
+                                        <div className="smallhr">
+                                                <hr />
+                                        </div> 
+                                    )}
+                                    </div>
+                                ))}
                             </div>
                             <div className="addHosts"><button>Add Hosts</button></div>
                         </>

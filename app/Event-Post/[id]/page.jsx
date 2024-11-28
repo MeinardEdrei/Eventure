@@ -142,11 +142,11 @@ function EventPost() {
             <div className="eventDate">
               {/* <img src="/Date.png" width={25} alt="Date" /> */}
               <p>
-                  {new Date(post.date).toLocaleDateString('en-US', {
+                  {new Date(post.dateStart).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',
-                  })} - {new Date(post.date).toLocaleTimeString('en-US', {
+                  })} - {new Date(`${post.dateStart.split('T')[0]}T${post.timeStart}`).toLocaleTimeString('en-US', {
                       hour: '2-digit',
                       minute: '2-digit',
                       hour12: true,

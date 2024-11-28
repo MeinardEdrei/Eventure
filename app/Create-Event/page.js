@@ -25,9 +25,10 @@ const Page = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
+  const [timeStart, setTimeStart] = useState("");
+  const [timeEnd, setTimeEnd] = useState("");
   const [organizerId, setOrganizerId] = useState("");
   const { data: session } = useSession();
   const router = useRouter();
@@ -38,7 +39,9 @@ const Page = () => {
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [visibilityType, setVisibilityType] = useState("Public");
   const [requireApproval, setRequireApproval] = useState(false);
-  const [requireTicket, setRequireTicket] = useState(false);
+  const [selectedPartnerships, setSelectedPartnerships] = useState([]);
+  const [campusType, setCampusType] = useState("On Campus");
+  const [eventType, setEventType] = useState("");
 
   const [isRequirementsModalOpen, setIsRequirementsModalOpen] = useState(false);
 
@@ -99,29 +102,33 @@ const Page = () => {
       //   Start: start,
       //   End: end,
       //   Location: venue,
-      //   Max_Capacity: capacity,
+      //   MaxCapacity: capacity,
       //   Visibility: visibilityType,
-      //   Hosted_By: selectedDepartments,
-      //   Require_Approval: requireApproval,
-      //   Require_Ticket: requireTicket,
+      //   HostedBy: selectedDepartments,
+      //   RequireApproval: requireApproval,
+      //   Partnerships: selectedPartnerships,
+      //   EventImage: selectedFile,
       //   Organizer_Id: validOrganizerId,
       //   Status: "Pending",
       // });
 
       const formData = new FormData(); // Using FormData to handle file uploads
 
+      formData.append("CampusType", campusType);
+      formData.append("EventType", eventType);
       formData.append("Title", title);
       formData.append("Description", description);
-      formData.append("Date", date);
-      formData.append("Start", start);
-      formData.append("End", end);
+      formData.append("DateStart", dateStart);
+      formData.append("DateEnd", dateEnd);
+      formData.append("TimeStart", timeStart);
+      formData.append("TimeEnd", timeEnd);
       formData.append("Location", venue);
       formData.append("MaxCapacity", parseInt(capacity));
       formData.append("EventImage", selectedFile);
       formData.append("OrganizerId", validOrganizerId);
       formData.append("Visibility", visibilityType);
       formData.append("RequireApproval", requireApproval.toString());
-      formData.append("RequireTicket", requireTicket.toString());
+      formData.append("Partnerships", JSON.stringify(selectedPartnerships));
       formData.append("HostedBy", JSON.stringify(selectedDepartments));
       formData.append("Status", "Pending");
 
@@ -138,7 +145,7 @@ const Page = () => {
       alert(res.data.message);
 
       if (res.status == 200) {
-        router.push("/Events");
+        router.push("/My-Events");
       }
     } catch (error) {
       console.error("Error details:", error);
@@ -263,8 +270,12 @@ const Page = () => {
               setVisibilityType={setVisibilityType}
               requireApproval={requireApproval}
               setRequireApproval={setRequireApproval}
-              requireTicket={requireTicket}
-              setRequireTicket={setRequireTicket}
+              selectedPartnerships={selectedPartnerships}
+              setSelectedPartnerships={setSelectedPartnerships}
+              campusType={campusType}
+              setCampusType={setCampusType}
+              eventType={eventType}
+              setEventType={setEventType}
             />
 
             {/* Input Event Schedule */}
@@ -285,8 +296,8 @@ const Page = () => {
                         <input
                           className=" text-white p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
                           type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
+                          value={dateStart}
+                          onChange={(e) => setDateStart(e.target.value)}
                           required
                         />
                       </div>
@@ -296,8 +307,8 @@ const Page = () => {
                         <Clock className="input-icon" />
                         <input
                           type="time"
-                          value={start}
-                          onChange={(e) => setStart(e.target.value)}
+                          value={timeStart}
+                          onChange={(e) => setTimeStart(e.target.value)}
                           required
                         />
                       </div>
@@ -314,8 +325,8 @@ const Page = () => {
                         <Calendar className="input-icon" />
                         <input
                           type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
+                          value={dateEnd}
+                          onChange={(e) => setDateEnd(e.target.value)}
                           required
                         />
                       </div>
@@ -325,8 +336,8 @@ const Page = () => {
                         <Clock className="input-icon" />
                         <input
                           type="time"
-                          value={end}
-                          onChange={(e) => setEnd(e.target.value)}
+                          value={timeEnd}
+                          onChange={(e) => setTimeEnd(e.target.value)}
                           required
                         />
                       </div>

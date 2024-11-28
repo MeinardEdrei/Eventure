@@ -35,7 +35,7 @@ namespace BackendProject.Controllers
             if (string.IsNullOrEmpty(eventsDto.Title) ||
                 string.IsNullOrEmpty(eventsDto.Description) ||
                 string.IsNullOrEmpty(eventsDto.Location) ||
-                eventsDto.Organizer_Id <= 0)
+                eventsDto.OrganizerId <= 0)
             {
                 return BadRequest(new { message = "All fields are required." });
             }
@@ -45,14 +45,14 @@ namespace BackendProject.Controllers
                 return BadRequest(new { message = "All fields are required." });
             }
 
-            if (eventsDto.Event_Image == null || eventsDto.Event_Image.Length == 0)
+            if (eventsDto.EventImage == null || eventsDto.EventImage.Length == 0)
             {
                 return BadRequest(new { message = "Event image is required." });
             }
 
             // Validate file type
             var allowedTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var extension = Path.GetExtension(eventsDto.Event_Image.FileName).ToLowerInvariant();
+            var extension = Path.GetExtension(eventsDto.EventImage.FileName).ToLowerInvariant();
             if (!allowedTypes.Contains(extension))
             {
                 return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
@@ -61,7 +61,7 @@ namespace BackendProject.Controllers
             // ----------------------END OF VALIDATION--------------------------------
 
             // ----------------------HANDLE FILE UPLOAD--------------------------------
-            var file = eventsDto.Event_Image;
+            var file = eventsDto.EventImage;
             string fileName = null;
 
             if (file != null && file.Length > 0)
@@ -90,20 +90,23 @@ namespace BackendProject.Controllers
             // ----------------------CREATE NEW EVENT--------------------------------
             var newEvent = new Event
             {
+                CampusType = eventsDto.CampusType,
+                EventType = eventsDto.EventType,
                 Title = eventsDto.Title,
                 Description = eventsDto.Description,
-                Date = eventsDto.Date,
-                Start = eventsDto.Start,
-                End = eventsDto.End,
+                DateStart = eventsDto.DateStart,
+                DateEnd = eventsDto.DateEnd,
+                TimeStart = eventsDto.TimeStart,
+                TimeEnd = eventsDto.TimeEnd,
                 Location = eventsDto.Location,
-                MaxCapacity = eventsDto.Max_Capacity,
-                HostedBy = eventsDto.Hosted_By,
+                MaxCapacity = eventsDto.MaxCapacity,
+                HostedBy = eventsDto.HostedBy,
                 Visibility = eventsDto.Visibility,
-                RequireApproval = eventsDto.Require_Approval,
+                RequireApproval = eventsDto.RequireApproval,
                 Partnerships = eventsDto.Partnerships,
                 EventImage = fileName,
                 CreatedAt = DateTime.Now,
-                OrganizerId = eventsDto.Organizer_Id,
+                OrganizerId = eventsDto.OrganizerId,
                 Status = eventsDto.Status, // Default to "Pending"
                 AttendeesCount = 0 // Default count
             };
@@ -112,7 +115,7 @@ namespace BackendProject.Controllers
             await _context.SaveChangesAsync();
 
             // ----------------------INCREMENT CREATED_EVENTS FOR ORGANIZER--------------------------------
-            var organizer = await _context.Users.FindAsync(eventsDto.Organizer_Id);
+            var organizer = await _context.Users.FindAsync(eventsDto.OrganizerId);
             if (organizer != null)
             {
                 organizer.Created_Events += 1; // Increment the count
@@ -245,7 +248,7 @@ namespace BackendProject.Controllers
                     EventTitle = n.Event.Title,
                     EventDesc = n.Event.Description,
                     EventImage = n.Event.EventImage,
-                    EventDate = n.Event.Date,
+                    EventDate = n.Event.DateStart,
                     EventLocation = n.Event.Location,
                 })
                 .ToListAsync();
@@ -345,13 +348,40 @@ namespace BackendProject.Controllers
         [HttpGet("{email}/ticket")]
         public async Task<IActionResult> GetTicket(string email)
         {
-            var rForm = await _context.RForms
-            .Where(e => e.Email == email)
-            .FirstOrDefaultAsync();
-            if (rForm == null) {
-                return NotFound(new { message = "RForm not found." });
+            var ticketDetails = await _context.RForms
+                .Where(e => e.Email == email)
+                .Select(r => new 
+                {
+                    // RForm details
+                    RegistrationId = r.Id,
+                    UserId = r.User_Id,
+                    Name = r.Name,
+                    Email = r.Email,
+                    SchoolId = r.School_Id,
+                    Section = r.Section,
+                    Status = r.Status,
+                    Ticket = r.Ticket,
+                    RegisteredTime = r.Registered_Time,
+
+                    // Related Event details
+                    EventId = r.Event.Id,
+                    EventTitle = r.Event.Title,
+                    EventDescription = r.Event.Description,
+                    EventDateStart = r.Event.DateStart,
+                    EventDateEnd = r.Event.DateEnd,
+                    EventTimeStart = r.Event.TimeStart,
+                    EventTimeEnd = r.Event.TimeEnd,
+                    EventLocation = r.Event.Location,
+                    EventImage = r.Event.EventImage
+                })
+                .FirstOrDefaultAsync();
+
+            if (ticketDetails == null) 
+            {
+                return NotFound(new { message = "Ticket not found." });
             }
-            return Ok(rForm);
+
+            return Ok(ticketDetails);
         }
     }
 }

@@ -42,5 +42,10 @@ namespace BackendProject.Models
 
         [Required]
         public required DateTime Registered_Time { get; set; }
+
+
+        //NAVIGATION PROPERTIES
+        [ForeignKey("Event_Id")]
+        public Event? Event { get; set; }
     }
 }

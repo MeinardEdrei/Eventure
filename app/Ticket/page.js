@@ -7,6 +7,7 @@ import axios from 'axios';
 function Ticket() {
   const { data: session } = useSession();
   const [ticketDetails, setTicketDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
@@ -14,6 +15,8 @@ function Ticket() {
       setTicketDetails(res.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -21,7 +24,7 @@ function Ticket() {
     fetchData();
   }, [session])
 
-  if (!ticketDetails) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className='ticket-container mt-[2%]'>
@@ -34,11 +37,14 @@ function Ticket() {
           <h1>{ticketDetails.eventTitle}</h1>
         </div>
         <div className='ticket-date'>
-          <p>{new Date(ticketDetails.eventDate).toLocaleDateString('en-us', {
+          <p>{new Date(ticketDetails.eventDateStart).toLocaleDateString('en-us', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-          })}, {ticketDetails.eventStart} - {ticketDetails.eventEnd}</p>
+          })}, {new Date(`2023-01-01T${ticketDetails.eventTimeStart}`).toLocaleTimeString('en-us', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</p>
         </div>
         <div className='ticket-location'>
           <p>{ticketDetails.eventLocation}</p>

@@ -59,6 +59,36 @@
     border-radius: 10px;
     display: flex;
     flex-direction: row;
+    border: var(--borderColor);
+    padding: 1rem;
+}
+.leftContainer {
+    margin-right: 1rem;
+    width: 50%;
+}
+.rightContainer {
+    width: 100%;
+}
+.hosts {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: .50rem;
+}
+.hosts img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: var(--borderColor);
+    border-radius: 100%;
+}
+.hostContainer {
+    gap: 1rem;
+}
+.hostContainer h3 {
+    font-weight: 700;
+    margin: 1rem 0 .50rem 0;
 }
 .eventImage {
     width: 100%;
@@ -66,9 +96,8 @@
 }
 .eventImage img {
     width: 25rem;
-    border-radius: 25px;
-    padding: 1rem;
-    box-sizing: border-box; 
+    border-radius: 10px;
+    border: var(--borderColor);
 }
 .eventDate, .eventPlace {
     display: flex;

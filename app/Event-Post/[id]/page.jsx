@@ -131,41 +131,57 @@ function EventPost() {
     <>
       <div className="container">
         <div className="eventContainer">
-          <div className="eventImage">
-            <img
-              src={`http://localhost:5000/api/event/uploads/${post.eventImage}`}
-              alt={post.title}
-            />
+          <div className="leftContainer">
+            <div className="eventImage">
+              <img
+                src={`http://localhost:5000/api/event/uploads/${post.eventImage}`}
+                alt={post.title}
+              />
+            </div>
+            <div className="hostContainer">
+              <h3>Hosted by</h3>
+              <div className="hosts">
+                <img src="/user.jpg" alt="" />
+                <p>UMak Jammers</p>
+              </div>
+              <div className="hosts">
+                <img src="/user.jpg" alt="" />
+                <p>UMak Jammers</p>
+              </div>
+            </div>
           </div>
-          <div className="event">
-            <div className="eventHeader">{post.title}</div>
-            <div className="eventDate">
-              {/* <img src="/Date.png" width={25} alt="Date" /> */}
-              <p>
-                  {new Date(post.dateStart).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                  })} - {new Date(`${post.dateStart.split('T')[0]}T${post.timeStart}`).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: true,
-                  })}
-              </p>
-            </div>
-            <div className="eventPlace">
-              {/* <img src="/Location.png" width={25} alt="Location" /> */}
-              <p>{post.location}</p>
-            </div>
-            <button
-              onClick={handleSubmit}
-              className="eventRegister"
-            >
-              Join Event
-            </button>
-            <div className="aboutEvent">
-              <h1>About the Event</h1>
-              <p>{post.description}</p>
+
+          <div className="rightContainer">
+            <div className="event">
+              <div className="eventHeader">{post.title}</div>
+              <div className="eventDate">
+                {/* <img src="/Date.png" width={25} alt="Date" /> */}
+                <p>
+                    {new Date(post.dateStart).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                    })} - {new Date(`${post.dateStart.split('T')[0]}T${post.timeStart}`).toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true,
+                    })}
+                </p>
+              </div>
+              <div className="eventPlace">
+                {/* <img src="/Location.png" width={25} alt="Location" /> */}
+                <p>{post.location}</p>
+              </div>
+              <button
+                onClick={handleSubmit}
+                className="eventRegister"
+              >
+                Join Event
+              </button>
+              <div className="aboutEvent">
+                <h1>About the Event</h1>
+                <p>{post.description}</p>
+              </div>
             </div>
           </div>
         </div>

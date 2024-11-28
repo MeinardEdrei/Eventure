@@ -78,7 +78,7 @@ function eventsDashboard () {
                             <div className="cardContainer">
                                 <div className="cardImage">
                                     <img 
-                                        src={`http://localhost:5000/api/event/uploads/${event.event_Image}`}
+                                        src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
                                         alt={event.title}
                                     />
                                 </div>

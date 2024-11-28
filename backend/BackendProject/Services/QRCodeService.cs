@@ -1,17 +1,29 @@
-using System.Net.Http;
+using QRCoder;
+using System;
+using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
 
 public class QRCodeService 
 {
-  public async Task<byte[]> GenerateQRCode(string data)
-  {
-    string url = $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={data}";
-    using (HttpClient client = new HttpClient())
+    public async Task<string> GenerateQRCode(string data)
     {
-        // Fetch the QR code image from the API
-        byte[] qrCodeImage = await client.GetByteArrayAsync(url);
-        return qrCodeImage;
+        // Create QR Code Generator
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        
+        // Create QR Code Data
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
+        
+        // Create QR Code Image with transparent background
+        PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
+        
+        // Generate PNG byte array with transparent background
+        byte[] qrCodeImage = qrCode.GetGraphic(
+            pixelsPerModule: 10, 
+            darkColor: Color.Black, 
+            lightColor: Color.Transparent
+        );
+        
+        // Convert to base64 string for easy transmission
+        return Convert.ToBase64String(qrCodeImage);
     }
-  }
 }

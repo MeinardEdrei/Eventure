@@ -25,7 +25,7 @@ function ViewNotification () {
         <div className="container">
             <div className="notifContainer">
                 <div className="notificationHeader">
-                    <img src={`http://localhost:5000/api/event/uploads/${notification?.event_Image}`} alt="" />
+                    <img src={`http://localhost:5000/api/event/uploads/${notification?.eventImage}`} alt="" />
                 </div>
                 <div className="notificationSub">
                     <h6>{notification?.title}</h6>
@@ -57,7 +57,7 @@ function ViewNotification () {
                 </div>
                 <hr />
                 <div className="notifImage">
-                    <img src={`http://localhost:5000/api/event/uploads/${notification?.event_Image}`} alt="" />
+                    <img src={`http://localhost:5000/api/event/uploads/${notification?.eventImage}`} alt="" />
                 </div>
                 <div className="notifText">
                     <p>

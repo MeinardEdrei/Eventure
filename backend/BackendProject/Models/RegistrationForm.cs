@@ -38,7 +38,7 @@ namespace BackendProject.Models
         public required string Status { get; set; }
 
         [Required]
-        public required byte[]? Ticket { get; set; }
+        public required string Ticket { get; set; }
 
         [Required]
         public required DateTime Registered_Time { get; set; }

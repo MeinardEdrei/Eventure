@@ -142,7 +142,7 @@ export default function EventApproval() {
             <div key={event.id} className="indiv-box flex flex-col">
               <div className="event-image">
                 <img
-                  src={`http://localhost:5000/api/event/uploads/${event.event_Image}`}
+                  src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
                   alt="Image"
                   width={250}
                   height={150}

@@ -96,16 +96,16 @@ namespace BackendProject.Controllers
                 Start = eventsDto.Start,
                 End = eventsDto.End,
                 Location = eventsDto.Location,
-                Max_Capacity = eventsDto.Max_Capacity,
-                Hosted_By = eventsDto.Hosted_By,
+                MaxCapacity = eventsDto.Max_Capacity,
+                HostedBy = eventsDto.Hosted_By,
                 Visibility = eventsDto.Visibility,
-                Require_Approval = eventsDto.Require_Approval,
+                RequireApproval = eventsDto.Require_Approval,
                 Partnerships = eventsDto.Partnerships,
-                Event_Image = fileName,
-                Created_At = DateTime.Now,
-                Organizer_Id = eventsDto.Organizer_Id,
+                EventImage = fileName,
+                CreatedAt = DateTime.Now,
+                OrganizerId = eventsDto.Organizer_Id,
                 Status = eventsDto.Status, // Default to "Pending"
-                Attendees_Count = 0 // Default count
+                AttendeesCount = 0 // Default count
             };
 
             _context.Events.Add(newEvent); // Save to database
@@ -174,7 +174,7 @@ namespace BackendProject.Controllers
 
             var notifications = new Notification
             {
-                UserId = eventToApprove.Organizer_Id,
+                UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
                 Type = "General",
             };
@@ -244,7 +244,7 @@ namespace BackendProject.Controllers
                     UserName = n.User.Username,
                     EventTitle = n.Event.Title,
                     EventDesc = n.Event.Description,
-                    EventImage = n.Event.Event_Image,
+                    EventImage = n.Event.EventImage,
                     EventDate = n.Event.Date,
                     EventLocation = n.Event.Location,
                 })
@@ -262,7 +262,7 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> GetOrganizerEvents(int id)
         {
             var events = await _context.Events
-            .Where(e => e.Organizer_Id == id)
+            .Where(e => e.OrganizerId == id)
             .ToListAsync();
 
             return Ok(events);
@@ -340,6 +340,18 @@ namespace BackendProject.Controllers
             _context.RForms.Update(rForm);
             await _context.SaveChangesAsync();
             return Ok(new { message = "Participant has been disapproved." });
+        }
+
+        [HttpGet("{email}/ticket")]
+        public async Task<IActionResult> GetTicket(string email)
+        {
+            var rForm = await _context.RForms
+            .Where(e => e.Email == email)
+            .FirstOrDefaultAsync();
+            if (rForm == null) {
+                return NotFound(new { message = "RForm not found." });
+            }
+            return Ok(rForm);
         }
     }
 }

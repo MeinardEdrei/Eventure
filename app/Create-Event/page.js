@@ -116,13 +116,13 @@ const Page = () => {
       formData.append("Start", start);
       formData.append("End", end);
       formData.append("Location", venue);
-      formData.append("Max_Capacity", parseInt(capacity));
-      formData.append("Event_Image", selectedFile);
-      formData.append("Organizer_Id", validOrganizerId);
+      formData.append("MaxCapacity", parseInt(capacity));
+      formData.append("EventImage", selectedFile);
+      formData.append("OrganizerId", validOrganizerId);
       formData.append("Visibility", visibilityType);
-      formData.append("Require_Approval", requireApproval.toString());
-      formData.append("Require_Ticket", requireTicket.toString());
-      formData.append("Hosted_By", JSON.stringify(selectedDepartments));
+      formData.append("RequireApproval", requireApproval.toString());
+      formData.append("RequireTicket", requireTicket.toString());
+      formData.append("HostedBy", JSON.stringify(selectedDepartments));
       formData.append("Status", "Pending");
 
       const res = await axios.post(

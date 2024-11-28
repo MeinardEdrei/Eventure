@@ -43,7 +43,7 @@ function MyEvents () {
                 <div className="containerngmgacards">
                     <div className="organizerEventCard">
                         <div className="organizerImage">
-                            <img src={`http://localhost:5000/api/event/uploads/${event.event_Image}`} alt="" />
+                            <img src={`http://localhost:5000/api/event/uploads/${event.eventImage}`} alt="" />
                         </div>
                         <div className="cardDetails">
                             <div className="cardTitle">{event.title}</div>

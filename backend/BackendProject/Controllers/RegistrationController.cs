@@ -43,7 +43,7 @@ namespace BackendProject.Controllers
                 return NotFound(new { message = "No Event Found" });
             }
 
-            if (eventToJoin.Attendees_Count == eventToJoin.Max_Capacity) {
+            if (eventToJoin.AttendeesCount == eventToJoin.MaxCapacity) {
                 var waitlisted = new RForm
                 {
                     User_Id = rformDto.User_Id,
@@ -54,7 +54,7 @@ namespace BackendProject.Controllers
                     School_Id = rformDto.School_Id,  
                     Section = rformDto.Section,
                     Status = "Waiting",
-                    Ticket = null,
+                    Ticket = rformDto.Ticket,
                     Registered_Time = rformDto.Registered_Time,
                 };
                 _context.RForms.Add(waitlisted);
@@ -66,8 +66,7 @@ namespace BackendProject.Controllers
             }
 
             // GENERATE QR CODE 
-            var data = rformDto.User_Id.ToString() + " | " + rformDto.Event_Id.ToString()
-                    + " | " + rformDto.Name + " | " + rformDto.Email;
+            var data = rformDto.School_Id.ToString();
             var qrCodeImage = await _qrcodeService.GenerateQRCode(data);
 
             var attendee = new RForm
@@ -88,7 +87,7 @@ namespace BackendProject.Controllers
             await _context.SaveChangesAsync();
 
             // +1 to Attendees
-            eventToJoin.Attendees_Count += 1; 
+            eventToJoin.AttendeesCount += 1; 
             _context.Events.Update(eventToJoin); 
             await _context.SaveChangesAsync(); 
 

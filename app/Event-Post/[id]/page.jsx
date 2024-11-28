@@ -133,7 +133,7 @@ function EventPost() {
         <div className="eventContainer">
           <div className="eventImage">
             <img
-              src={`http://localhost:5000/api/event/uploads/${post.event_Image}`}
+              src={`http://localhost:5000/api/event/uploads/${post.eventImage}`}
               alt={post.title}
             />
           </div>

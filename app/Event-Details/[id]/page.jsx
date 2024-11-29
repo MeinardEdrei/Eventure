@@ -485,21 +485,9 @@ function OrganizerEvents() {
 
                             {/* Toggle Restriction */}
                             <div className="organizerHeader">Toggle Registration</div>
-
-                            
                             <div className="organizerDescription">
                                 Enable or disable event registration with a single click for flexible attendee management.
                             </div>
-                            <div className="switch-container">
-                                <div
-                                    className={`switch ${isEnabled ? "switch-enabled" : "switch-disabled"}`}
-                                    onClick={toggleSwitch}
-                                >
-                                    <div className="switch-thumb"></div>
-                                </div>
-                                <span className="switch-label">Airplane Mode</span>
-                            </div>
-                           
                         </>
                     )}
 

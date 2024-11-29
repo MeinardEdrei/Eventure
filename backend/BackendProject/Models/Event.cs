@@ -48,6 +48,8 @@ public partial class Event
 
     public int AttendeesCount { get; set; }
 
+    public string RequirementFiles { get; set;} = null!;
+
     // Eager Loading Navigatiion Props
     public ICollection<UEvent> UserEvents { get; set; } = new List<UEvent>();
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();

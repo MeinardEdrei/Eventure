@@ -399,5 +399,56 @@ namespace BackendProject.Controllers
 
             return Ok(ticketDetails);
         }
+
+        [HttpPost("upload-requirements")]
+        public async Task<IActionResult> UploadRequirements([FromForm] List<IFormFile> files, [FromForm] int id)
+        {
+            var _event = await _context.Events.FindAsync(id);
+
+            if (_event == null) { return NotFound(new { message = "Event not found." }); }
+
+            var fileNames = new List<string>();
+            var uploadPath = "";
+
+            // Define the uploads folder path
+            if (_event?.EventType == "Curricular"){
+                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Curricular Uploads");
+            } 
+            else if (_event?.EventType == "Organizational"){
+                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Organizational Uploads");
+            } 
+            else if (_event?.EventType == "College"){
+                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "College Uploads");
+            }
+            
+            Directory.CreateDirectory(uploadPath);
+            
+            foreach (var file in files) {
+                if (file != null && file.Length > 0)
+                {
+                    try {
+                        var fileName = $"{Guid.NewGuid()}_{file.FileName}"; // Store the filename
+                        var filePath = Path.Combine(uploadPath, fileName);
+
+                        // Save the file
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+
+                        fileNames.Add(fileName);
+                    } catch (Exception ex) {
+                        Console.WriteLine($"Error saving file: {ex.Message}");
+                        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    }
+                }
+            }
+
+            // Serialize filenames to JSON
+            _event.RequirementFiles = System.Text.Json.JsonSerializer.Serialize(fileNames);
+            
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Requirements Uploaded Successfully" });
+        }
     }
 }

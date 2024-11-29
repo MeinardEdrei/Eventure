@@ -16,22 +16,24 @@ function MyEvents() {
   const { data: session } = useSession();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const fetchData = async () => {
+    try {
+        setLoading(true);
+        if (session) {
+            const res = await axios.get(`http://localhost:5000/api/event/organizer-events/${session?.user?.id}`)
+            setEvents(res.data);
+        }
+    } catch (error) {
+        console.log(error);
+    } finally {
+        setLoading(false);
+    }
+  }
 
   useEffect(() => {
-      const fetchData = async () => {
-          try {
-              setLoading(true);
-              if (session) {
-                  const res = await axios.get(`http://localhost:5000/api/event/organizer-events/${session?.user?.id}`)
-                  setEvents(res.data);
-              }
-          } catch (error) {
-              console.log(error);
-          } finally {
-              setLoading(false);
-          }
-      }
-      fetchData();
+    fetchData(); 
   }, [session]);
 
   const handleSelect = (option) => {
@@ -39,14 +41,32 @@ function MyEvents() {
     setIsOpen(false);
   };
 
-  const handleFileUpload = (files) => {
+  const handleFileUpload = async (files) => {
     console.log("Files to upload:", files);
+    try {
+      const formData = new FormData();
+      
+      formData.append("id", selectedEvent.id);
+      files.forEach((file) => formData.append('files', file));
+      const res = await axios.post('http://localhost:5000/api/event/upload-requirements', 
+        formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      
+      if (res.status === 200) {
+        alert(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsUploadModalOpen(false);
+    }
   };
 
   useEffect(() => {
     const filtered = events.filter((event) => event.status === selected);
     setFilteredEvents(filtered);
-  }, [selected]);
+  }, [selected, events]);
 
   if (loading) return <div>Loading...</div>;
   
@@ -133,6 +153,7 @@ function MyEvents() {
                     </div>
 
                     <div className="flex flex-row gap-4 justify-end">
+                      
                       {/* Button: See Details */}
                       <Link href={`/Event-Details/${event.id}`}>
                         <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
@@ -145,18 +166,25 @@ function MyEvents() {
                       </Link>
 
                       {/* Button: Upload Requirements */}
-                      <div className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded">
-                        <i
-                          className="fa fa-plus text-[0.8rem]"
-                          aria-hidden="true"
-                        ></i>
-                        <button
-                          className="text-[0.8rem]"
-                          onClick={() => setIsUploadModalOpen(true)}
-                        >
-                          Upload Files
+                      { event.status === selected && (selected === 'Pending' || selected === 'Modified') && ( 
+                        <button 
+                          type="button"
+                          onClick={() => {
+                            setIsUploadModalOpen(true); 
+                            setSelectedEvent(event);
+                          }}
+                          className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded">
+                          <i
+                            className="fa fa-plus text-[0.8rem]"
+                            aria-hidden="true"
+                          ></i>
+                          <p
+                            className="text-[0.8rem]"
+                          >
+                            Upload Files
+                          </p>
                         </button>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -167,6 +195,7 @@ function MyEvents() {
               isOpen={isUploadModalOpen}
               onClose={() => setIsUploadModalOpen(false)}
               onUpload={handleFileUpload}
+              event={selectedEvent}
             />
           </div>
         </div>

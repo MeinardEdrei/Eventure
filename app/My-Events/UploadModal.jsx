@@ -9,7 +9,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
 
-const PDFUploadModal = ({ isOpen, onClose, onUpload }) => {
+const PDFUploadModal = ({ isOpen, onClose, onUpload, event }) => {
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
@@ -103,12 +103,29 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload }) => {
                   marginLeft: "20px",
                 }}
               >
-                <p>1. Intent Letter.pdf</p>
-                <p>2. Budget Request.pdf</p>
-                <p>3. Excuse Letter.pdf</p>
-                <p>4. Disbursement.pdf</p>
-                <p>5. Permit to Borrow.pdf</p>
-                <p>6. Permit to Transfer.pdf</p>
+              { event.eventType === "Curricular" ? (
+                  <>
+                  <p>1. Intent Letter.pdf</p>
+                  <p>2. Fees and funds.pdf <i>(if money is involved)</i></p>
+                  <p>3. Voluntary Contribution Letter.pdf <i>(if money is involved)</i></p>
+                  <p>4. Letter of UFMO.pdf <i>(if there's a venue)</i></p>
+                  <p>5. Learning Journal.pdf</p>
+                  <p>6. Activities.pdf</p>
+                  </>
+                ) : event.eventType === "Organizational" || event.eventType === "College" && (
+                <>
+                  <p>1. Intent Letter.pdf</p>
+                  <p>2. Fees and Funds.pdf</p>
+                  <p>3. Budget Request.pdf</p>
+                  <p>4. Voluntary Contribution Letter.pdf</p>
+                  <p>5. Parent's Consent.pdf <i>(if it is overnight)</i></p>
+                  <p>6. Medical Clearance.pdf <i>(if it is overnight)</i></p>
+                  <p>7. Assurance Letter.pdf <i>(if it is overnight)</i></p>
+                  <p>8. Certificate of insurance.pdf <i>(if it is overnight)</i></p>
+                  <p>9. Learning Journal.pdf</p>
+                  <p>10. Activities.pdf</p>
+                </>
+              )}
               </AccordionDetails>
             </Accordion>
           </div>

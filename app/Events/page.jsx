@@ -5,6 +5,7 @@ import '../css/eventDashboard.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Ticket } from 'lucide-react';
 
 function EventsDashboard() {
     const [event, setEvent] = useState([]);
@@ -200,7 +201,12 @@ function EventsDashboard() {
                         </p>
                         <p>{selectedEvent.location}</p>
                         <hr />
-                        <p>{selectedEvent.description}</p>
+                        <div className="modalDescription">
+                            <p>{selectedEvent.description}</p>
+                            {/* for testing */}
+                            <p>{selectedEvent.description}</p>
+                            <p>{selectedEvent.description}</p>
+                        </div>
                         <hr />
                         <div className="hosts">
                             <h3>Hosted by</h3>
@@ -211,12 +217,17 @@ function EventsDashboard() {
                                 <p>UMak Jammers</p>
                             </div>
                         </div>
+                        <hr />
                         <div className="eventButtons">
                             <button className='requestJoin'>Request to join</button>
+                            <Link href={'./Ticket'}> 
+                                <button className='checkTicket'>My ticket</button>
+                            </Link>
                             {/* <Link href={`/Event-Post/${selectedEvent.id}`}>
                                 <button className="expandButton">Expand</button>
                             </Link> */}
                         </div>
+                        
                     </div>
                 </div>
             </div>

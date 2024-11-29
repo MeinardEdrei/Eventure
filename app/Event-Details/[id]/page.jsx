@@ -136,7 +136,7 @@ function OrganizerEvents() {
             return () => textarea.removeEventListener('input', adjustHeight); // Cleanup
         }
     }, []);    
-
+    
     // FETCH DATA FROM API
     const fetchData = async () => {
         try {
@@ -271,8 +271,15 @@ function OrganizerEvents() {
                             <div className="guestContainer">
                                 { JSON.parse(event.partnerships).map((partner, index) => (
                                     <div key={index}>
-                                    <div className="guestDetails">
-                                        <h6>{partner}</h6>
+                                    <div className="guestRowContainer">
+                                        <div className="guestDetails">
+                                            <h6>{partner}</h6>
+                                        </div>
+                                        <div className="guestRowButtons">
+                                            <button className='modifyHostButton'>Modify</button>
+                                            <button className='removeHostButton'>Remove</button>
+                                        </div>
+                                        
                                     </div>
                                     { index < JSON.parse(event.partnerships).length - 1 && (
                                         <div className="smallhr">
@@ -282,7 +289,10 @@ function OrganizerEvents() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="addHosts"><button>Add Hosts</button></div>
+                            <div className="addHostContainer">
+                                <input type="text" className='addHostsName' placeholder='Type event partners' />
+                                <button className='addHosts'>Add Partners</button>
+                            </div>
                         </>
                     )}
                     
@@ -319,7 +329,13 @@ function OrganizerEvents() {
                                     </button>
                                 </div>
                             </div>
-
+                            {/* search bar section */}
+                            <div className="searchBarContainer">
+                                <div className="searchBar">
+                                    <input type="text" name="" id="searchBar" placeholder='Search by name...'/>
+                                </div>
+                                <button type="submit">Search</button>
+                            </div>
                             {/* Dynamic Content Section */}
                             <div className="contentSection">
                                 {selectedSection === 'waiting' && (
@@ -449,8 +465,9 @@ function OrganizerEvents() {
                                 </div>
                             </div>
 
-                            <div className="eventScanner">
-                                <button
+                            <div className="attendanceButtons">
+                                <div className="eventScanner">
+                                    <button
                                  type="button"
                                  onClick={(e) => {
                                     toggleScanner(e); 
@@ -459,13 +476,30 @@ function OrganizerEvents() {
                                 >
                                     {isScannerActive ? "Stop Scanning" : "Start QR Scanner"}
                                 </button>
+                                </div>
+                                <div className="exportToExcel">
+                                    <button>Export to Excel</button>
+                                </div>
                             </div>
-
                             <hr />
+
+                            {/* Toggle Restriction */}
                             <div className="organizerHeader">Toggle Registration</div>
+
+                            
                             <div className="organizerDescription">
                                 Enable or disable event registration with a single click for flexible attendee management.
                             </div>
+                            <div className="switch-container">
+                                <div
+                                    className={`switch ${isEnabled ? "switch-enabled" : "switch-disabled"}`}
+                                    onClick={toggleSwitch}
+                                >
+                                    <div className="switch-thumb"></div>
+                                </div>
+                                <span className="switch-label">Airplane Mode</span>
+                            </div>
+                           
                         </>
                     )}
 

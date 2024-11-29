@@ -140,3 +140,100 @@ hr {
     line-height: 1rem;
     opacity: 50%;
 }
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem;
+    align-items: center;
+    overflow-y: auto;
+}
+.profileModalContent {
+    background: var(--color2);
+    border: var(--borderColor);
+    padding: 1rem;
+    border-radius: 8px;
+    width: 30rem;
+}
+hr {
+    opacity: 25%;
+    margin: 1rem 0 1rem 0;
+}
+.profileModalContent h2 {
+    text-align: center;
+    font-weight: 700;
+    font-size: 24px;
+
+}
+.modalInput {
+    margin: 1rem 0 1rem 0;
+}
+.modalInput h3 {
+    gap: .50rem;
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    margin-bottom: .50rem;
+}
+.modalInput input {
+    width: 100%;
+    appearance: none;
+    border: var(--borderColor);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--color3);
+    height: 2.5rem;
+    padding: 1rem;
+}
+.previewProfile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.previewProfile h4 {
+    font-weight: 600;
+    opacity: 50%;
+}
+.previewProfile img{
+    border-radius: 100%;
+    width: 10rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: var(--borderColor);
+}
+.changePicture {
+    height: 2.5rem;
+    width: 100%;
+    border: var(--borderColor);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+.changePicture:hover {
+    color: var(--color5);
+    background-color: var(--color3);
+    font-weight: 600;
+}
+.userButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    
+}
+.userButtons button:hover {
+    color: var(--color5);
+    background-color: var(--color3);
+    font-weight: 600;
+}
+.userButtons button {
+    height: 2.5rem;
+    width: 7rem;
+    border: var(--borderColor);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+}

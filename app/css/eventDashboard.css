@@ -183,14 +183,16 @@ hr {
     justify-content: flex-end;
     padding: 1.5rem;
     align-items: center;
+    overflow-y: auto;
 }
 .modalContent {
     background-color: var(--color2);
     border: var(--borderColor);
     border-radius: 10px;
     width: 35rem;
-    height: auto;
-    overflow: hidden;
+    height: 100%;
+    max-width: 90%;
+    overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-in-out; 
 }
@@ -210,32 +212,45 @@ hr {
 .modalDetails p {
     line-height: 1.2rem;
 }
-.eventButtons {
+/* .modalDescription p {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical; 
+} */
+/* .eventButtons {
     margin-top: 1rem;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-}
+} */
 .eventButtons button{
     height: 2.5rem;
-    background-color: var(--color3);
-    font-weight: 700;
+    border: var(--borderColor);
+    margin-top: .5rem;
+    width: 100%;
     border-radius: 7px;
-    color: var(--color5);
+    color: var(--color3);
     transition: var(--transition);
 }
 .eventButtons button:hover {
     background-color: var(--color5);
     color: var(--color3);
-    font-weight: 500;
+    font-weight: 600;
     border: var(--borderColor);
 }
 .requestJoin {
+    
     width: 100%;
 }
-.expandButton {
+/* .expandButton {
     width: 7rem;
-}
+} */
+.checkTicket {
+    border: var(--borderColor);
+    margin-top: .50rem;
+    width: 100%;
+} 
 .hosts h3 {
     font-weight: 700;
     font-size: 18px;
@@ -253,17 +268,19 @@ hr {
 }
 .closeButtonBox {
     position: fixed;
-    top: 1.4rem;
-    right: 1.9rem;
+    top: 2rem;
+    right: 2rem;
     background-color: var(--color3);
     width: 2rem;
     height: 2rem;
     border-radius: 5px;
+    
+    transition: var(--transition);
 }
 .eventClose {
     position: fixed;
-    top: .1rem;
-    right: 2rem;
+    top: .8rem;
+    right: 2.1rem;
     background: none;
     border: none;
     font-size: 3rem;
@@ -279,4 +296,9 @@ hr {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+.modalContent::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }

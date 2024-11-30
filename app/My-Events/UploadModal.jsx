@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Upload, FileText, X } from "lucide-react";
 import Alert from "@mui/material/Alert";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -13,8 +13,9 @@ import {
   IconButton 
 } from '@mui/material';
 import Button from "@mui/material/Button";
+import axios from "axios";
 
-const PDFUploadModal = ({ isOpen, onClose, onUpload, event, deleteFile, setDeleteFile }) => {
+const PDFUploadModal = ({ isOpen, onClose, onUpload, event, handleFileDownload, handleDeleteFile }) => {
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
@@ -37,12 +38,13 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event, deleteFile, setDelet
     }
   };
 
-  const handleFileDownload = (fileName) => {
-    
+  const getCleanFileName = (fileName) => {
+    // Check if the file name contains an underscore
+    if (fileName.includes('_')) {
+      return fileName.split('_').slice(1).join('_'); // Remove the first part if it has an underscore
+    }
+    return fileName; // Return as is if no underscore
   };
-  // const handleDeleteFile = (deleteFile) => {
-  //   alert(deleteFile)
-  // };
 
   if (!isOpen) return null;
 
@@ -155,42 +157,27 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event, deleteFile, setDelet
                     marginLeft: "20px",
                   }}
                 >
-                  {event.requirementFiles.map((fileName, index) => {
-                    const cleanFileName = fileName.split('_').slice(1).join('_');
-                    return (
-                      <div 
-                        key={index} 
-                        className="flex items-center justify-between space-x-2 mb-2"
-                      >
-                        <div className="flex items-center space-x-2 flex-grow">
-                          <AttachFileIcon 
-                            className="text-gray-500" 
-                            fontSize="small" 
-                          />
-                          <Typography 
-                            variant="body2" 
-                            className="truncate flex-grow border-b-2 border-slate-400"
-                          >
-                            {cleanFileName}
-                          </Typography>
-                        </div>
-                        <div className="flex space-x-1">
-                          <IconButton 
-                            size="small" 
-                            onClick={() => handleFileDownload(cleanFileName)}
-                          >
-                            <DownloadIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton 
-                            size="small" 
-                            onClick={() => setDeleteFile(cleanFileName)}
-                          >
-                            <DeleteIcon fontSize="small" className="text-red-500" />
-                          </IconButton>
-                        </div>
+                {event.requirementFiles.map((fileName, index) => {
+                  const cleanFileName = getCleanFileName(fileName);
+                  return (
+                    <div key={index} className="flex items-center justify-between space-x-2 mb-2">
+                      <div className="flex items-center space-x-2 flex-grow">
+                        <AttachFileIcon className="text-gray-500" fontSize="small" />
+                        <Typography variant="body2" className="truncate flex-grow border-b-2 border-slate-400">
+                          {cleanFileName}
+                        </Typography>
                       </div>
-                    );
-                  })}
+                      <div className="flex space-x-1">
+                        <IconButton size="small" onClick={() => handleFileDownload(event.eventType, fileName)}>
+                          <DownloadIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" onClick={() => handleDeleteFile(event.id, event.eventType, fileName)}>
+                          <DeleteIcon fontSize="small" className="text-red-500" />
+                        </IconButton>
+                      </div>
+                    </div>
+                  );
+                })}
                 </AccordionDetails>
               </Accordion>
             </div>

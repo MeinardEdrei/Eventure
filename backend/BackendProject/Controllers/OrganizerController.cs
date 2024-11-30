@@ -200,7 +200,6 @@ namespace BackendProject.Controllers
 
             if (_event == null) { return NotFound(new { message = "Event not found." }); }
 
-            var fileNames = new List<string>();
             var uploadPath = "";
 
             // Define the uploads folder path
@@ -215,6 +214,13 @@ namespace BackendProject.Controllers
             }
             
             Directory.CreateDirectory(uploadPath);
+
+            // Deserialize existing files
+            var existingFiles = string.IsNullOrEmpty(_event?.RequirementFiles) 
+                ? new List<string>() 
+                : System.Text.Json.JsonSerializer.Deserialize<List<string>>(_event.RequirementFiles)
+                ?? new List<string>();
+            
             
             foreach (var file in files) {
                 if (file != null && file.Length > 0)
@@ -229,7 +235,7 @@ namespace BackendProject.Controllers
                             await file.CopyToAsync(fileStream);
                         }
 
-                        fileNames.Add(fileName);
+                        existingFiles.Add(fileName);
                     } catch (Exception ex) {
                         Console.WriteLine($"Error saving file: {ex.Message}");
                         Console.WriteLine($"Stack trace: {ex.StackTrace}");
@@ -238,10 +244,57 @@ namespace BackendProject.Controllers
             }
 
             // Serialize filenames to JSON
-            _event.RequirementFiles = System.Text.Json.JsonSerializer.Serialize(fileNames);
+            _event.RequirementFiles = System.Text.Json.JsonSerializer.Serialize(existingFiles);
             
             await _context.SaveChangesAsync();
             return Ok(new { message = "Requirements Uploaded Successfully" });
+        }
+
+        [HttpGet("download/{eventType}/{filename}")]
+        public IActionResult DownloadFile(string eventType, string filename)
+        {
+          // Define the uploads folder path
+          string uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventType} Uploads");
+          var filePath = Path.Combine(uploadPath, filename);
+
+          if (!System.IO.File.Exists(filePath))
+              return NotFound();
+
+          // Read the Binary data from the file
+          var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+          return File(
+            fileBytes, 
+            "application/pdf", 
+            filename
+          );
+        }
+
+        [HttpDelete("deleteFile/{id}/{eventType}/{filename}")]
+        public async Task<IActionResult> DeleteFile(int id, string eventType, string filename)
+        {
+          var eventEntity = await _context.Events
+            .FirstOrDefaultAsync(e => e.Id == id && e.EventType == eventType && e.RequirementFiles.Contains(filename));
+          
+          if (eventEntity == null) return NotFound();
+          
+          var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventType} Uploads");
+          var filePath = Path.Combine(uploadPath, filename);
+
+          try {
+            // Delete the file locally
+            System.IO.File.Delete(filePath);
+
+            // Update the Data in the Database
+            var requirementFiles = JsonSerializer.Deserialize<List<string>>(eventEntity.RequirementFiles);
+            requirementFiles?.Remove(filename);
+            eventEntity.RequirementFiles = JsonSerializer.Serialize(requirementFiles);
+
+            await _context.SaveChangesAsync();
+            return Ok(new { Message = "File deleted successfully." });
+          } catch (Exception ex) {
+            return StatusCode(500, new { Message = "An error occurred while deleting the file.", Error = ex.Message });
+          }
         }
         // ----------------------END OF ORGANIZER API--------------------------------
   }

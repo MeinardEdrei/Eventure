@@ -17,15 +17,12 @@ function MyEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [deleteFile, setDeleteFile] = useState([]);
 
   const fetchData = async () => {
     try {
         if (session) {
             const res = await axios.get(`http://localhost:5000/api/organizer/events/${session?.user?.id}`);
             setEvents(res.data);
-            // const blob = axios.get(`http://localhost:5000/api/event/organizer-requirements/${selectedEvent?.id}`);
-            // setFiles(blob);
         }
     } catch (error) {
         console.log(error);
@@ -42,7 +39,7 @@ function MyEvents() {
   };
 
   const handleFileUpload = async (files) => {
-    console.log("Files to upload:", files);
+    // console.log("Files to upload:", files);
     try {
       const formData = new FormData();
       
@@ -55,11 +52,65 @@ function MyEvents() {
       
       if (res.status === 200) {
         alert(res.data.message);
+        fetchData();
+
+        const newFileNames = files.map(file => file.name);
+        setSelectedEvent((prev) => ({
+          ...prev,
+          requirementFiles: [...prev.requirementFiles, ...newFileNames], 
+          requirementFilesCount: prev.requirementFilesCount + newFileNames.length,
+        }));
+
+        setIsUploadModalOpen(false);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsUploadModalOpen(false);
+    }
+  };
+
+  const handleDeleteFile = async (id, eventType, fileName) => {
+    try {
+      const res = await axios.delete(`http://localhost:5000/api/organizer/deleteFile/${id}/${eventType}/${fileName}`);
+      if (res.status === 200) {
+        // alert("Deleted Successfully");
+        fetchData();
+        setSelectedEvent((prevEvent) => ({
+          ...prevEvent,
+          requirementFiles: prevEvent.requirementFiles.filter(file => file !== fileName),
+          requirementFilesCount: prevEvent.requirementFilesCount - 1
+        }));
+      }
+    } catch (error) {
+      console.error('PDF Deletion Failed', error);
+    }
+  };
+
+  const handleFileDownload = async (eventType, fileName) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/organizer/download/${eventType}/${fileName}`, {
+          responseType: 'blob' 
+        }
+      );
+
+      // Create download mechanism
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], { type: 'application/pdf' })
+      );
+  
+      // Create temporary link
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+  
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF Download Failed', error);
     }
   };
 
@@ -173,15 +224,15 @@ function MyEvents() {
                             setIsUploadModalOpen(true); 
                             setSelectedEvent(event);
                           }}
-                          className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded">
+                          className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-0 rounded">
                           <i
-                            className="fa fa-plus text-[0.8rem]"
+                            className={`fa ${event.requirementFilesCount === 0 ? 'fa-plus' : 'fa-cog'} text-[0.8rem]`}
                             aria-hidden="true"
                           ></i>
                           <p
                             className="text-[0.8rem]"
                           >
-                            Upload Files
+                            {event.requirementFilesCount === 0 ? "Upload Requirements" : "Manage Requirements"}
                           </p>
                         </button>
                       )}
@@ -199,8 +250,8 @@ function MyEvents() {
               // Event Related
               onUpload={handleFileUpload}
               event={selectedEvent}
-              deleteFile={deleteFile}
-              setDeleteFile={setDeleteFile}
+              handleDeleteFile={handleDeleteFile}
+              handleFileDownload={handleFileDownload}
             />
           </div>
         </div>

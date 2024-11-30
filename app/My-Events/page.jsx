@@ -17,18 +17,18 @@ function MyEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [deleteFile, setDeleteFile] = useState([]);
 
   const fetchData = async () => {
     try {
-        setLoading(true);
         if (session) {
-            const res = await axios.get(`http://localhost:5000/api/event/organizer-events/${session?.user?.id}`)
+            const res = await axios.get(`http://localhost:5000/api/organizer/events/${session?.user?.id}`);
             setEvents(res.data);
+            // const blob = axios.get(`http://localhost:5000/api/event/organizer-requirements/${selectedEvent?.id}`);
+            // setFiles(blob);
         }
     } catch (error) {
         console.log(error);
-    } finally {
-        setLoading(false);
     }
   }
 
@@ -48,7 +48,7 @@ function MyEvents() {
       
       formData.append("id", selectedEvent.id);
       files.forEach((file) => formData.append('files', file));
-      const res = await axios.post('http://localhost:5000/api/event/upload-requirements', 
+      const res = await axios.post('http://localhost:5000/api/organizer/upload-requirements', 
         formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -192,10 +192,15 @@ function MyEvents() {
             )}
 
             <PDFUploadModal
+              // Modal Functions
               isOpen={isUploadModalOpen}
               onClose={() => setIsUploadModalOpen(false)}
+
+              // Event Related
               onUpload={handleFileUpload}
               event={selectedEvent}
+              deleteFile={deleteFile}
+              setDeleteFile={setDeleteFile}
             />
           </div>
         </div>

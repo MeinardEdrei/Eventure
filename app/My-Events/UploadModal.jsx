@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { Upload, FileText, X } from "lucide-react";
 import Alert from "@mui/material/Alert";
-// import * as React from "react";
-import Accordion from "@mui/material/Accordion";
-import AccordionActions from "@mui/material/AccordionActions";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { 
+  Accordion, 
+  AccordionSummary, 
+  AccordionDetails, 
+  Typography, 
+  IconButton 
+} from '@mui/material';
 import Button from "@mui/material/Button";
 
-const PDFUploadModal = ({ isOpen, onClose, onUpload, event }) => {
+const PDFUploadModal = ({ isOpen, onClose, onUpload, event, deleteFile, setDeleteFile }) => {
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
@@ -31,6 +36,13 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event }) => {
       onClose();
     }
   };
+
+  const handleFileDownload = (fileName) => {
+    
+  };
+  // const handleDeleteFile = (deleteFile) => {
+  //   alert(deleteFile)
+  // };
 
   if (!isOpen) return null;
 
@@ -58,16 +70,10 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event }) => {
             color: "#00364c",
             boxShadow:
               "0 4px 8px rgba(190, 190, 190, 0.3), 0 6px 20px rgba(190, 190, 190, 0.15)",
-
-            // border: "1px solid #5e757e",
           }}
         >
           Note: Upload all your requirements here in PDF Format only.
         </Alert>
-
-        {/* <p className="text-sm text-gray-600 mb-4">
-          Upload multiple PDF files for your event. Maximum 5 files allowed.
-        </p> */}
 
         <div className="mt-4">
           <input
@@ -103,33 +109,93 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event }) => {
                   marginLeft: "20px",
                 }}
               >
-              { event.eventType === "Curricular" ? (
+                {event.eventType === "Curricular" ? (
                   <>
-                  <p>1. Intent Letter.pdf</p>
-                  <p>2. Fees and funds.pdf <i>(if money is involved)</i></p>
-                  <p>3. Voluntary Contribution Letter.pdf <i>(if money is involved)</i></p>
-                  <p>4. Letter of UFMO.pdf <i>(if there's a venue)</i></p>
-                  <p>5. Learning Journal.pdf</p>
-                  <p>6. Activities.pdf</p>
+                    <p>1. Intent Letter.pdf</p>
+                    <p>2. Fees and funds.pdf <i>(if money is involved)</i></p>
+                    <p>3. Voluntary Contribution Letter.pdf <i>(if money is involved)</i></p>
+                    <p>4. Letter of UFMO.pdf <i>(if there's a venue)</i></p>
+                    <p>5. Learning Journal.pdf</p>
+                    <p>6. Activities.pdf</p>
                   </>
                 ) : event.eventType === "Organizational" || event.eventType === "College" && (
-                <>
-                  <p>1. Intent Letter.pdf</p>
-                  <p>2. Fees and Funds.pdf</p>
-                  <p>3. Budget Request.pdf</p>
-                  <p>4. Voluntary Contribution Letter.pdf</p>
-                  <p>5. Parent's Consent.pdf <i>(if it is overnight)</i></p>
-                  <p>6. Medical Clearance.pdf <i>(if it is overnight)</i></p>
-                  <p>7. Assurance Letter.pdf <i>(if it is overnight)</i></p>
-                  <p>8. Certificate of insurance.pdf <i>(if it is overnight)</i></p>
-                  <p>9. Learning Journal.pdf</p>
-                  <p>10. Activities.pdf</p>
-                </>
-              )}
+                  <>
+                    <p>1. Intent Letter.pdf</p>
+                    <p>2. Fees and Funds.pdf</p>
+                    <p>3. Budget Request.pdf</p>
+                    <p>4. Voluntary Contribution Letter.pdf</p>
+                    <p>5. Parent's Consent.pdf <i>(if it is overnight)</i></p>
+                    <p>6. Medical Clearance.pdf <i>(if it is overnight)</i></p>
+                    <p>7. Assurance Letter.pdf <i>(if it is overnight)</i></p>
+                    <p>8. Certificate of insurance.pdf <i>(if it is overnight)</i></p>
+                    <p>9. Learning Journal.pdf</p>
+                    <p>10. Activities.pdf</p>
+                  </>
+                )}
               </AccordionDetails>
             </Accordion>
           </div>
-
+          
+          {/* REQUIREMENTS UPLOADED */}
+          {event.requirementFilesCount > 0 && (
+            <div className="mt-1">
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel2-content"
+                  id="panel2-header"
+                  sx={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  My Uploaded Requirements
+                </AccordionSummary>
+                <AccordionDetails
+                  sx={{
+                    marginLeft: "20px",
+                  }}
+                >
+                  {event.requirementFiles.map((fileName, index) => {
+                    const cleanFileName = fileName.split('_').slice(1).join('_');
+                    return (
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-between space-x-2 mb-2"
+                      >
+                        <div className="flex items-center space-x-2 flex-grow">
+                          <AttachFileIcon 
+                            className="text-gray-500" 
+                            fontSize="small" 
+                          />
+                          <Typography 
+                            variant="body2" 
+                            className="truncate flex-grow border-b-2 border-slate-400"
+                          >
+                            {cleanFileName}
+                          </Typography>
+                        </div>
+                        <div className="flex space-x-1">
+                          <IconButton 
+                            size="small" 
+                            onClick={() => handleFileDownload(cleanFileName)}
+                          >
+                            <DownloadIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton 
+                            size="small" 
+                            onClick={() => setDeleteFile(cleanFileName)}
+                          >
+                            <DeleteIcon fontSize="small" className="text-red-500" />
+                          </IconButton>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </AccordionDetails>
+              </Accordion>
+            </div>
+          )}
+          
           {files.length > 0 && (
             <div className="mt-4">
               <h4 className="text-sm text-gray-700 font-medium mb-2">

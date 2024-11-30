@@ -75,7 +75,7 @@ function OrganizerEvents() {
                     hasScannedRef.current = true;
 
                     try {
-                        const res = await axios.post(`http://localhost:5000/api/event/${decodedText}/present`);
+                        const res = await axios.post(`http://localhost:5000/api/organizer/${decodedText}/present`);
                         setScanMessage(
                             res.status === 200 
                             ? `Attendance confirmed for ${decodedText}`
@@ -141,7 +141,7 @@ function OrganizerEvents() {
     const fetchData = async () => {
         try {
             const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`);
-            const res2 = await axios.get(`http://localhost:5000/api/event/${id}/participants`);
+            const res2 = await axios.get(`http://localhost:5000/api/organizer/${id}/participants`);
             setParticipants(res2.data);
             setEvent(res1.data);
         } catch (error) {
@@ -158,7 +158,7 @@ function OrganizerEvents() {
     // HANDLE PRESENT BUTTON
     const handlePresentButton = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/event/${email}/present`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/present`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -170,7 +170,7 @@ function OrganizerEvents() {
     // HANDLE UNDO PRESENT BUTTON
     const handleUndoPresent = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/event/${email}/undo-present`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/undo-present`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -182,7 +182,7 @@ function OrganizerEvents() {
     // HANDLE APPROVE PARTICIPANT BUTTON
     const handleApproveParticipant = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/event/${email}/approve-participant`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/approve-participant`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -194,7 +194,7 @@ function OrganizerEvents() {
     // HANDLE DISAPPROVE PARTICIPANT BUTTON
     const handleDisapproveParticipant = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/event/${email}/disapprove-participant`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/disapprove-participant`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();

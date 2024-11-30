@@ -27,6 +27,7 @@ function OrganizerEvents() {
         setActiveButton(buttonName);
     };
 
+    // SCANNER TOGGLE
     const toggleScanner = (e) => {
         e.preventDefault();
         
@@ -64,6 +65,7 @@ function OrganizerEvents() {
         handleScannerToggle();
     };
 
+    // SCANNER INITIALIZATION
     const initializeScanner = async () => {
         if (!html5QrCodeRef.current) {
             try {
@@ -75,7 +77,7 @@ function OrganizerEvents() {
                     hasScannedRef.current = true;
 
                     try {
-                        const res = await axios.post(`http://localhost:5000/api/organizer/${decodedText}/present`);
+                        const res = await axios.post(`http://localhost:5000/api/organizer/${id}/${decodedText}/present`);
                         setScanMessage(
                             res.status === 200 
                             ? `Attendance confirmed for ${decodedText}`
@@ -89,7 +91,8 @@ function OrganizerEvents() {
                         setScanMessage(
                             statusCode === 409 
                             ? `Ticket has already been scanned for ${decodedText}` 
-                            : `Error: ${error.message || 'An unknown error occurred.'}`
+                            : statusCode === 404 ? `Ticket is not registered for this event`
+                            : `Error confirming attendance for ${decodedText}`
                         )
                     } 
                     setTimeout(() => {
@@ -158,7 +161,7 @@ function OrganizerEvents() {
     // HANDLE PRESENT BUTTON
     const handlePresentButton = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/present`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${id}/${email}/present`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -170,7 +173,7 @@ function OrganizerEvents() {
     // HANDLE UNDO PRESENT BUTTON
     const handleUndoPresent = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/undo-present`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${id}/${email}/undo-present`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -182,7 +185,7 @@ function OrganizerEvents() {
     // HANDLE APPROVE PARTICIPANT BUTTON
     const handleApproveParticipant = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/approve-participant`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${id}/${email}/approve-participant`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -194,7 +197,7 @@ function OrganizerEvents() {
     // HANDLE DISAPPROVE PARTICIPANT BUTTON
     const handleDisapproveParticipant = async (email) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/organizer/${email}/disapprove-participant`);
+            const res = await axios.post(`http://localhost:5000/api/organizer/${id}/${email}/disapprove-participant`);
             if (res.status === 200) {
                 alert(res.data.message);
                 fetchData();
@@ -225,6 +228,7 @@ function OrganizerEvents() {
                 </div>
                 <div className="output">
 
+                    {/* OVERVIEW PAGE */}
                     {activeButton === 'Overview' && (
                         <>
                             <hr />
@@ -296,6 +300,7 @@ function OrganizerEvents() {
                         </>
                     )}
                     
+                    {/* REGISTRATION PAGE */}
                     {activeButton === 'Registration' && (
                         <>
                             <hr />
@@ -329,14 +334,18 @@ function OrganizerEvents() {
                                     </button>
                                 </div>
                             </div>
-                            {/* search bar section */}
+
+
+                            {/* SEARCH BAR SECTION */}
                             <div className="searchBarContainer">
                                 <div className="searchBar">
                                     <input type="text" name="" id="searchBar" placeholder='Search by name...'/>
                                 </div>
                                 <button type="submit">Search</button>
                             </div>
-                            {/* Dynamic Content Section */}
+
+
+                            {/* ATTENDEES LIST: ATTENDED SECTION */}
                             <div className="contentSection">
                                 {selectedSection === 'waiting' && (
                                     <div className="guestContainer">
@@ -366,6 +375,7 @@ function OrganizerEvents() {
                                     </div>
                                 )}
 
+                                {/* ATTENDEES LIST: ATTENDING SECTION */}
                                 {selectedSection === 'attending' && (
                                     <div className="attendeeList">
                                         <div className="guestContainer">
@@ -395,6 +405,7 @@ function OrganizerEvents() {
                                     </div>
                                 )}
 
+                                {/* ATTENDEES LIST: ATTENDED SECTION */}
                                 {selectedSection === 'attended' && (
                                     <div className="attendeeList">
                                         <div className="guestContainer">
@@ -439,7 +450,7 @@ function OrganizerEvents() {
                                 {/* Scan Result Message */}
                                 {scanMessage && (
                                     <div className="scanMessage flex w-full" style={{
-                                        backgroundColor: scanMessage.includes('Error') ? 'red' 
+                                        backgroundColor: scanMessage.includes('Error') || scanMessage.includes('not') ? 'red'
                                                         : scanMessage.includes('scanned') ? '#B66503' 
                                                         : 'green',
                                         padding: '10px',
@@ -452,7 +463,7 @@ function OrganizerEvents() {
 
                                 {/* QR Code Scanner Container */}
                                 <div id="reader" 
-                                    className='my-[1vw]'
+                                    className='mt-[.5vw] mb-[2vw]'
                                     style={{ 
                                     width: '100%', 
                                     display: isScannerActive ? 'block' : 'none' 
@@ -491,7 +502,7 @@ function OrganizerEvents() {
                         </>
                     )}
 
-
+                    {/* SHARE PAGE */}
                     {activeButton === 'Share' && 
                     <>
                     <hr />
@@ -525,6 +536,7 @@ function OrganizerEvents() {
                     </>
                     }
                     
+                    {/* MORE PAGE */}
                     {activeButton === 'More' && 
                     <>
                     <hr />

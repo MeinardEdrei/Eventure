@@ -86,11 +86,11 @@ namespace BackendProject.Controllers
             return Ok(participants);
         }
 
-        [HttpPost("{email}/present")]
-        public async Task<IActionResult> Present(string email)
+        [HttpPost("{id}/{email}/present")]
+        public async Task<IActionResult> Present(string email, int id)
         {
-            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email);
-            var rFormBySchoolId = await _context.RForms.FirstOrDefaultAsync(r => r.School_Id == email);
+            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email && r.Id == id);
+            var rFormBySchoolId = await _context.RForms.FirstOrDefaultAsync(r => r.School_Id == email && r.Id == id);
 
             // Check if the user has already attended
             if (rForm != null && rForm.Status == "Attended") {
@@ -115,10 +115,10 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Participant has been marked as present." });
         }
 
-        [HttpPost("{email}/undo-present")]
-        public async Task<IActionResult> UndoPresent(string email)
+        [HttpPost("{id}/{email}/undo-present")]
+        public async Task<IActionResult> UndoPresent(string email, int id)
         {
-            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email);
+            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email && r.Id == id);
             if (rForm == null){
                 return NotFound(new { message = "RForm not found." });
             }
@@ -128,10 +128,10 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Participant Attendance undone successfully." });
         }
 
-        [HttpPost("{email}/approve-participant")]
-        public async Task<IActionResult> ApproveParticipant(string email)
+        [HttpPost("{id}/{email}/approve-participant")]
+        public async Task<IActionResult> ApproveParticipant(string email, int id)
         {
-            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email);
+            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email && r.Id == id);
             if (rForm == null){
                 return NotFound(new { message = "RForm not found." });
             }
@@ -141,10 +141,10 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Participant approved successfully." });
         }
 
-        [HttpPost("{email}/disapprove-participant")]
-        public async Task<IActionResult> DispproveParticipant(string email)
+        [HttpPost("{id}/{email}/disapprove-participant")]
+        public async Task<IActionResult> DispproveParticipant(string email, int id)
         {
-            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email);
+            var rForm = await _context.RForms.FirstOrDefaultAsync(r => r.Email == email && r.Id == id);
             if (rForm == null){
                 return NotFound(new { message = "RForm not found." });
             }

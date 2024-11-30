@@ -9,6 +9,7 @@ import axios from 'axios';
 import { Html5Qrcode } from 'html5-qrcode';
 
 function OrganizerEvents() {
+    const { data: session } = useSession();
     const { id } = useParams();
     const [activeButton, setActiveButton] = useState('Overview');
     const textareaRef = useRef(null); // Reference to the textarea
@@ -22,6 +23,8 @@ function OrganizerEvents() {
     const html5QrCodeRef = useRef(null);
     const hasScannedRef = useRef(false);
     const [isScanning, setIsScanning] = useState(false);
+    const [message, setMessage] = useState('');
+    const [notificationImage, setNotificationImage] = useState(null);
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName);
@@ -207,6 +210,35 @@ function OrganizerEvents() {
         }
     }
 
+    // SEND NOTIFICATION
+    const handleSendNotification = async (e) => {
+        e.preventDefault(); 
+
+        const formData = new FormData();
+        formData.append('UserId', session?.user?.id);
+        formData.append('EventId', id);
+        formData.append('Type', "All");
+        formData.append('Message', message);
+        formData.append('NotificationImage', notificationImage);
+    
+        try {
+            const res = await axios.post(`http://localhost:5000/api/organizer/notification`, 
+            formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            if (res.status === 200) {
+                alert('Notification sent successfully!');
+                setMessage("");
+                setNotificationImage(null);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error sending notification');
+        }
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -280,7 +312,6 @@ function OrganizerEvents() {
                                             <h6>{partner}</h6>
                                         </div>
                                         <div className="guestRowButtons">
-                                            <button className='modifyHostButton'>Modify</button>
                                             <button className='removeHostButton'>Remove</button>
                                         </div>
                                         
@@ -509,21 +540,25 @@ function OrganizerEvents() {
                         <div className="organizerHeader">Send Notifications</div>
                             <div className="organizerDescription">Add hosts, special guests, and event managers.</div>
                             <div className="postContainer">
-                            <textarea
-                                ref={textareaRef}
-                                placeholder="Say something meaningful..."
-                                onInput={(e) => {
-                                    e.target.style.height = 'auto';
-                                    e.target.style.height = `${e.target.scrollHeight}px`; 
-                                }}
-                                style={{
-                                    overflowY: 'auto'
-                                }}
-                            />
-                            <div className="postButtons">
-                                <button>Attach an image</button>
-                                <button>Send</button>
-                            </div>
+                            <form onSubmit={handleSendNotification}>
+                                <textarea
+                                    ref={textareaRef}
+                                    value={message}
+                                    placeholder="Say something meaningful..."
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    style={{
+                                        overflowY: 'auto'
+                                    }}
+                                />
+                                <div className="postButtons">
+                                    <input 
+                                        type="file" 
+                                        accept='.png, .jpg, .jpeg, .gif'
+                                        onChange={(e) => setNotificationImage(e.target.files[0])}
+                                    />
+                                    <button type='submit'>Send</button>
+                                </div>
+                            </form>
                             </div>
                             <hr />
                             <div className="organizerHeader">Share Event</div>

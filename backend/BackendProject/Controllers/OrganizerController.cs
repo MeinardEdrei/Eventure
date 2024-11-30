@@ -7,6 +7,7 @@ using BackendProject.Models;
 // File Manipulation
 using System.IO;
 using System.Text.Json;
+using Org.BouncyCastle.Bcpg;
 
 namespace BackendProject.Controllers  
 {
@@ -295,6 +296,63 @@ namespace BackendProject.Controllers
           } catch (Exception ex) {
             return StatusCode(500, new { Message = "An error occurred while deleting the file.", Error = ex.Message });
           }
+        }
+
+        // -------------- NOTIFICATION API
+        [HttpPost("notification")]
+        public async Task<IActionResult> SendNotification([FromForm] NotificationsDto notificationsDto)
+        {
+            if (notificationsDto == null ) return BadRequest(new { Message = "Invalid request." });
+
+            var file = notificationsDto.NotificationImage;
+            string fileName = null!;
+
+            if (file != null && file.Length > 0)
+            {
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Notification Uploads");
+                Directory.CreateDirectory(uploadPath);
+
+                fileName = Path.GetFileName(file.FileName);
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                await file.CopyToAsync(stream);
+                }
+            }
+
+            var newNotification = new Notification 
+            {
+                UserId = notificationsDto.UserId,
+                EventId = notificationsDto.EventId,
+                Type = notificationsDto.Type,
+                Message = notificationsDto.Message,
+                NotificationImage = fileName
+            };
+
+            _context.Notifications.Add(newNotification);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Notification sent successfully." });
+        }
+
+        [HttpGet("notification/image/{filename}")]
+        public IActionResult GetNotificationImage(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                return BadRequest(new { Message = "File name cannot be empty." });
+            }
+
+            var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Notification Uploads", filename);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound(new { Message = "Image not found." });
+            }
+
+            var contentType = "image/jpeg";
+            return PhysicalFile(filePath, contentType);
         }
         // ----------------------END OF ORGANIZER API--------------------------------
   }

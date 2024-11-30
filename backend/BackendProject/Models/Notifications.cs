@@ -21,7 +21,13 @@ namespace BackendProject.Models
 
     [Required]
     [Column("Type")]
-    public required string Type { get; set; } = string.Empty;
+    public required string Type { get; set; }
+
+    [Column("NotificationImage")]
+    public string? NotificationImage { get; set; }
+
+    [Column("Message")]
+    public string? Message { get; set; }
 
 
     // Eager Loading Navigatiion Props

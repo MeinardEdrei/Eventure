@@ -51,19 +51,11 @@ namespace BackendProject.Controllers
                 return BadRequest(new { message = "Event image is required." });
             }
 
-            // Validate file type
-            var allowedTypes = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var extension = Path.GetExtension(eventsDto.EventImage.FileName).ToLowerInvariant();
-            if (!allowedTypes.Contains(extension))
-            {
-                return BadRequest(new { message = "Invalid file type. Allowed types: jpg, jpeg, png, gif" });
-            }
-
             // ----------------------END OF VALIDATION--------------------------------
 
             // ----------------------HANDLE FILE UPLOAD--------------------------------
             var file = eventsDto.EventImage;
-            string fileName = null;
+            string fileName = null!;
 
             if (file != null && file.Length > 0)
             {
@@ -180,7 +172,7 @@ namespace BackendProject.Controllers
             {
                 UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
-                Type = "General",
+                Type = "All",
             };
 
             _context.Notifications.Add(notifications);
@@ -222,15 +214,13 @@ namespace BackendProject.Controllers
         {
             var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", filename);
 
-            if (System.IO.File.Exists(filePath))
+            if (!System.IO.File.Exists(filePath))
             {
-                byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-                return File(imageBytes, "image/jpeg");
+                return NotFound(new { Message = "Image not found." });
             }
-            else
-            {
-                return NotFound();
-            }
+
+            var contentType = "image/jpeg"; 
+            return PhysicalFile(filePath, contentType);
         }
 
         // ----------------------END OF FETCH EVENTS--------------------------------

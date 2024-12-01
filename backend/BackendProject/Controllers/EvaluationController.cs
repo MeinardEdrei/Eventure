@@ -22,6 +22,9 @@ namespace BackendProject.Controllers
       try {
         if (evaluationFormDto == null) return BadRequest("Evaluation form is null");
 
+        var evaluationTable = await _context.EvaluationForms.FindAsync(evaluationFormDto.EventId);
+        if (evaluationTable != null) return BadRequest("Evaluation form already exists");
+
         var evaluationForm = new EvaluationForm {
           EventId = evaluationFormDto.EventId,
           OrganizerId = evaluationFormDto.OrganizerId,

@@ -121,21 +121,23 @@ function PostEvaluation() {
   return (
     <>
       <div className="container">
-        <input
-          className="eventTitle bg-transparent focus:outline-none"
-          autoFocus={true}
-          placeholder="Post Evaluation Title"
-          onChange={(e) => setEvaluationTitle(e.target.value)}
-          required
-        />
-        <input
-          className="eventDescription bg-transparent focus:outline-none"
-          placeholder="Design and distribute surveys or forms to gather feedback and assess event performance."
-          onChange={(e) => setEvaluationDescription(e.target.value)}
-          required
-        />
-        <div className="postEvaluationContainer">
-          <form onSubmit={handleCreateEvaluation}>
+        <form onSubmit={handleCreateEvaluation}>
+          <div className="flex flex-col">
+            <input
+              className="eventTitle bg-transparent focus:outline-none"
+              autoFocus={true}
+              placeholder="Post Evaluation Title"
+              onChange={(e) => setEvaluationTitle(e.target.value)}
+              required
+            />
+            <input
+              className="eventDescription bg-transparent focus:outline-none"
+              placeholder="Design and distribute surveys or forms to gather feedback and assess event performance."
+              onChange={(e) => setEvaluationDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div className="postEvaluationContainer">
             {categories.map((category, categoryIndex) => (
               <div key={categoryIndex} className="evaluationBlock">
                 <div className="flex">
@@ -282,7 +284,6 @@ function PostEvaluation() {
                                 "Excellent"
                               )
                             }
-                            required
                           />{" "}
                           Excellent
                         </label>
@@ -298,7 +299,6 @@ function PostEvaluation() {
                                 "Very-Good"
                               )
                             }
-                            required
                           />{" "}
                           Very Good
                         </label>
@@ -314,7 +314,6 @@ function PostEvaluation() {
                                 "Good"
                               )
                             }
-                            required
                           />{" "}
                           Good
                         </label>
@@ -330,7 +329,6 @@ function PostEvaluation() {
                                 "Fair"
                               )
                             }
-                            required
                           />{" "}
                           Fair
                         </label>
@@ -346,7 +344,6 @@ function PostEvaluation() {
                                 "Poor"
                               )
                             }
-                            required
                           />{" "}
                           Poor
                         </label>
@@ -362,8 +359,8 @@ function PostEvaluation() {
               </Link>
               <button className="bg-purple-700">Create</button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </>
   );

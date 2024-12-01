@@ -1,29 +1,29 @@
 "use client";
-import "../css/createEvaluation.css";
+import "../../css/createEvaluation.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
-import { MoreVertical, Plus, Trash2, Radio, Type } from "lucide-react";
+import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
+import { useParams } from "next/navigation";
 
 function PostEvaluation() {
+  const { id } = useParams();
+  const { data: session } = useSession();
   const [questionDotsMenuOpen, setQuestionDotsMenuOpen] = useState(null);
   const [categoryDotsMenuOpen, setCategoryDotsMenuOpen] = useState(null);
-  const [answerTypeDotsMenuOpen, setAnswerTypeDotsMenuOpen] = useState(null);
   const [evaluationTitle, setEvaluationTitle] = useState("");
   const [evaluationDescription, setEvaluationDescription] = useState("");
   const questionDropDown = useRef(null);
   const categoryDropDown = useRef(null);
-  const answerTypeDropDown = useRef(null);
   const [categories, setCategories] = useState([
     {
       categoryName: "",
       questions: [
         {
-          questionText: "",
-          answer: "",
-          type: "text",
+          question: "",
+          questionAnswer: "",
         },
       ],
     },
@@ -34,17 +34,34 @@ function PostEvaluation() {
     e.preventDefault();
 
     const formData = new FormData();
+    const categoryNames = categories.map((category) => category.categoryName);
+    const categoryQuestions = categories.map((category) => category.questions);
+
+    formData.append("EventId", id);
+    formData.append("OrganizerId", session?.user?.id);
     formData.append("Title", evaluationTitle);
     formData.append("Description", evaluationDescription);
-    formData.append("Categories", JSON.stringify(categories));
-    formData.append("Questions", JSON.stringify(categories[0].questions));
+    formData.append("Categories", JSON.stringify(categoryNames));
+    formData.append("Questions", JSON.stringify(categoryQuestions));
+
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/evaluation/create`
-      );
+        const response = await axios.post(`http://localhost:5000/api/evaluation/create`, 
+            formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        )
+
+        if (response.status === 200) {
+            console.log(response.data);
+        }
     } catch (error) {
-      console.log(error);
+        console.log(error);
     }
   };
 
@@ -57,7 +74,7 @@ function PostEvaluation() {
 
   const handleQuestionsChange = (categoryIndex, questionIndex, value) => {
     const newCategories = [...categories];
-    newCategories[categoryIndex].questions[questionIndex].questionText = value;
+    newCategories[categoryIndex].questions[questionIndex].question = value;
     setCategories(newCategories);
   };
 
@@ -68,18 +85,12 @@ function PostEvaluation() {
     setCategories(newCategories);
   };
 
-  const handleAnswerTypeChange = (categoryIndex, questionIndex, value) => {
-    const newCategories = [...categories];
-    newCategories[categoryIndex].questions[questionIndex].type = value;
-    setCategories(newCategories);
-  };
-
   // CATEGORY FUNCTION
   const addNewCategory = () => {
     const newCategories = [...categories];
     newCategories.push({
       categoryName: "",
-      questions: [{ questionText: "", questionAnswer: "" }],
+      questions: [{ question: "", questionAnswer: "" }],
     });
     setCategories(newCategories);
   };
@@ -94,7 +105,7 @@ function PostEvaluation() {
   const addNewQuestion = (categoryIndex) => {
     const newCategories = [...categories];
     newCategories[categoryIndex].questions.push({
-      questionText: "",
+      question: "",
       questionAnswer: "",
     });
     setCategories(newCategories);
@@ -106,10 +117,6 @@ function PostEvaluation() {
     setCategories(newCategories);
   };
 
-  const changeAnswerType = (categoryIndex, questionIndex, type) => {
-    console.log(categoryIndex, questionIndex, type);
-  };
-
   const toggleQuestionMenu = (categoryIndex, questionIndex) => {
     // If the same menu is clicked again, close
     if (
@@ -119,17 +126,6 @@ function PostEvaluation() {
       setQuestionDotsMenuOpen(null);
     } else {
       setQuestionDotsMenuOpen({ categoryIndex, questionIndex });
-    }
-  };
-
-  const toggleAnswerTypeMenu = (categoryIndex, questionIndex) => {
-    if (
-      answerTypeDotsMenuOpen?.categoryIndex === categoryIndex &&
-      answerTypeDotsMenuOpen?.questionIndex === questionIndex
-    ) {
-      setAnswerTypeDotsMenuOpen(null);
-    } else {
-      setAnswerTypeDotsMenuOpen({ categoryIndex, questionIndex });
     }
   };
 
@@ -147,12 +143,6 @@ function PostEvaluation() {
         !categoryDropDown.current.contains(event.target)
       ) {
         setCategoryDotsMenuOpen(null);
-      }
-      if (
-        answerTypeDropDown.current &&
-        !answerTypeDropDown.current.contains(event.target)
-      ) {
-        setAnswerTypeDotsMenuOpen(null);
       }
     };
 
@@ -252,7 +242,7 @@ function PostEvaluation() {
                           type="text"
                           placeholder="e.g. The information provided in the event is clear and beneficial"
                           className="focus:outline-none"
-                          value={question.questionText}
+                          value={question.question}
                           onChange={(e) =>
                             handleQuestionsChange(
                               categoryIndex,
@@ -316,113 +306,82 @@ function PostEvaluation() {
                             )}
                         </div>
                       </div>
-                      <div className="flex m-0 p-0">
-                        <div className="evaluationInput flex items-center justify-between">
-                          {category.questions[questionIndex].type ===
-                            "radio" ? (
-                            <>
-                              <label>
-                                <input
-                                  type="radio"
-                                  name={`answer-${questionIndex}`}
-                                  value="Excellent"
-                                />{" "}
-                                Excellent
-                              </label>
-                              <label>
-                                <input
-                                  type="radio"
-                                  name={`answer-${questionIndex}`}
-                                  value="Very-Good"
-                                />{" "}
-                                Very Good
-                              </label>
-                              <label>
-                                <input
-                                  type="radio"
-                                  name={`answer-${questionIndex}`}
-                                  value="Good"
-                                />{" "}
-                                Good
-                              </label>
-                              <label>
-                                <input
-                                  type="radio"
-                                  name={`answer-${questionIndex}`}
-                                  value="Fair"
-                                />{" "}
-                                Fair
-                              </label>
-                              <label>
-                                <input
-                                  type="radio"
-                                  name={`answer-${questionIndex}`}
-                                  value="Poor"
-                                />{" "}
-                                Poor
-                              </label>
-                            </>
-                          ) : (
-                            <>
-                            <textarea className="bg-transparent border border-white/10 w-full"/>
-                            </>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            toggleAnswerTypeMenu(categoryIndex, questionIndex)
-                          }
-                          className="p-2 ml-2 hover:bg-purple-800/30 rounded-full"
-                        >
-                          <MoreVertical className="text-gray-500" size={20} />
-                        </button>
-                      </div>
-                      <div className="relative">
-                        {answerTypeDotsMenuOpen?.categoryIndex ===
-                          categoryIndex &&
-                          answerTypeDotsMenuOpen?.questionIndex ===
-                            questionIndex && (
-                            <div
-                              ref={answerTypeDropDown}
-                              className="absolute right-0 z-10 mt-2 w-48 bg-white border rounded-md shadow-lg"
-                            >
-                              <div className="py-1">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    changeAnswerType(
-                                      categoryIndex,
-                                      questionIndex,
-                                      { type: "radio" }
-                                    );
-                                    setAnswerTypeDotsMenuOpen(null);
-                                  }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                  <Radio
-                                    className="mr-2 text-purple-500"
-                                    size={16}
-                                  />{" "}
-                                  Radio Button
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    changeAnswerType(
-                                      categoryIndex,
-                                      questionIndex,
-                                      { type: "text" }
-                                    );
-                                    setAnswerTypeDotsMenuOpen(null);
-                                  }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-neutral-900 hover:bg-gray-100"
-                                >
-                                  <Type className="mr-2" size={16} /> Text Field
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                      <div className="evaluationInput">
+                        <label>
+                          <input
+                            type="radio"
+                            name={`answer-${questionIndex}`}
+                            value="Excellent"
+                            onChange={() =>
+                              handleAnswerChange(
+                                categoryIndex,
+                                questionIndex,
+                                "Excellent"
+                              )
+                            }
+                          />{" "}
+                          Excellent
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`answer-${questionIndex}`}
+                            value="Very-Good"
+                            onChange={() =>
+                              handleAnswerChange(
+                                categoryIndex,
+                                questionIndex,
+                                "Very-Good"
+                              )
+                            }
+                          />{" "}
+                          Very Good
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`answer-${questionIndex}`}
+                            value="Good"
+                            onChange={() =>
+                              handleAnswerChange(
+                                categoryIndex,
+                                questionIndex,
+                                "Good"
+                              )
+                            }
+                          />{" "}
+                          Good
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`answer-${questionIndex}`}
+                            value="Fair"
+                            onChange={() =>
+                              handleAnswerChange(
+                                categoryIndex,
+                                questionIndex,
+                                "Fair"
+                              )
+                            }
+                          />{" "}
+                          Fair
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`answer-${questionIndex}`}
+                            value="Poor"
+                            onChange={() =>
+                              handleAnswerChange(
+                                categoryIndex,
+                                questionIndex,
+                                "Poor"
+                              )
+                            }
+                          />{" "}
+                          Poor
+                        </label>
                       </div>
                     </div>
                   );
@@ -430,7 +389,7 @@ function PostEvaluation() {
               </div>
             ))}
             <div className="belowButtons">
-              <Link href="/My-Events">
+              <Link href={`/Event-Details/${id}`}>
                 <button>Back</button>
               </Link>
               <button className="bg-purple-700">Create</button>

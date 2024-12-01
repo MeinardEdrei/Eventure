@@ -582,7 +582,7 @@ function OrganizerEvents() {
                         <div className="organizerHeader">Post Evaluation</div>
                         <div className="organizerDescription">Design and distribute surveys or forms to gather feedback and assess event performance.</div>
                         <div className="postEvaluation">
-                            <Link href="/PostEvaluation"><button>Create</button></Link>
+                            <Link href={`/PostEvaluation/${event.id}`}><button>Create</button></Link>
                             <button>Edit</button>
                             <Link href="/EvaluationSummary"><button>View Summary</button></Link>
                         </div>

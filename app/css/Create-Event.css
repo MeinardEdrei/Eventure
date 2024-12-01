@@ -92,11 +92,12 @@ body {
 {
   background-color: rgba(85, 97, 87, 0.3);
   /* background-color: rgb(56, 44, 66); */
-  border: 2px solid hwb(271 78% 0% / 0.7);
+  border: 2px solid #e4c7ffb3;
 }
 .input-containers input::placeholder, 
 .input-containers textarea::placeholder {
   color: #ffffff;
+  color: #595959;
   opacity: 0.5;
 }
 

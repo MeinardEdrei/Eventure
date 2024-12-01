@@ -59,5 +59,7 @@ namespace BackendProject.Models
 
         [Required]
         public int AttendeesCount { get; set; }
+
+        public string? RequirementFiles { get; set;} = null;
     }
 }

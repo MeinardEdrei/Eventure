@@ -101,7 +101,8 @@ namespace BackendProject.Controllers
                 CreatedAt = DateTime.Now,
                 OrganizerId = eventsDto.OrganizerId,
                 Status = eventsDto.Status, // Default to "Pending"
-                AttendeesCount = 0 // Default count
+                AttendeesCount = 0, // Default count
+                RequirementFiles = eventsDto.RequirementFiles ?? string.Empty,
             };
 
             _context.Events.Add(newEvent); // Save to database

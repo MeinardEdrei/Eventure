@@ -32,20 +32,13 @@
   color: white;
   opacity: 0.5;
 }
-.line-container {
-  width: 100%;
-  height: auto;
-}
-.line-container hr {
-  border: 1px solid #ffffff80;
-}
+
 
 /* Dropdown Styles */
 .dropdown-container {
   position: relative;
   width: 9rem;
 }
-
 .dropdown-button {
   display: flex;
   align-items: center;
@@ -64,7 +57,6 @@
 /* .dropdown-button:hover {
   border: 2px solid #ff0000;
 } */
-
 .dropdown-icon {
   margin-left: 0.5rem;
   transition: transform 0.3s ease;
@@ -72,7 +64,6 @@
 .dropdown-icon.rotate {
   transform: rotate(180deg);
 }
-
 .dropdown-menu {
   position: absolute;
   right: 0;
@@ -85,7 +76,6 @@
     0 2px 4px -1px rgba(255, 255, 255, 0.06);
   z-index: 10;
 }
-
 .dropdown-item {
   display: block;
   width: 100%;
@@ -105,7 +95,6 @@
   font-weight: bold;
   opacity: 1;
 }
-
 .dropdown-item.selected {
   background-color: #9333ea;
 }
@@ -116,6 +105,17 @@
   color: white;
   margin-bottom: 1rem;
 }
+.organizerImage {
+  border-right: var(--borderColor);
+}
+.cardTitle, .cardInfo {
+  color: var(--color3);
+}
+.cardInfo p {
+  margin: 0.2rem 0;
+}
+
+/* For olde design */
 .indiv-box {
   background-color: transparent;
   padding: 1.5rem;
@@ -159,11 +159,12 @@
 }
 
 /* Approve and Reject Button */
+.pre-approve-btn,
 .approve-btn,
 .reject-btn {
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 8px;
   color: #ffffff;
   border-radius: 5px;
   font-size: 0.8rem;
@@ -171,15 +172,27 @@
   cursor: pointer;
   transition: all 0.3s ease;
 }
+.pre-approve-btn{
+  background-color: #0c0069;
+}
 .approve-btn {
-  background-color: #9333ea;
+  /* background-color: #9333ea; */
+  background-color: #0c9d1f;
 }
 .reject-btn {
   background-color: #930000;
 }
 
+.pre-approve-btn:hover {
+  background-color: #002fff;
+  opacity: 1;
+  color: #dedede;
+  font-weight: bold;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+}
 .approve-btn:hover {
-  background-color: rgb(218, 183, 255);
+  background-color: #00ff2f;
   opacity: 1;
   color: #463951;
   font-weight: bold;
@@ -187,7 +200,7 @@
   box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
 }
 .reject-btn:hover {
-  background-color: rgb(222, 0, 0);
+  background-color: #ff3232;
   opacity: 1;
   color: rgb(62, 0, 0);
   font-weight: bold;

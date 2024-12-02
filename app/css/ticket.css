@@ -4,16 +4,16 @@
   justify-content: center;
 }
 .ticket-subcontainer {
-  height: 650px;
-  width: 400px;
-  background: linear-gradient(180deg, #E6E6FA 0%, #D6EAF8 50%, #FADBD8 90%);
+  min-height: 600px;
+  width: 415px;
+  background: linear-gradient(180deg, #F8E6F2 5%, #D6EAF8 55%, #FADBD8 100%);
   border-radius: 8px;
   padding: 12px 20px;
   opacity: 0.95;
 }
 
 .dotted-line {
-  border-top: 0.5px dotted #B0AFAF; /* Creates the dotted line */
+  border-top: 0.5px dotted #a6a6a6; /* Creates the dotted line */
   height: 0px; /* Ensures no height for the div */
   width: 100%; /* Full width */
   margin: 15px 0px;
@@ -42,7 +42,7 @@
 }
 .ticket-title h1 {
   color: #010101;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -67,20 +67,28 @@
 .ticket-attendee {
   display: flex;
   align-items: center;
-  gap: 75px;
 }
-.full-name h3, .student-number h3 {
+.ticket-attendee  div {
+  width: 50%;
+}
+.ticket-attendee, .section_status {
+  margin-top: 15px;
+}
+.full-name h3, .student-number h3, .section h3, .status h3 {
   color: #504E52;
   opacity: 0.5;
   font-size: 14px;
   font-weight: 600;
 }
 
-.full-name p, .student-number p {
+.full-name p, .student-number p, .section p, .status p {
   color: #010101;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.5px;
+}
+.status p {
+  color: green;
 }
 
 .ticket-download {
@@ -95,4 +103,16 @@
   border-radius: 5px;
   font-size: 14px;
   font-weight: 600;
+  color: white; /* Ensure the text is visible */
+  cursor: pointer; /* Show pointer cursor on hover */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
+}
+
+.ticket-download button:hover {
+  background-color: #321e3b; /* Change background on hover */
+  transform: scale(1.02); /* Slightly enlarge the button */
+}
+
+.ticket-download button:active {
+  transform: scale(0.98); /* Button shrinks slightly when clicked */
 }

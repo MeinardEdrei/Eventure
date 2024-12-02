@@ -24,6 +24,46 @@ function Ticket() {
     fetchData();
   }, [session])
 
+  const downloadTicket = async (e, userId, eventId) => {
+    
+    try {
+        const response = await axios.post(`http://localhost:5000/api/ticket/download`, 
+          { userId: userId, eventId: eventId }, 
+          { responseType: 'blob' }
+        );
+
+        // Create a Blob URL for the PDF response and trigger download
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link element to trigger a download
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', response.data.fileName || "ticket.pdf");
+        document.body.appendChild(link);
+
+        link.click(); 
+        link.remove(); 
+
+        // Revoke the URL after the download starts
+        window.URL.revokeObjectURL(url);
+        
+        // const newWindow = window.open(url, '_blank');
+        
+        // // Revoke the URL after a longer delay
+        // setTimeout(() => {
+        //     window.URL.revokeObjectURL(url);
+        // }, 1000); 
+
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+        }
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -57,8 +97,8 @@ function Ticket() {
           <img
             src={`data:image/png;base64,${ticketDetails.ticket}`} 
             alt="Event QR Code"
-            width="290"
-            height="290"
+            width="280"
+            height="280"
           />
         </div>
 
@@ -76,12 +116,24 @@ function Ticket() {
           </div>
         </div>
 
-        <div className='dotted-line'></div>
+        <div className='ticket-attendee section_status'>
+          <div className='section'>
+            <h3>Section</h3>
+            <p>{ticketDetails.section}</p>
+          </div>
+          <div className='status'>
+            <h3>Status</h3>
+            <p>{ticketDetails.status}</p>
+          </div>
+        </div>
 
+        <div className='dotted-line'></div>
+          
         {/* DOWNLOAD BUTTON */}
         <div className='ticket-download'>
-          <button>Download</button>
+          <button onClick={(e) => downloadTicket(e, ticketDetails.userId, ticketDetails.eventId)}>Download</button>
         </div>
+        
       </div>
     </div>
   )

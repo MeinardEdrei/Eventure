@@ -25,6 +25,7 @@ function OrganizerEvents() {
     const [isScanning, setIsScanning] = useState(false);
     const [message, setMessage] = useState('');
     const [notificationImage, setNotificationImage] = useState(null);
+    const [evaluationForm, setEvaluationForm] = useState([]);
 
     const handleButtonClick = (buttonName) => {
         setActiveButton(buttonName);
@@ -145,6 +146,9 @@ function OrganizerEvents() {
     
     // FETCH DATA FROM API
     const fetchData = async () => {
+        const res3 = await axios.get(`http://localhost:5000/api/evaluation/${id}/evaluation-form`);
+        setEvaluationForm(res3.data);
+
         try {
             const res1 = await axios.get(`http://localhost:5000/api/event/events${id}`);
             const res2 = await axios.get(`http://localhost:5000/api/organizer/${id}/participants`);
@@ -160,6 +164,19 @@ function OrganizerEvents() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // HANDLE DELETE EVALUATION FORM
+    const handleDeleteEvaluation = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:5000/api/evaluation/${id}/delete-form`);
+            if (res.status === 204) {
+                alert("Form deleted successfully.");
+                fetchData();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     // HANDLE PRESENT BUTTON
     const handlePresentButton = async (email) => {
@@ -582,9 +599,15 @@ function OrganizerEvents() {
                         <div className="organizerHeader">Post Evaluation</div>
                         <div className="organizerDescription">Design and distribute surveys or forms to gather feedback and assess event performance.</div>
                         <div className="postEvaluation">
-                            <Link href="/PostEvaluation"><button>Create</button></Link>
-                            <button>Edit</button>
-                            <Link href="/EvaluationSummary"><button>View Summary</button></Link>
+                            {evaluationForm.length === 0 ? (
+                                <Link href={`/PostEvaluation/${event.id}`}><button>Create</button></Link>
+                            ) : (
+                                <>
+                                <Link href={`/EditPostEvaluation/${event.id}`}><button>Edit</button></Link>
+                                <button onClick={handleDeleteEvaluation}>Delete</button>
+                                <Link href="/EvaluationSummary"><button>View Summary</button></Link>
+                                </>
+                            )}
                         </div>
                     <hr />
                         <div className="organizerHeader">Cancel Event</div>

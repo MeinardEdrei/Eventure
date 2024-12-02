@@ -8,11 +8,14 @@ namespace BackendProject.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Event> Events { get; set; }
-        public DbSet<RForm> RForms { get; set; }
-        public DbSet<UEvent> UEvents { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
+        public required DbSet<User> Users { get; set; }
+        public required DbSet<Event> Events { get; set; }
+        public required DbSet<RForm> RForms { get; set; }
+        public required DbSet<UEvent> UEvents { get; set; }
+        public required DbSet<Notification> Notifications { get; set; }
+        public required DbSet<EvaluationForm> EvaluationForms { get; set; }
+        public required DbSet<EvaluationQuestion> EvaluationQuestions { get; set; }
+        public required DbSet<EvaluationAnswer> EvaluationAnswers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

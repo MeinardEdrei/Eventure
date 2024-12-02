@@ -6,11 +6,12 @@ import { useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 import { MoreVertical, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 function PostEvaluation() {
   const { id } = useParams();
   const { data: session } = useSession();
+  const router = useRouter();
   const [questionDotsMenuOpen, setQuestionDotsMenuOpen] = useState(null);
   const [categoryDotsMenuOpen, setCategoryDotsMenuOpen] = useState(null);
   const [evaluationTitle, setEvaluationTitle] = useState("");
@@ -44,9 +45,9 @@ function PostEvaluation() {
     formData.append("Categories", JSON.stringify(categoryNames));
     formData.append("Questions", JSON.stringify(categoryQuestions));
 
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(key, value);
+    // }
 
     try {
         const response = await axios.post(`http://localhost:5000/api/evaluation/create`, 
@@ -58,7 +59,8 @@ function PostEvaluation() {
         )
 
         if (response.status === 200) {
-            console.log(response.data);
+            alert(response.data.message);
+            router.push(`/Event-Details/${id}`)
         }
     } catch (error) {
         console.log(error);

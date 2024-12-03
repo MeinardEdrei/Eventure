@@ -204,8 +204,8 @@ namespace BackendProject.Controllers
             var uploadPath = "";
 
             // Define the uploads folder path
-            if (_event?.EventType == "Curricular"){
-                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Curricular Uploads");
+            if (_event?.EventType == "Curriculum"){
+                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Curriculum Uploads");
             } 
             else if (_event?.EventType == "Organizational"){
                 uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Organizational Uploads");

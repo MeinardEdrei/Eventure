@@ -62,7 +62,7 @@ namespace BackendProject.Controllers
                 fileName = file.FileName; // Store the filename
 
                 // Define the uploads folder path
-                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Event Uploads");
 
                 // Create directory if it doesn't exist
                 if (!Directory.Exists(uploadPath))
@@ -157,7 +157,7 @@ namespace BackendProject.Controllers
             return Ok(events);
         }
 
-        [HttpPost("approve{eventId}")]
+        [HttpPost("{eventId}/approve")]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {
             var eventToApprove = await _context.Events.FindAsync(eventId);
@@ -182,7 +182,32 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Event approved." });
         }
 
-        [HttpPost("reject{eventId}")]
+        [HttpPost("{eventId}/pre-approve")]
+        public async Task<IActionResult> PreApproveEvent(int eventId)
+        {
+            var eventToApprove = await _context.Events.FindAsync(eventId);
+
+            if (eventToApprove == null)
+            {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            eventToApprove.Status = "Pre-Approved";
+
+            var notifications = new Notification
+            {
+                UserId = eventToApprove.OrganizerId,
+                EventId = eventToApprove.Id,
+                Type = "Organizer",
+            };
+
+            _context.Notifications.Add(notifications);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event approved." });
+        }
+
+        [HttpPost("{eventId}/reject")]
         public async Task<IActionResult> RejectEvent(int eventId)
         {
             var eventToReject = await _context.Events.FindAsync(eventId);

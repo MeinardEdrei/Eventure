@@ -111,7 +111,7 @@ const PDFUploadModal = ({ isOpen, onClose, onUpload, event, handleFileDownload, 
                   marginLeft: "20px",
                 }}
               >
-                {event.eventType === "Curricular" ? (
+                {event.eventType === "Curriculum" ? (
                   <>
                     <p>1. Intent Letter.pdf</p>
                     <p>2. Fees and funds.pdf <i>(if money is involved)</i></p>

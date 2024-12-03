@@ -62,7 +62,8 @@ namespace BackendProject.Controllers
                 fileName = file.FileName; // Store the filename
 
                 // Define the uploads folder path
-                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Event Uploads");
+                // var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventsDto.DateStart.ToString("MMMM dd, yyyy h-mm tt")} Event Uploads");
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
 
                 // Create directory if it doesn't exist
                 if (!Directory.Exists(uploadPath))
@@ -123,8 +124,6 @@ namespace BackendProject.Controllers
 
 
 
-        // ----------------------FETCH EVENTS--------------------------------
-
         [HttpGet("events")]
         public async Task<IActionResult> GetEvents()
         {
@@ -140,6 +139,21 @@ namespace BackendProject.Controllers
 
             // Return the list of events as a JSON response
             return Ok(events);
+        }
+
+        [HttpDelete("{id}/cancel-event")]
+        public async Task<IActionResult> CancelEvent(int id)
+        {
+            var eventToCancel = await _context.Events.FindAsync(id);
+            if (eventToCancel == null) return NotFound(new { message = "Event not found." });
+
+            _context.Events.Remove(eventToCancel);
+            await _context.SaveChangesAsync();
+
+            // var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventToCancel.DateStart} Event Uploads");
+            // Directory.Delete(uploadPath, true);
+
+            return Ok(new { message = "Event cancelled successfully." });
         }
 
         [HttpGet("event-approval")]
@@ -248,8 +262,6 @@ namespace BackendProject.Controllers
             var contentType = "image/jpeg"; 
             return PhysicalFile(filePath, contentType);
         }
-
-        // ----------------------END OF FETCH EVENTS--------------------------------
 
         [HttpGet("notification")]
         public async Task<IActionResult> GetNotification()

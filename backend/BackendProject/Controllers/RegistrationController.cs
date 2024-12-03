@@ -111,28 +111,27 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Joined the Event Successfully." });
         }
 
-        // ----------------------FETCH REGISTRATION FORM--------------------------------
-        [HttpGet("form")]
-        public async Task<IActionResult> GetForm()
+        [HttpGet("{id}/registration-form")]
+        public async Task<IActionResult> GetForm(int id)
         {
             var Form = await _context.RForms
-                .Where(e => e.Status == "Going")
-                .ToListAsync(); // Use ToListAsync to get the results as a list
+                .Where(e => e.Status == "Attended" && e.Event_Id == id)
+                .ToListAsync();
                 
             return Ok(Form);
         }
 
-        [HttpPost("sheets")]
-        public async Task<IActionResult> ExportToExcel([FromBody] List<ExcelSheetsDto> entries)
+        [HttpPost("excel")]
+        public IActionResult ExportToExcel([FromBody] List<ExcelSheetsDto> entries)
         {
             if (entries == null || !entries.Any())
             {
                 return BadRequest(new { message = "No entries provided." });
             }
 
-           foreach (var entry in entries)
+            // Validate each entry
+            foreach (var entry in entries)
             {
-                // Validate each entry
                 if (string.IsNullOrEmpty(entry.Name) || 
                     string.IsNullOrEmpty(entry.Email) || 
                     string.IsNullOrEmpty(entry.SchoolId) || 
@@ -140,60 +139,51 @@ namespace BackendProject.Controllers
                 {
                     return BadRequest(new { message = "All fields are required for each entry." });
                 }
+            }
+            
+           using (var package = new ExcelPackage())
+            {
+                byte[] content;
+                string fileName;
+                var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";;
 
-                // Prepare the data for Google Apps Script
-                var payload = new
+                var worksheet = package.Workbook.Worksheets.Add("Registrations");
+
+                // Add headers
+                worksheet.Cells["A1"].Value = "Name";
+                worksheet.Cells["B1"].Value = "Email";
+                worksheet.Cells["C1"].Value = "School ID";
+                worksheet.Cells["D1"].Value = "Section";
+                worksheet.Cells["E1"].Value = "Event";
+                worksheet.Cells["F1"].Value = "Registration Date";
+
+                // Style the header row
+                using (var range = worksheet.Cells["A1:F1"])
                 {
-                    name = entry.Name,
-                    email = entry.Email,
-                    schoolId = entry.SchoolId,
-                    section = entry.Section,
-                    eventId = entry.EventId,
-                    eventTitle = entry.EventTitle
-                };
-
-                using (var package = new ExcelPackage())
-                {
-                    var worksheet = package.Workbook.Worksheets.Add("Registrations");
-
-                    // Add headers
-                    worksheet.Cells["A1"].Value = "Name";
-                    worksheet.Cells["B1"].Value = "Email";
-                    worksheet.Cells["C1"].Value = "School ID";
-                    worksheet.Cells["D1"].Value = "Section";
-                    worksheet.Cells["E1"].Value = "Event";
-                    worksheet.Cells["F1"].Value = "Registration Date";
-
-                    // Style the header row
-                    using (var range = worksheet.Cells["A1:F1"])
-                    {
-                        range.Style.Font.Bold = true;
-                        range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
-                    }
-
-                    // Add data rows
-                    int row = 2;
-                    foreach (var item in entries)
-                    {
-                        worksheet.Cells[row, 1].Value = item.Name;
-                        worksheet.Cells[row, 2].Value = item.Email;
-                        worksheet.Cells[row, 3].Value = item.SchoolId;
-                        worksheet.Cells[row, 4].Value = item.Section;
-                        worksheet.Cells[row, 5].Value = item.RegisteredTime;
-                        row++;
-                    }
-
-                    // Auto-fit columns
-                    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-                    // Generate file
-                    var content = package.GetAsByteArray();
-                    var contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    var fileName = $"{entry.EventTitle}_{DateTime.Now:yyyyMMdd}.xlsx";
-
-                    return File(content, contentType, fileName);
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                 }
+
+                // Add data rows
+                int row = 2;
+                foreach (var item in entries)
+                {
+                    worksheet.Cells[row, 1].Value = item.Name;
+                    worksheet.Cells[row, 2].Value = item.Email;
+                    worksheet.Cells[row, 3].Value = item.SchoolId;
+                    worksheet.Cells[row, 4].Value = item.Section;
+                    worksheet.Cells[row, 5].Value = item.RegisteredTime;
+                    row++;
+                }
+
+                // Auto-fit columns
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                // Generate file
+                content = package.GetAsByteArray();
+                fileName = $"{entries.First().EventTitle}_{DateTime.Now:yyyyMMdd}.xlsx";
+                
 
                 // Email Service
                 // string email = entry.Email;
@@ -202,9 +192,9 @@ namespace BackendProject.Controllers
                 // string firstName = entry.Name;
 
                 // string result = _emailService.sendEmail(email, emailSubject, emailBody, firstName);
-            }
 
-            return Ok(new { message = "Successfully updated Google Sheets" });
+                return File(content, contentType, fileName);
+            }
         }
     }
 }

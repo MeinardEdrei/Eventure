@@ -9,7 +9,7 @@
     --color4: #DAB7FF;
     --color5: #4a3b55;
     --color6: #705c7c;
-    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --borderColor: 0.25px solid hsl(0, 0%, 20%);
     --font: Montserrat, Arial, Helvetica;
     --transition: all ease-in-out 200ms;
 }
@@ -21,7 +21,7 @@
     /* overflow: hidden; */
 }
 .container {
-    width: 50rem;
+    width: 60%;
     margin: 3rem auto;
     display: flex;
     justify-content: center;
@@ -49,6 +49,13 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    width: 100%;
+}
+.subcon img {
+    width: 100%;
+    height: auto; 
+    max-height: 500px; 
+    object-fit: cover;
 }
 .notificationContainer hr {
     margin: 1rem;

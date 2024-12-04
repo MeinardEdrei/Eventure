@@ -354,6 +354,15 @@ namespace BackendProject.Controllers
             var contentType = "image/jpeg";
             return PhysicalFile(filePath, contentType);
         }
+
+        [HttpGet("{id}/get-organizer")]
+        public async Task<IActionResult> GetOrganizer(int id)
+        {
+            var organizer = await _context.Users.FindAsync(id);
+            if (organizer == null) return NotFound(new { Message = "Organizer not found." });
+
+            return Ok(organizer);
+        }
         // ----------------------END OF ORGANIZER API--------------------------------
   }
 }

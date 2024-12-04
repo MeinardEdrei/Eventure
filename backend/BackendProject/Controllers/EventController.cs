@@ -187,7 +187,9 @@ namespace BackendProject.Controllers
             {
                 UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
+                Message = "Your event has been approved.",
                 Type = "All",
+                CreatedAt = DateTime.Now,
             };
 
             _context.Notifications.Add(notifications);

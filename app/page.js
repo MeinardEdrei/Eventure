@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./css/Homepage.css";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [isLoaded, setIsLoaded] = useState(false); 
   const router = useRouter();
+  const [event, setEvent] = useState([]);
 
   useEffect(() => {
     if (status !== "loading") {
@@ -21,6 +23,120 @@ export default function Home() {
     }
   }, [status, session, router]);
 
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/event/events");
+      setEvent(res?.data);
+      console.log(res.data)
+    } catch (error) {
+      if (error.status === 404) {
+        alert("No events found");
+      }
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, [session])
+
+  const popularEvents = () => {
+    const currentDate = new Date();
+
+    const topEvents = event
+      .filter(
+        (events) =>
+        new Date(events.dateStart).getFullYear() === currentDate.getFullYear()
+      ).sort((a, b) => b.attendeeCount - a.attendeeCount);
+      return {
+        Highlights: topEvents
+      }
+  }
+  useEffect(() => {
+    popularEvents();
+  }, [event]);
+
+  // MAIN EVENT IMAGE
+  const renderMainEventImage = () => {
+    const highlights = popularEvents()?.Highlights;
+    
+    // If no events or no highlights
+    if (!highlights || highlights.length === 0) {
+      return (
+        <div 
+          className="rounded-[70px] h-[585px] w-full flex items-center justify-center bg-black"
+        >
+          <p className="text-white text-2xl text-center">
+            No highlights available at the moment
+          </p>
+        </div>
+      );
+    }
+
+    // If events exist but first event has no image
+    if (!highlights[0]?.eventImage) {
+      return (
+        <div 
+          className="rounded-[70px] h-[585px] w-full flex items-center justify-center bg-black"
+        >
+          <p className="text-white text-2xl text-center">
+            No image available for this event
+          </p>
+        </div>
+      );
+    }
+
+    // Render event image
+    return (
+      <div
+        className="rounded-[70px] h-[585px] w-full object-cover"
+        style={{ 
+          backgroundImage: `url(http://localhost:5000/api/event/uploads/${highlights[0]?.eventImage})`, 
+          backgroundSize: 'auto', 
+          backgroundPosition: 'center'
+        }} 
+        alt="Event Image" 
+      />
+    );
+  };
+
+  // SECOND EVENT IMAGE
+  const renderSecondaryEventImage = () => {
+    const highlights = popularEvents()?.Highlights;
+    
+    // If no events or highlights less than 2
+    if (!highlights || highlights.length < 2) {
+      return (
+        <img 
+          className="absolute z-10 top-0 right-0 w-[350px] h-[305px] object-cover
+          rounded-[50px] bg-black"
+          src="/fwvsdv.jpg"
+          alt="No second event"
+        />
+      );
+    }
+
+    // If second event has no image
+    if (!highlights[1]?.eventImage) {
+      return (
+        <img 
+          className="absolute z-10 top-0 right-0 w-[350px] h-[305px] object-cover
+          rounded-[50px] bg-black"
+          src="/fwvsdv.jpg"
+          alt="No image for second event"
+        />
+      );
+    }
+
+    // Render second event image
+    return (
+      <img 
+        className="absolute z-10 top-0 right-0 w-[350px] h-[305px] object-cover
+        rounded-[50px] bg-black"
+        src={`http://localhost:5000/api/event/uploads/${highlights[1]?.eventImage}`}
+        alt="Second Highlight"
+      />
+    );
+  };
+
   if (!isLoaded || status === "loading") {
     return <div>Loading...</div>;
   }
@@ -32,34 +148,22 @@ export default function Home() {
       <div className="w-[86%] mr-2 mt-[2%]">
         <div className="mb-9 sm:ml-[1%] ml-[5%]">
           <h1 className="text-2xl font-[900] pb-4
-            sm:text-3xl md:text-4xl lg:text-5xl">The 'Eras' Highlights
+            sm:text-3xl md:text-4xl lg:text-5xl">Your next Eventure starts here. 
           </h1>
-          <p>
-            Explore popular events near you, browse by category, or check out
-            some of the great community calendars.
+          <p className="text-white/50 font-semibold">
+            Explore events that educate, entertain, and empower students like you. 🚀
           </p>
         </div>
         <section className="relative">
-          <div
-            className="rounded-[70px] h-[585px] w-full object-cover"
-            style={{ 
-              backgroundImage: 'url(/heronsNight.jpg)', 
-              backgroundSize: 'cover', 
-              backgroundPosition: 'center'}} 
-            alt="Image" 
-          />
-          <div className="absolute inset-0 rounded-[70px] bg-gradient-to-b from-[#000000] to-transparent opacity-70"
+          {renderMainEventImage()}
+          <div className="absolute inset-0 rounded-[70px] bg-gradient-to-b from-[#000000] to-transparent opacity-80"
                 style={{ rotate: '180deg'}} />
           <div 
             name="gap"
             className="absolute top-0 right-0 w-[372px] h-[330px] object-cover
             rounded-[50px] bg-[#0C0C0C]"
           />
-          <img 
-            className="absolute z-10 top-0 right-0 w-[350px] h-[305px] object-cover
-            rounded-[50px]"
-            src="/kokoko.jpg"
-          />
+          {renderSecondaryEventImage()}
           <div
             name="top-left"
             className="absolute xl:top-[-1.9%] xl:right-[24%] lg:top-[-2%] lg:right-[36%]
@@ -107,7 +211,9 @@ export default function Home() {
             <p className="text-black text-sm font-medium
             lg:text-lg max-sm:text-xs"
             >
-              November 30, 2023
+              {popularEvents()?.Highlights[0] 
+                ? new Date(popularEvents()?.Highlights[0]?.dateStart).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                : 'No Date'}
             </p>
           </div>
           <Link href='/Events' className="z-10 flex items-center text-center justify-center absolute top-[40%] lg:right-[10%] max-sm:left-[10%] bg-slate-300 w-48 rounded-full 
@@ -122,7 +228,7 @@ export default function Home() {
           <div className="flex absolute px-4 py-2 w-[50%] rounded-full bottom-[14%] left-[3%] md:left-[6%] max-sm:left-[7%]
           text-lg font-bold lg:text-3xl md:text-2xl max-sm:text-sm"
           >
-              The long awaited concert this 2023 with UMAK Jammers
+              {popularEvents()?.Highlights[0]?.title || 'No Event Title'}
           </div>
         </section>
       </div>

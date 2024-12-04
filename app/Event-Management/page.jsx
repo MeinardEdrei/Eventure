@@ -7,9 +7,25 @@ import { useSession } from "next-auth/react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ChevronDown, Check, CheckCheck, X, Info } from "lucide-react";
 import axios from "axios";
-import { fetchData } from "next-auth/client/_utils";
 import ViewEventModal from "./ViewEventModal";
 import RejectReasonModal from "./RejectReasonModal";
+
+import {
+  format,
+  parseISO,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function EventApproval() {
   const { data: session } = useSession();
@@ -18,23 +34,15 @@ export default function EventApproval() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [noEvents, setNoEvents] = useState(true);
+  const [searchEventQuery, setsearchEventQuery] = useState("");
+  const [dateRange, setDateRange] = useState({ from: null, to: null });
+
   // For Event Modal
   const [viewEventModal, setViewEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   // For Reject Reason Modal
   const [rejectReasonModal, setRejectReasonModal] = useState(false);
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
-  const openRejectReasonModal = (event) => {
-    setSelectedRejectEvent(event);
-    setRejectReasonModal(true);
-  };
-
-  const closeRejectReasonModal = () => {
-    setSelectedRejectEvent(null);
-    setRejectReasonModal(false);
-  };
-
-  const [eventId, setEventId] = useState(null);
 
   const options = [
     "Pending",
@@ -43,10 +51,6 @@ export default function EventApproval() {
     "Modified",
     "Rejected",
   ];
-  const handleSelect = (option) => {
-    setSelected(option);
-    setIsOpen(false);
-  };
 
   const fetchData = async () => {
     try {
@@ -56,7 +60,7 @@ export default function EventApproval() {
       );
       if (res.status === 200) {
         setEvents(res.data);
-        setNoEvents(false);
+        setNoEvents(res.data.length === 0);
       }
     } catch (error) {
       console.log(error);
@@ -69,7 +73,38 @@ export default function EventApproval() {
     fetchData();
   }, [session]);
 
-  const filteredEvents = events.filter((event) => event.status === selected);
+  // Enhanced filtering function
+  const filteredEvents = events.filter((event) => {
+    // Filter by status
+    const matchesStatus = event.status === selected;
+
+    // Filter by search query (case-insensitive)
+    const matchesSearch =
+      searchEventQuery === "" ||
+      event.title.toLowerCase().includes(searchEventQuery.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchEventQuery.toLowerCase()) ||
+      event.dateStart.toLowerCase().includes(searchEventQuery.toLowerCase());
+
+    // Filter by date range
+    const matchesDateRange =
+      !dateRange.from ||
+      !dateRange.to ||
+      (new Date(event.dateStart) >= dateRange.from &&
+        new Date(event.dateStart) <= dateRange.to);
+
+    // Return true only if all filters pass
+    return matchesStatus && matchesSearch && matchesDateRange;
+  });
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setsearchEventQuery(e.target.value);
+  };
+
+  const handleSelect = (option) => {
+    setSelected(option);
+    setIsOpen(false);
+  };
 
   const handleApprove = async (eventId) => {
     try {
@@ -86,19 +121,14 @@ export default function EventApproval() {
     }
   };
 
-  const handleReject = async (eventId) => {
-    try {
-      const res = await axios.post(
-        `http://localhost:5000/api/event/reject${eventId}`
-      );
+  const openRejectReasonModal = (event) => {
+    setSelectedRejectEvent(event);
+    setRejectReasonModal(true);
+  };
 
-      if (res.status === 200) {
-        alert("Event rejected successfully");
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error rejecting event:", error);
-    }
+  const closeRejectReasonModal = () => {
+    setSelectedRejectEvent(null);
+    setRejectReasonModal(false);
   };
 
   const openEventModal = (event) => {
@@ -110,7 +140,6 @@ export default function EventApproval() {
     setSelectedEvent(null);
     setViewEventModal(false);
   };
-
 
   if (loading) {
     return <div>Loading...</div>;
@@ -128,7 +157,6 @@ export default function EventApproval() {
               users.
             </p>
           </div>
-
           {/* Dropdown Container */}
           <div className="relative w-[11rem]">
             <button
@@ -150,7 +178,7 @@ export default function EventApproval() {
                     key={option}
                     className={`block w-full py-2 px-2 text-left capitalize bg-transparent border-0 cursor-pointer text-white opacity-50 transition-all duration-300 ease-in-out ${
                       selected === option
-                        ? "bg-purple-500 text font-bold text-white opacity-80"
+                        ? "bg-[#9148cd] text font-bold text-white opacity-90"
                         : "hover:bg-purple-700 hover:text-white hover:font-bold hover:opacity-100"
                     }`}
                     onClick={() => handleSelect(option)}
@@ -169,9 +197,46 @@ export default function EventApproval() {
       </div>
 
       {/* Content */}
-      <div className="box-maincontainer flex flex-col w-[50%]">
-        <div className="process-title mb-5">
-          <h3 className="capitalize">{selected} Events</h3>
+      <div className="box-maincontainer flex flex-col w-[50%] justify-center">
+        <div className="flex flex-row justify-between mb-4 items-center">
+          <div className="text-[1.3rem] font-bold">
+            <h3 className="capitalize">{selected} Events</h3>
+          </div>
+
+          <div className="flex flex-row gap-4">
+            {/* Search Container */}
+            <div className="search-container">
+              <div className="relative group w-full">
+                <i
+                  className="fa fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-[#F7F0FF]/80"
+                  aria-hidden="true"
+                ></i>
+                <input
+                  className="w-48 h-9 pl-11 pr-5 py-[1.1rem] text-large bg-[#463951]/50 text-[#F7F0FF] border border-[#fff0f0b3]/25 rounded-[8px] outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
+                  placeholder="Search"
+                  value={searchEventQuery}
+                  onChange={handleSearchChange}
+                />
+                <div
+                  className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/30 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ zIndex: -1 }}
+                />
+              </div>
+            </div>
+
+            {/* Date Picker */}
+            <div className="relative group">
+              <DatePickerWithRange
+                className=""
+                onDateChange={setDateRange}
+                selectedRange={dateRange}
+              />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/30 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
+            </div>
+          </div>
         </div>
 
         {noEvents && <>No events found.</>}
@@ -297,64 +362,60 @@ export default function EventApproval() {
           onClose={closeRejectReasonModal}
           eventData={selectedRejectEvent}
         />
-
-        {/* Old Design */}
-        {/* <div className="box-container flex flex-col gap-7">
-          {filteredEvents.map((event) => (
-            <div key={event.id} className="indiv-box flex flex-col">
-              <div className="event-image">
-                <img
-                  src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
-                  alt="Image"
-                  width={250}
-                  height={150}
-                />
-              </div>
-
-              <div className="event-details flex flex-col gap-5">
-                <div className="event-text">
-                  <h4>{event.title}</h4>
-                  <p>{event.location}</p>
-                  <p>{new Date(event.date).toLocaleDateString()}</p>
-                </div>
-
-                <div className="pressable flex flex-row justify-between">
-                  <div className="view-details">
-                    <button className="view">See Event Details...</button>
-                  </div>
-                  <div className="event-btn flex flex-row gap-4">
-                    <div className="approve-btn">
-                      <span className="label-icon">
-                        <i className="fa fa-check" aria-hidden="true"></i>
-                      </span>
-                      <button
-                        className="approve"
-                        onClick={() => handleApprove(event.id)}
-                        disabled={event.status === "approved"}
-                      >
-                        Approve
-                      </button>
-                    </div>
-
-                    <div className="reject-btn">
-                      <span className="label-icon">
-                        <i className="fa fa-times" aria-hidden="true"></i>
-                      </span>
-                      <button
-                        className="reject"
-                        onClick={() => handleReject(event.id)}
-                        disabled={event.status === "rejected"}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div> */}
       </div>
+    </div>
+  );
+}
+
+function DatePickerWithRange({ className, onDateChange, selectedRange }) {
+  return (
+    <div className={cn("grid gap-2", className)}>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            // variant={"outline"}
+            className={cn(
+              "w-[100%] justify-start text-left font-normal bg-[#463951]/50 border border-[#fff0f0b3]/25",
+              !selectedRange && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {selectedRange?.from ? (
+              selectedRange.to ? (
+                <>
+                  {format(selectedRange.from, "LLL dd, y")} -{" "}
+                  {format(selectedRange.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(selectedRange.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Date Range</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-auto p-0 bg-transparent border-none"
+          align="start"
+        >
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={selectedRange?.from}
+            selected={selectedRange}
+            onSelect={onDateChange}
+            numberOfMonths={2}
+            className="bg-[#0e0811] rounded-md border border-[#fff0f0b3]/25"
+            modifiersStyles={{
+              selected: {
+                backgroundColor: "#5F3284",
+                color: "white",
+              },
+            }}
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

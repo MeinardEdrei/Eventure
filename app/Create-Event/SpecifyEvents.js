@@ -3,7 +3,7 @@ import "./SpecifyEvents.css";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useSession } from "next-auth/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Send } from "lucide-react";
 // import { Label } from "@/components/ui/label";
 
 const EventSettingsPanel = ({
@@ -60,6 +60,35 @@ const EventSettingsPanel = ({
     CHK: "College of Human Kinetics",
     HSU: "Higher School ng UMak",
   };
+  // For adding a department that was not in the dropdown list
+  const [customDepartmentInput, setCustomDepartmentInput] = useState("");
+  const handleAddCustomDepartment = () => {
+    if (
+      customDepartmentInput.trim() &&
+      !selectedDepartments.includes(customDepartmentInput.trim())
+    ) {
+      setSelectedDepartments((prev) => [...prev, customDepartmentInput.trim()]);
+      setCustomDepartmentInput(""); // Clear input
+      setIsDepartmentOpen(false);
+    }
+  };
+
+  // For adding a partner that was not in the dropdown list
+  const [customPartnershipInput, setCustomPartnershipInput] = useState("");
+    const handleAddCustomPartnership = () => {
+      if (
+        customPartnershipInput.trim() &&
+        !selectedPartnerships.includes(customPartnershipInput.trim())
+      ) {
+        setSelectedPartnerships((prev) => [
+          ...prev,
+          customPartnershipInput.trim(),
+        ]);
+        setCustomPartnershipInput(""); // Clear input
+        setIsPartnershipOpen(false);
+      }
+    };
+
 
   const userDept = Object.keys(departmentMap);
 
@@ -132,7 +161,7 @@ const EventSettingsPanel = ({
               <button
                 className="dropdown-button"
                 onClick={(e) => {
-                  e.preventDefault(); 
+                  e.preventDefault();
                   setIsOpen(!isOpen);
                 }}
               >
@@ -236,6 +265,21 @@ const EventSettingsPanel = ({
                     ))}
                   </>
                 )}
+                {visibilityType === "Custom" && (
+                  <>
+                    {selectedDepartments.map((dept) => (
+                      <span key={dept} className="tag">
+                        {dept}
+                        <button
+                          className="tag-remove"
+                          onClick={() => handleDepartmentToggle(dept)}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </>
+                )}
               </div>
 
               {/* New Dropdown UI for Departments with Filterable Input */}
@@ -269,9 +313,32 @@ const EventSettingsPanel = ({
                     ></i>
                   </button>
                 </div>
-
+                {/* Dropdown Menu */}
                 {isDepartmentOpen && departmentsDropDown && (
                   <div className="dropdown-menu">
+                    <div className="flex items-center p-2 bg-[#6d3998]">
+                      <input
+                        className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
+                        type="text"
+                        placeholder="Add department"
+                        value={customDepartmentInput}
+                        onChange={(e) =>
+                          setCustomDepartmentInput(e.target.value)
+                        }
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            handleAddCustomDepartment();
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={handleAddCustomDepartment}
+                        className="text-white hover:text-[#d19fff] mr-4"
+                      >
+                        <Send size={19} />
+                      </button>
+                    </div>
+
                     {filteredDepartments.map((dept) => (
                       <button
                         key={dept}
@@ -284,7 +351,7 @@ const EventSettingsPanel = ({
                       </button>
                     ))}
                   </div>
-                )}
+                )}{" "}
               </div>
             </div>
 
@@ -372,6 +439,18 @@ const EventSettingsPanel = ({
                   />
                   Private
                 </label>
+
+                {/* Custom Button */}
+                <label className="radio-label">
+                  <input
+                    type="radio"
+                    name="visibility"
+                    className="radio-input accent-purple-500"
+                    checked={visibilityType === "Custom"}
+                    onChange={() => setVisibilityType("Custom")}
+                  />
+                  Custom
+                </label>
               </div>
             </div>
 
@@ -380,7 +459,7 @@ const EventSettingsPanel = ({
               <hr className="border border-solid border-[#ffffff62]" />
             </div>
 
-            {/* Partnership */}
+            {/* Partnership Section*/}
             <div className="box">
               <label className="label-container">
                 <span className="label-icon">
@@ -389,12 +468,12 @@ const EventSettingsPanel = ({
                 <span>Partnership</span>
               </label>
               <div className="tags-container">
-                {selectedPartnerships.map((departmentMap) => (
-                  <span key={departmentMap} className="tag">
-                    {departmentMap}
+                {selectedPartnerships.map((partnership) => (
+                  <span key={partnership} className="tag">
+                    {partnership}
                     <button
                       className="tag-remove"
-                      onClick={() => handlePartnershipToggle(departmentMap)}
+                      onClick={() => handlePartnershipToggle(partnership)}
                     >
                       ×
                     </button>
@@ -430,13 +509,36 @@ const EventSettingsPanel = ({
 
                 {isPartnershipOpen && (
                   <div className="dropdown-menu">
-                    {filteredPartnerships.map((departments) => (
+                    <div className="flex items-center p-2 bg-[#6d3998]">
+                      <input
+                        className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
+                        type="text"
+                        placeholder="Add partners"
+                        value={customPartnershipInput}
+                        onChange={(e) =>
+                          setCustomPartnershipInput(e.target.value)
+                        }
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            handleAddCustomPartnership();
+                          }
+                        }}
+                      />
                       <button
-                        key={departments}
-                        className="dropdown-item"
-                        onClick={() => handlePartnershipToggle(departments)}
+                        onClick={handleAddCustomPartnership}
+                        className="text-white hover:text-[#d19fff] mr-4"
                       >
-                        {departments}
+                        <Send size={19} />
+                      </button>
+                    </div>
+
+                    {filteredPartnerships.map((partnership) => (
+                      <button
+                        key={partnership}
+                        className="dropdown-item"
+                        onClick={() => handlePartnershipToggle(partnership)}
+                      >
+                        {partnership}
                       </button>
                     ))}
                   </div>

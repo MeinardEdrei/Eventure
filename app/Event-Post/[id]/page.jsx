@@ -87,45 +87,10 @@ function EventPost() {
               setShowModal(true);
               return;
             }
-            
-            const registrationForm = await axios.get('http://localhost:5000/api/registration/form');
-          
-            if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
-              const lastEntry = registrationForm.data[registrationForm.data.length - 1];
-              
-              const sheetsData = [{
-                name: lastEntry.name || 'N/A',
-                email: lastEntry.email || 'N/A',
-                schoolId: lastEntry.school_Id || 'N/A',
-                section: lastEntry.section || 'N/A',
-                eventId: (lastEntry.event_Id || lastEntry.event_id || '').toString(),
-                eventTitle: lastEntry.event_Title || lastEntry.event_title || 'N/A',
-                registeredTime: lastEntry.registered_time || lastEntry.registered_Time || 'N/A',
-              }];
 
-              // try {
-              //   const response = await axios.post(
-              //     'http://localhost:5000/api/registration/sheets',
-              //     sheetsData,  
-              //     {
-              //         headers: {
-              //             'Content-Type': 'application/json'
-              //         },
-              //         timeout: 10000
-              //     }
-              //   );
-              // } catch (error) {
-              //     console.error('Google Sheets Error:', error);
-              //     alert('Failed to update Google Sheets: ' + error.message);
-              // }
-
-              setMessage('Joined Event Successfully!');
-              setShowModal(true);
-                
-            }
-        } else {
-          setMessage('An error occurred.');
-          setShowModal(true);
+            alert('Joined Event Successfully!');
+        }else{
+          alert(res.data.message);
         }
     } catch (err) {
         console.error('Error:', err.response?.data?.message || err.message);

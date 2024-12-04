@@ -1,0 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --gradient: linear-gradient(180deg, #0c0c0c, #25152c);
+  --color1: #0c0c0c;
+  --color2: #252525;
+  --color3: #fefefe;
+  --color4: #dab7ff;
+  --color5: #4a3b55;
+  --color6: #705c7c;
+  --color7: #181818;
+  --borderColor: 0.25px solid hsl(0, 0%, 25%);
+  --font: Montserrat, Arial, Helvetica;
+  --transition: all ease-in-out 200ms;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", "Nunito";
+  /* overflow: hidden; */
+}
+.notificationBody {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  width: 87.5%;
+  height: auto;
+  padding: 2rem 0 2rem;
+  margin: 0 auto;
+}
+.notificationContainer {
+  width: 85%;
+}
+.notificationHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  flex-direction: column;
+  height: 10rem;
+  padding: 0 5rem 0 5rem;
+}
+.notificationHeader h1 {
+  font-size: 40;
+  font-weight: 900;
+}
+.notificationHeader p {
+  opacity: 50%;
+  text-align: center;
+}
+.notificationTitle {
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #f7f0ff;
+  /* margin-bottom: 20px; */
+}
+.notificationDescription {
+  font-size: 1rem;
+  color: white;
+  opacity: 0.5;
+}
+
+.notificationMismo {
+  border: var(--borderColor);
+  border-radius: 10px;
+  height: auto;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+.notificationMismo hr {
+  opacity: 25%;
+  margin: .50rem 0 .50rem;
+}
+.notificationMismoHeader {
+  background-color: var(--color7);
+  border-bottom: var(--borderColor);
+  height: 2.5rem;
+  padding: .50rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+.notificationMismoHeader ul {
+  display: flex;
+  gap: 4rem;
+  opacity: 50%;
+}
+.notificationMismoHeader h6 {
+  font-weight: 700;
+}
+.notificationMismoMismo {
+  width: 95%;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+  flex-direction: column;
+  gap: .50rem;
+  margin: 1rem auto;
+}
+.notificationMismoContainer {
+  border-radius: 10px;
+  border: var(--borderColor);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.notificationMismoContainer img {
+  height: 3rem;
+  width: 3rem;
+  border-radius: 100%;
+  border: var(--borderColor);
+}
+.notificationDetails h1  {
+  font-weight: 700;
+  line-height: 1.25rem;
+  font-size: 20px;
+}
+.notificationDetails p {
+  line-height: 1.25rem;
+  opacity: 50%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden; 
+  text-overflow: ellipsis; /* Adds an ellipsis (…) */
+}
+
+/* MODAL */
+.notificationModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.notificationModalContent {
+  background: var(--color7);
+  border:var(--borderColor);
+  overflow: hidden;
+  width: 60rem;
+  height: 100%;
+  border-radius: 10px;
+  padding: 2rem;
+  overflow-y: scroll;
+}
+.notificationModalContent hr {
+  margin: 1rem 0 1rem 0;
+  opacity: 25%;
+}
+.notificationModalUser {
+  display: flex;
+  gap: 1rem;
+}
+.notificationModalUser h2 {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.25rem;
+}
+.notificationModalUser img{
+  width: 3rem;
+  height: 3rem;
+  border-radius: 100%;
+}
+.notificationModalDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.notificationModalDescription img{
+  border-radius: 10px;
+  border: var(--borderColor);
+}
+.notificationModalContent button {
+  width: 7rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border: var(--borderColor);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.notificationModalContent button:hover {
+  background-color: var(--color3);
+  color: var(--color5);
+  font-weight: 700;
+}
+

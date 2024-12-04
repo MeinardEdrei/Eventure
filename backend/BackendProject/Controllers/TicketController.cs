@@ -30,6 +30,45 @@ namespace BackendProject.Controllers
             public int EventId { get; set; }
         }
 
+        [HttpGet("{id}/my-ticket")]
+        public async Task<IActionResult> GetTicket(int id)
+        {
+            var ticketDetails = await _context.RForms
+                .Where(e => e.User_Id == id)
+                .Select(r => new 
+                {
+                    // RForm details
+                    RegistrationId = r.Id,
+                    UserId = r.User_Id,
+                    Name = r.Name,
+                    Email = r.Email,
+                    SchoolId = r.School_Id,
+                    Section = r.Section,
+                    Status = r.Status,
+                    Ticket = r.Ticket,
+                    RegisteredTime = r.Registered_Time,
+
+                    // Related Event details
+                    EventId = r.Event.Id,
+                    EventTitle = r.Event.Title,
+                    EventDescription = r.Event.Description,
+                    EventDateStart = r.Event.DateStart,
+                    EventDateEnd = r.Event.DateEnd,
+                    EventTimeStart = r.Event.TimeStart,
+                    EventTimeEnd = r.Event.TimeEnd,
+                    EventLocation = r.Event.Location,
+                    EventImage = r.Event.EventImage
+                })
+                .FirstOrDefaultAsync();
+
+            if (ticketDetails == null) 
+            {
+                return NotFound(new { message = "Ticket not found." });
+            }
+
+            return Ok(ticketDetails);
+        }
+
         // Proper Alignment
         private void DrawMultilineText(XGraphics graphics, string text, XFont font, XRect rect)
         {

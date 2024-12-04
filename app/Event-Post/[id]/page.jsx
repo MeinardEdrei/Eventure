@@ -15,6 +15,8 @@ function EventPost() {
   const { data: session } = useSession();
   const [ post, setPost ] = useState({});
   const [ isLoading, setIsLoading ] = useState(true);
+  const [message, setMessage] = useState(""); // Manage message feedback
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
   const [formData, setFormData] = useState({
     name: session?.user?.username,
     email: session?.user?.email,
@@ -62,7 +64,8 @@ function EventPost() {
     e.preventDefault();
 
     if (session?.user?.role === 'Organizer' || session?.user?.role === 'Admin') {
-      alert("You are not allowed to join this event because you're an " + session?.user?.role);
+      setMessage("You are not allowed to join this event because you're an " + session?.user?.role);
+      setShowModal(true);
       return;
     }
 
@@ -80,7 +83,8 @@ function EventPost() {
 
         if (res.status === 200) {
             if (res.data.status === 'Pending') {
-              alert('Event is full. You have been added to the waitlist.');
+              setMessage('Event is full. You have been added to the waitlist.');
+              setShowModal(true);
               return;
             }
             
@@ -115,15 +119,18 @@ function EventPost() {
               //     alert('Failed to update Google Sheets: ' + error.message);
               // }
 
-              alert('Joined Event Successfully!');
-              
+              setMessage('Joined Event Successfully!');
+              setShowModal(true);
+                
             }
-        }else{
-          alert('An error occured.');
+        } else {
+          setMessage('An error occurred.');
+          setShowModal(true);
         }
     } catch (err) {
         console.error('Error:', err.response?.data?.message || err.message);
-        alert(err.response?.data?.message || 'An error occurred while joining the event');
+        setMessage(err.response?.data?.message || 'An error occurred while joining the event');
+        setShowModal(true);
     }
   }
 
@@ -178,6 +185,7 @@ function EventPost() {
               >
                 Join Event
               </button>
+              
               <div className="aboutEvent">
                 <h1>About the Event</h1>
                 <p>{post.description}</p>
@@ -186,6 +194,14 @@ function EventPost() {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="modalMessage">
+          <div className="modalContentMessage">
+            <p>{message}</p>
+            <button onClick={() => setShowModal(false)} className="closeButton">Close</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -69,7 +69,6 @@ hr {
 .overviewContainer img {
   width: 17rem;
   height: 12rem;
-  border-radius: 1rem 0 0 1rem;
   border-right: var(--borderColor);
 }
 .overviewDetails {
@@ -82,10 +81,14 @@ hr {
 .overviewDetails h1 {
   font-weight: 800;
   font-size: 24px;
+  line-height: 1.5rem;
 }
-.overviewDetails p {
+.overviewDetails p:first-of-type {
   opacity: 50%;
-  margin: -3.5rem 0 0 0;
+}
+.overviewDetails p + p {
+  opacity: 50%;
+  margin-top: -1rem;
 }
 .overviewDetails button {
   border: var(--borderColor);

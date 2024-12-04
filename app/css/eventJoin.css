@@ -9,10 +9,11 @@
     --color4: #DAB7FF;
     --color5: #4a3b55;
     --color6: #705c7c;
-    --borderColor: 0.25px solid hsl(0, 0%, 50%);
+    --color7: #01c70b;
+    --borderColor: 0.25px solid hsl(0, 0%, 25%);
     --font: Montserrat, Arial, Helvetica;
+    --transition: all ease-in-out 200ms;
 }
-
 * {
     margin: 0;
     padding: 0;
@@ -305,31 +306,39 @@ hr {
     border: var(--borderColor);
 }
 
-/* Prevent body scrolling when modal is open */
-body.modal-open {
-    overflow: hidden;
+.modalMessage {
+position: fixed;
+left: 50%;
+transform: translate(-50%, 0); /* Center horizontally */
+background: rgba(0, 0, 0, 0.9);
+border: var(--borderColor);
+color: var(--color3);
+height: 4rem;
+display: flex;
+padding: 1rem;
+justify-content: center;
+align-items: center;
+width: 50%;
+border-radius: 10px;
 }
 
-/* Input placeholder color */
-.modal input::placeholder {
-    color: var(--color6);
+.modalContentMessage {
+display: flex;
+justify-content: space-between;
+width: 100%;
+align-items: center;
 }
 
-/* Custom scrollbar for modal */
-.modal::-webkit-scrollbar {
-    width: 8px;
+.closeButton {
+background: #ff4d4d;
+border: none;
+color: white;
+padding: 10px 20px;
+border-radius: 5px;
+cursor: pointer;
+transition: var(--transition);
 }
 
-.modal::-webkit-scrollbar-track {
-    background: var(--color5);
-    border-radius: 4px;
-}
-
-.modal::-webkit-scrollbar-thumb {
-    background: var(--color6);
-    border-radius: 4px;
-}
-
-.modal::-webkit-scrollbar-thumb:hover {
-    background: var(--color4);
+.closeButton:hover {
+background: #ff0000;
 }

@@ -203,9 +203,7 @@ function EventsDashboard() {
                         <hr />
                         <div className="modalDescription">
                             <p>{selectedEvent.description}</p>
-                            {/* for testing */}
-                            <p>{selectedEvent.description}</p>
-                            <p>{selectedEvent.description}</p>
+                            
                         </div>
                         <hr />
                         <div className="hosts">
@@ -219,7 +217,9 @@ function EventsDashboard() {
                         </div>
                         <hr />
                         <div className="eventButtons">
-                            <button className='requestJoin'>Request to join</button>
+                            <Link href={'/Event-Post/${selectedEvent.id}'}>
+                                <button className='requestJoin'>Request to join</button>
+                            </Link>
                             <Link href={'./Ticket'}> 
                                 <button className='checkTicket'>My ticket</button>
                             </Link>

@@ -29,6 +29,9 @@ namespace BackendProject.Models
     [Column("Message")]
     public string? Message { get; set; }
 
+    [Column("CreatedAt")]
+    public DateTime? CreatedAt { get; set; }
+
 
     // Eager Loading Navigatiion Props
     public User? User { get; set; }

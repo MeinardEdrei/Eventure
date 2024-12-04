@@ -46,7 +46,7 @@ export default function EventApproval() {
 
   const options = [
     "Pending",
-    "Pre-approved",
+    "Pre-Approved",
     "Approved",
     "Modified",
     "Rejected",
@@ -106,10 +106,54 @@ export default function EventApproval() {
     setIsOpen(false);
   };
 
+  const handleFileDownload = async (eventType, fileName) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/organizer/download/${eventType}/${fileName}`, {
+          responseType: 'blob' 
+        }
+      );
+
+      // Create download mechanism
+      const url = window.URL.createObjectURL(
+        new Blob([response.data], { type: 'application/pdf' })
+      );
+  
+      // Create temporary link
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+  
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF Download Failed', error);
+    }
+  };
+
+  const handlePreApprove = async (eventId) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/event/${eventId}/pre-approve`
+      );
+
+      if (res.status === 200) {
+        alert("Event pre-approved successfully");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error approving event:", error);
+    }
+  };
+
   const handleApprove = async (eventId) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/event/approve${eventId}`
+        `http://localhost:5000/api/event/${eventId}/approve`
       );
 
       if (res.status === 200) {
@@ -118,6 +162,21 @@ export default function EventApproval() {
       }
     } catch (error) {
       console.error("Error approving event:", error);
+    }
+  };
+
+  const handleReject = async (eventId) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/event/${eventId}/reject`
+      );
+
+      if (res.status === 200) {
+        alert("Event rejected successfully");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error rejecting event:", error);
     }
   };
 
@@ -239,7 +298,7 @@ export default function EventApproval() {
           </div>
         </div>
 
-        {noEvents && <>No events found.</>}
+        {/* {noEvents && <>No events found.</>} */}
 
         {/* Latest Design */}
         <div className="cards-container flex flex-col w-full gap-2">
@@ -300,13 +359,12 @@ export default function EventApproval() {
                         <Check size={16} />
                         <button
                           className="text-[0.8rem]"
-                          onClick={() => handleApprove(event.id)}
+                          onClick={() => handlePreApprove(event.id)}
                           disabled={event.status === "approved"}
                         >
                           Pre-approve
                         </button>
                       </div>
-
                       {/* Button: Approve */}
                       <div className="approve-btn">
                         <span className="flex items-center">
@@ -351,16 +409,22 @@ export default function EventApproval() {
             ))
           )}
         </div>
+
         {/* Modal with event data passed */}
         <ViewEventModal
           isOpen={viewEventModal}
           onClose={closeEventModal}
           eventData={selectedEvent} // Pass the selected event data
+          handleApprove={handleApprove}
+          handlePreApprove={handlePreApprove}
+          handleReject={handleReject}
+          handleFileDownload={handleFileDownload}
         />
         <RejectReasonModal
           isOpen={rejectReasonModal}
           onClose={closeRejectReasonModal}
           eventData={selectedRejectEvent}
+          handleReject={handleReject}
         />
       </div>
     </div>

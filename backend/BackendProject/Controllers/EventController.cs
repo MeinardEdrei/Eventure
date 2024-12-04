@@ -62,6 +62,7 @@ namespace BackendProject.Controllers
                 fileName = file.FileName; // Store the filename
 
                 // Define the uploads folder path
+                // var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventsDto.DateStart.ToString("MMMM dd, yyyy h-mm tt")} Event Uploads");
                 var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
 
                 // Create directory if it doesn't exist
@@ -123,8 +124,6 @@ namespace BackendProject.Controllers
 
 
 
-        // ----------------------FETCH EVENTS--------------------------------
-
         [HttpGet("events")]
         public async Task<IActionResult> GetEvents()
         {
@@ -142,6 +141,21 @@ namespace BackendProject.Controllers
             return Ok(events);
         }
 
+        [HttpDelete("{id}/cancel-event")]
+        public async Task<IActionResult> CancelEvent(int id)
+        {
+            var eventToCancel = await _context.Events.FindAsync(id);
+            if (eventToCancel == null) return NotFound(new { message = "Event not found." });
+
+            _context.Events.Remove(eventToCancel);
+            await _context.SaveChangesAsync();
+
+            // var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, $"{eventToCancel.DateStart} Event Uploads");
+            // Directory.Delete(uploadPath, true);
+
+            return Ok(new { message = "Event cancelled successfully." });
+        }
+
         [HttpGet("event-approval")]
         public async Task<IActionResult> GetAdminEvents()
         {
@@ -157,7 +171,7 @@ namespace BackendProject.Controllers
             return Ok(events);
         }
 
-        [HttpPost("approve{eventId}")]
+        [HttpPost("{eventId}/approve")]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {
             var eventToApprove = await _context.Events.FindAsync(eventId);
@@ -173,7 +187,9 @@ namespace BackendProject.Controllers
             {
                 UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
+                Message = "Your event has been approved.",
                 Type = "All",
+                CreatedAt = DateTime.Now,
             };
 
             _context.Notifications.Add(notifications);
@@ -182,7 +198,32 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Event approved." });
         }
 
-        [HttpPost("reject{eventId}")]
+        [HttpPost("{eventId}/pre-approve")]
+        public async Task<IActionResult> PreApproveEvent(int eventId)
+        {
+            var eventToApprove = await _context.Events.FindAsync(eventId);
+
+            if (eventToApprove == null)
+            {
+                return NotFound(new { message = "Event not found." });
+            }
+
+            eventToApprove.Status = "Pre-Approved";
+
+            var notifications = new Notification
+            {
+                UserId = eventToApprove.OrganizerId,
+                EventId = eventToApprove.Id,
+                Type = "Organizer",
+            };
+
+            _context.Notifications.Add(notifications);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event approved." });
+        }
+
+        [HttpPost("{eventId}/reject")]
         public async Task<IActionResult> RejectEvent(int eventId)
         {
             var eventToReject = await _context.Events.FindAsync(eventId);
@@ -223,8 +264,6 @@ namespace BackendProject.Controllers
             var contentType = "image/jpeg"; 
             return PhysicalFile(filePath, contentType);
         }
-
-        // ----------------------END OF FETCH EVENTS--------------------------------
 
         [HttpGet("notification")]
         public async Task<IActionResult> GetNotification()

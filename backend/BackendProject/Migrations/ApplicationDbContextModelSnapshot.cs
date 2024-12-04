@@ -217,6 +217,10 @@ namespace BackendProject.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("CreatedAt");
+
                     b.Property<int>("EventId")
                         .HasColumnType("int")
                         .HasColumnName("EventId");
@@ -405,7 +409,7 @@ namespace BackendProject.Migrations
                         .IsRequired();
 
                     b.HasOne("BackendProject.Models.EvaluationForm", "EvaluationForm")
-                        .WithMany()
+                        .WithMany("EvaluationAnswers")
                         .HasForeignKey("EvaluationFormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -437,7 +441,7 @@ namespace BackendProject.Migrations
             modelBuilder.Entity("BackendProject.Models.EvaluationQuestion", b =>
                 {
                     b.HasOne("BackendProject.Models.EvaluationForm", "EvaluationForm")
-                        .WithMany()
+                        .WithMany("EvaluationQuestions")
                         .HasForeignKey("EvaluationFormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -492,6 +496,13 @@ namespace BackendProject.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationForm", b =>
+                {
+                    b.Navigation("EvaluationAnswers");
+
+                    b.Navigation("EvaluationQuestions");
                 });
 
             modelBuilder.Entity("BackendProject.Models.Event", b =>

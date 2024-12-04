@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const RejectReasonModal = ({ isOpen, onClose, eventData }) => {
+const RejectReasonModal = ({ isOpen, onClose, eventData, handleReject }) => {
   const [reason, setReason] = useState("");
   const [files, setFiles] = useState([]);
 
@@ -13,7 +13,7 @@ const RejectReasonModal = ({ isOpen, onClose, eventData }) => {
 
     // Process rejection with reason and files
     console.log("Rejection Reason:", reason);
-    // console.log("Rejection Files:", files);
+    handleReject(eventData.id);
     console.log("Event:", eventData);
 
     onClose();

@@ -112,7 +112,7 @@ const Header = () => {
                     </>
                 ) : (
                     <>
-                        <Link className='xl:flex lg:flex' href='/Events'>Events</Link>
+                        <Link className='xl:flex lg:flex' href='/Events'>Discover</Link>
                         <Link className='xl:flex lg:flex' href='/EventCalendar'>Calendar</Link>
                         <Link className='xl:flex lg:flex' href='/UserNotifications'>Notifications</Link>
                     </>

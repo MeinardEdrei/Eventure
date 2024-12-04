@@ -7,7 +7,15 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
 
-const ViewEventModal = ({ isOpen, onClose, eventData }) => {
+const ViewEventModal = ({
+  isOpen,
+  onClose,
+  eventData,
+  handleApprove,
+  handlePreApprove,
+  handleReject,
+  handleFileDownload,
+}) => {
   // State Hooks
   const [isVisible, setIsVisible] = useState(false);
   const [selected, setSelected] = useState("Pre-approve");
@@ -39,8 +47,21 @@ const ViewEventModal = ({ isOpen, onClose, eventData }) => {
       day: "numeric",
     });
   };
+
+  // HANDLE SELECTION IN DROPDOWN
   const handleSelect = (option) => {
     setSelected(option);
+    switch (option) {
+      case "Pre-approve":
+        handlePreApprove(eventData.id);
+        break;
+      case "Approve":
+        handleApprove(eventData.id);
+        break;
+      case "Reject":
+        handleReject(eventData.id);
+        break;
+    }
     setDropDownOpen(false);
   };
   // For modal dropdown: bg color will change
@@ -69,13 +90,30 @@ const ViewEventModal = ({ isOpen, onClose, eventData }) => {
     }
   };
 
+  const getCleanFileName = (fileName) => {
+    // Check if the file name contains an underscore
+    if (fileName.includes("_")) {
+      return fileName.split("_").slice(1).join("_"); // Remove the first part if it has an underscore
+    }
+    return fileName; // Return as is if no underscore
+  };
+
   // For modal see requirements
-  const requirements = [
-    { id: 1, text: "Approved Letter of Intent", completed: true },
-    { id: 2, text: "List of Participants", completed: false },
-    { id: 3, text: "Parents/Guardians Consent", completed: false },
-    { id: 4, text: "Approved Room Reservation", completed: false },
-  ];
+  const parsedFiles = JSON.parse(eventData.requirementFiles);
+  const parsedFilesArray = parsedFiles.map((file) => [file]);
+
+  const requirements = (fileName) => {
+    // const cleanFileName = getCleanFileName(fileName[0]);
+    return parsedFilesArray.map((fileName, index) => {
+      return {
+        id: index,
+        text: fileName,
+        completed: true,
+      };
+    });
+  };
+
+  const requirementsList = requirements(parsedFilesArray);
 
   return (
     <div
@@ -263,25 +301,31 @@ const ViewEventModal = ({ isOpen, onClose, eventData }) => {
                   <h3 className="text-lg font-semibold mb-2">
                     Event Requirements
                   </h3>
-                  {requirements.map((req) => (
-                    <div
-                      key={req.id}
-                      className="flex items-center space-x-3 bg-[#3a3a3a] p-2 rounded-md"
-                    >
-                      {req.completed ? (
-                        <Check size={20} className="text-green-500" />
-                      ) : (
-                        <div className="w-5 h-5 border-2 border-gray-500 rounded"></div>
-                      )}
-                      <span
-                        className={`${
-                          req.completed ? "text-green-300" : "text-gray-300"
-                        }`}
+                  {requirementsList.map((req) => {
+                    const cleanFileName = getCleanFileName(req.text[0]);
+                    return (
+                      <div
+                        key={req.id}
+                        onClick={() =>
+                          handleFileDownload(eventData.eventType, req.text)
+                        }
+                        className="flex items-center space-x-3 bg-[#3a3a3a] p-2 rounded-md cursor-pointer"
                       >
-                        {req.text}
-                      </span>
-                    </div>
-                  ))}
+                        {req.completed ? (
+                          <Check size={20} className="text-green-500" />
+                        ) : (
+                          <div className="w-5 h-5 border-2 border-gray-500 rounded"></div>
+                        )}
+                        <span
+                          className={`${
+                            req.completed ? "text-green-300" : "text-gray-300"
+                          }`}
+                        >
+                          {cleanFileName}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

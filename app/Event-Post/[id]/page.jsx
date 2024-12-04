@@ -15,6 +15,8 @@ function EventPost() {
   const { data: session } = useSession();
   const [ post, setPost ] = useState({});
   const [ isLoading, setIsLoading ] = useState(true);
+  const [message, setMessage] = useState(""); // Manage message feedback
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
   const [formData, setFormData] = useState({
     name: session?.user?.username,
     email: session?.user?.email,
@@ -62,7 +64,8 @@ function EventPost() {
     e.preventDefault();
 
     if (session?.user?.role === 'Organizer' || session?.user?.role === 'Admin') {
-      alert("You are not allowed to join this event because you're an " + session?.user?.role);
+      setMessage("You are not allowed to join this event because you're an " + session?.user?.role);
+      setShowModal(true);
       return;
     }
 
@@ -80,50 +83,19 @@ function EventPost() {
 
         if (res.status === 200) {
             if (res.data.status === 'Pending') {
-              alert('Event is full. You have been added to the waitlist.');
+              setMessage('Event is full. You have been added to the waitlist.');
+              setShowModal(true);
               return;
             }
-            
-            const registrationForm = await axios.get('http://localhost:5000/api/registration/form');
-          
-            if (registrationForm.data.length > 0) { // Only process if there is Approved Attendees
-              const lastEntry = registrationForm.data[registrationForm.data.length - 1];
-              
-              const sheetsData = [{
-                name: lastEntry.name || 'N/A',
-                email: lastEntry.email || 'N/A',
-                schoolId: lastEntry.school_Id || 'N/A',
-                section: lastEntry.section || 'N/A',
-                eventId: (lastEntry.event_Id || lastEntry.event_id || '').toString(),
-                eventTitle: lastEntry.event_Title || lastEntry.event_title || 'N/A',
-                registeredTime: lastEntry.registered_time || lastEntry.registered_Time || 'N/A',
-              }];
 
-              // try {
-              //   const response = await axios.post(
-              //     'http://localhost:5000/api/registration/sheets',
-              //     sheetsData,  
-              //     {
-              //         headers: {
-              //             'Content-Type': 'application/json'
-              //         },
-              //         timeout: 10000
-              //     }
-              //   );
-              // } catch (error) {
-              //     console.error('Google Sheets Error:', error);
-              //     alert('Failed to update Google Sheets: ' + error.message);
-              // }
-
-              alert('Joined Event Successfully!');
-              
-            }
+            alert('Joined Event Successfully!');
         }else{
-          alert('An error occured.');
+          alert(res.data.message);
         }
     } catch (err) {
         console.error('Error:', err.response?.data?.message || err.message);
-        alert(err.response?.data?.message || 'An error occurred while joining the event');
+        setMessage(err.response?.data?.message || 'An error occurred while joining the event');
+        setShowModal(true);
     }
   }
 
@@ -178,6 +150,7 @@ function EventPost() {
               >
                 Join Event
               </button>
+              
               <div className="aboutEvent">
                 <h1>About the Event</h1>
                 <p>{post.description}</p>
@@ -186,6 +159,14 @@ function EventPost() {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="modalMessage">
+          <div className="modalContentMessage">
+            <p>{message}</p>
+            <button onClick={() => setShowModal(false)} className="closeButton">Close</button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

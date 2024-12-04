@@ -155,45 +155,6 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Participant has been disapproved." });
         }
 
-        [HttpGet("{email}/ticket")]
-        public async Task<IActionResult> GetTicket(string email)
-        {
-            var ticketDetails = await _context.RForms
-                .Where(e => e.Email == email)
-                .Select(r => new 
-                {
-                    // RForm details
-                    RegistrationId = r.Id,
-                    UserId = r.User_Id,
-                    Name = r.Name,
-                    Email = r.Email,
-                    SchoolId = r.School_Id,
-                    Section = r.Section,
-                    Status = r.Status,
-                    Ticket = r.Ticket,
-                    RegisteredTime = r.Registered_Time,
-
-                    // Related Event details
-                    EventId = r.Event.Id,
-                    EventTitle = r.Event.Title,
-                    EventDescription = r.Event.Description,
-                    EventDateStart = r.Event.DateStart,
-                    EventDateEnd = r.Event.DateEnd,
-                    EventTimeStart = r.Event.TimeStart,
-                    EventTimeEnd = r.Event.TimeEnd,
-                    EventLocation = r.Event.Location,
-                    EventImage = r.Event.EventImage
-                })
-                .FirstOrDefaultAsync();
-
-            if (ticketDetails == null) 
-            {
-                return NotFound(new { message = "Ticket not found." });
-            }
-
-            return Ok(ticketDetails);
-        }
-
         [HttpPost("upload-requirements")]
         public async Task<IActionResult> UploadRequirements([FromForm] List<IFormFile> files, [FromForm] int id)
         {
@@ -204,8 +165,8 @@ namespace BackendProject.Controllers
             var uploadPath = "";
 
             // Define the uploads folder path
-            if (_event?.EventType == "Curricular"){
-                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Curricular Uploads");
+            if (_event?.EventType == "Curriculum"){
+                uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Curriculum Uploads");
             } 
             else if (_event?.EventType == "Organizational"){
                 uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "Organizational Uploads");
@@ -353,6 +314,15 @@ namespace BackendProject.Controllers
 
             var contentType = "image/jpeg";
             return PhysicalFile(filePath, contentType);
+        }
+
+        [HttpGet("{id}/get-organizer")]
+        public async Task<IActionResult> GetOrganizer(int id)
+        {
+            var organizer = await _context.Users.FindAsync(id);
+            if (organizer == null) return NotFound(new { Message = "Organizer not found." });
+
+            return Ok(organizer);
         }
         // ----------------------END OF ORGANIZER API--------------------------------
   }

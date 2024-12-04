@@ -10,10 +10,12 @@ import { Html5Qrcode } from "html5-qrcode";
 import { ChevronDown, X, Pencil } from "lucide-react";
 import SharePage from "./SharePage";
 import MorePage from "./MorePage";
+import { useRouter } from 'next/navigation';
 
 function OrganizerEvents() {
   const { data: session } = useSession();
   const { id } = useParams();
+    const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("Overview");
   const [activeButton, setActiveButton] = useState("Overview");
@@ -253,6 +255,67 @@ function OrganizerEvents() {
       console.log(error);
     }
   };
+
+    // HANDLE CANCEL EVENT
+    const handleCancelEvent = async () => {
+        try {
+            const res = await axios.delete(`http://localhost:5000/api/event/${id}/cancel-event`);
+            if (res.status === 200) {
+                alert(res.data.message);
+                router.push("/My-Events");
+            }
+        } catch (error) {
+            if (error.response.status === 400) {
+                alert("Event not found");
+            }
+        }
+    }
+
+    // HANDLE EXPORT TO EXCEL
+    const handleExportToExcel = async () => {
+        try {
+            const registrationForm = await axios.get(`http://localhost:5000/api/registration/${id}/registration-form`);
+            
+            const sheetsData = registrationForm.data.map(entry => ({
+            name: entry.name || 'N/A',
+            email: entry.email || 'N/A',
+            schoolId: entry.school_Id || 'N/A',
+            section: entry.section || 'N/A',
+            eventId: (entry.event_Id || entry.event_id || '').toString(),
+            eventTitle: entry.event_Title || entry.event_title || 'N/A',
+            registeredTime: entry.registered_time || entry.registered_Time || 'N/A',
+            }));
+
+            try {
+                const res = await axios.post(
+                    'http://localhost:5000/api/registration/excel',
+                    sheetsData,  
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        responseType: 'blob',
+                    }
+                );
+
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${res.fileName}.xlsx`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (error) {
+                if (error.status === 400) {
+                    alert("No one attended yet.");
+                }
+            }
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
   // SEND NOTIFICATION
   const handleSendNotification = async (e) => {
@@ -747,7 +810,11 @@ function OrganizerEvents() {
                   </button>
                 </div>
                 <div className="exportToExcel">
-                  <button>Export to Excel</button>
+                  <button 
+                                        onClick={handleExportToExcel}
+                                    >
+                                        Export to Excel
+                                    </button>
                 </div>
               </div>
               <hr />

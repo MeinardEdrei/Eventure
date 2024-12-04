@@ -35,7 +35,6 @@ function EventNewPage() {
       // FETCH EVENTS
       const res = await axios.get("http://localhost:5000/api/event/events");
       setEvent(res?.data);
-      
     } catch (error) {
       if (error.status === 404) {
         setNoEvents(true);
@@ -44,7 +43,7 @@ function EventNewPage() {
       setLoading(false);
     }
   };
-  
+
   const fetchRegistration = async () => {
     try {
       // CHECK REGISTRATION
@@ -53,8 +52,9 @@ function EventNewPage() {
       );
       if (registration.status === 404) {
         setIsRegistered(false);
-      } else {setIsRegistered(true);}
-      
+      } else {
+        setIsRegistered(true);
+      }
     } catch (error) {
       if (error.status === 404) {
         setNoEvents(true);
@@ -81,13 +81,41 @@ function EventNewPage() {
     };
   };
 
+  const PopularEvents = () => {
+    const currentDate = new Date();
+
+    const topMonthEvent = event
+      .filter(
+        (event) =>
+          new Date(event.dateStart).getMonth() === currentDate.getMonth() &&
+          new Date(event.dateStart).getFullYear() === currentDate.getFullYear()
+      )
+      .sort((a, b) => b.attendeeCount - a.attendeeCount)[0];
+
+    const weekStart = new Date();
+    weekStart.setDate(currentDate.getDate() - currentDate.getDay()); // Get the start of the week (Sunday)
+
+    const topWeekEvent = event
+      .filter(
+        (event) =>
+          new Date(event.dateStart) >= weekStart &&
+          new Date(event.dateStart) <= currentDate
+      )
+      .sort((a, b) => b.attendeeCount - a.attendeeCount)[0];
+
+    return {
+      TopMonthEvent: topMonthEvent,
+      TopWeekEvent: topWeekEvent,
+    };
+  };
+
   // HANDLE SESSION FORM DATA
   useEffect(() => {
     if (session && !loading) {
       setFormData((prev) => ({
         ...prev,
         user_id: session?.user?.id,
-        eventId: selectedEvent ? parseInt(selectedEvent.id) : "", 
+        eventId: selectedEvent ? parseInt(selectedEvent.id) : "",
         eventTitle: selectedEvent ? selectedEvent.title : "",
       }));
     }
@@ -169,25 +197,40 @@ function EventNewPage() {
               </p>
             </div>
 
+            {/* Popular Events */}
             <div className="newCards">
-              <div className="newCard">
-                <div className="newImage">
-                  <img src="heronsNight.jpg" alt="" />
+              {PopularEvents().TopMonthEvent && (
+                <div className="newCard">
+                  <div className="newImage">
+                    <img
+                      src={`http://localhost:5000/api/event/uploads/${
+                        PopularEvents()?.TopMonthEvent?.eventImage
+                      }`}
+                      alt="Event Image"
+                    />
+                  </div>
+                  <div className="newDetails">
+                    <h6>{PopularEvents()?.TopMonthEvent?.title}</h6>
+                    <p>Popular this month</p>
+                  </div>
                 </div>
-                <div className="newDetails">
-                  <h6>Heron's Night 2025</h6>
-                  <p>Popular this month</p>
+              )}
+              {PopularEvents().TopWeekEvent && (
+                <div className="newCard">
+                  <div className="newImage">
+                    <img
+                      src={`http://localhost:5000/api/event/uploads/${
+                        PopularEvents()?.TopWeekEvent?.eventImage
+                      }`}
+                      alt="Event Image"
+                    />
+                  </div>
+                  <div className="newDetails">
+                    <h6>{PopularEvents()?.TopWeekEvent?.title}</h6>
+                    <p>Popular this week</p>
+                  </div>
                 </div>
-              </div>
-              <div className="newCard">
-                <div className="newImage">
-                  <img src="heronsNight.jpg" alt="" />
-                </div>
-                <div className="newDetails">
-                  <h6>General Assembly</h6>
-                  <p>Popular this week</p>
-                </div>
-              </div>
+              )}
             </div>
 
             <hr />
@@ -352,18 +395,18 @@ function EventNewPage() {
               </div>
               <hr />
               <div className="eventButtons">
-              {!isRegistered ? (
-                <button
-                  className="requestJoin"
-                  onClick={() => handleJoinEvent(selectedEvent.id)}
-                >
-                  Request to join
-                </button>
-              ) : (
+                {!isRegistered ? (
+                  <button
+                    className="requestJoin"
+                    onClick={() => handleJoinEvent(selectedEvent.id)}
+                  >
+                    Request to join
+                  </button>
+                ) : (
                   <Link href={`/Ticket/${session?.user?.id}`}>
                     <button className="checkTicket">My ticket</button>
                   </Link>
-              )}
+                )}
               </div>
             </div>
           </div>

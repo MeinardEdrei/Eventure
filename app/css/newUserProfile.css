@@ -1,0 +1,239 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --gradient: linear-gradient(180deg, #0c0c0c, #25152c);
+  --color1: #0c0c0c;
+  --color2: #252525;
+  --color3: #fefefe;
+  --color4: #dab7ff;
+  --color5: #4a3b55;
+  --color6: #705c7c;
+  --color7: #181818;
+  --borderColor: 0.25px solid hsl(0, 0%, 25%);
+  --font: Montserrat, Arial, Helvetica;
+  --transition: all ease-in-out 200ms;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", "Nunito";
+  /* overflow: hidden; */
+}
+.newProfileBody {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  width: 87.5%;
+  height: auto;
+  padding: 2rem 0 2rem;
+  margin: 0 auto;
+}
+.newProfileContainer {
+  width: 85%;
+}
+.newProfileHeader img{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: var(--borderColor);
+  border-radius: 10px;
+  flex-direction: column;
+  width: 100%;
+  object-fit: cover;
+  height: 10rem;
+}
+
+.newProfileInformation {
+  padding: 0 1rem 0 2.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 1rem;
+  justify-content: space-between;
+}
+.newProfileInformation img {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 100%;
+  margin-top: -3rem;
+}
+.newProfileDetails h1 {
+  font-weight: 700;
+}
+.newProfileDetails p {
+  opacity: 50%;
+}
+.newProfileEdit {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end; 
+  margin-right: -1rem;
+}
+.newProfileEdit button {
+  height: 2.5rem;
+  width: 100%;
+  max-width: 10rem; 
+  border: var(--borderColor);
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition);
+}
+.newProfileEdit button:hover {
+  color: var(--color5);
+  background-color: var(--color3);
+  font-weight: 600;
+}
+.newProfileContainer hr {
+  margin: 1rem 0 1rem 0;
+  opacity: 25%;
+}
+
+/* EVENT CONTENT */
+.newEventContent {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  flex-wrap: wrap; /* Allow wrapping of items */
+}
+.newEventDisplay {
+  border: var(--borderColor);
+  border-radius: 10px;
+  width: 23.1rem;
+  height: 9rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.newEventContentDetails {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.newEventContentDetails h1 {
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+.newEventContentDetails p {
+  font-size: .9rem;
+  opacity: 50%;
+  line-height: 1.25rem;
+}
+.newEventContent img {
+  width: 9rem;
+  height: 9rem;
+  object-fit: cover;
+}
+.newEventFunctions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.newEventFunctions h1 {
+  font-weight: 700;
+}
+.newEventButtons {
+  border: var(--borderColor);
+  border-radius: 10px;
+  width: 12rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: space-evenly;
+  background-color: var(--color1);
+  overflow: hidden;
+}
+.newEventButtons button {
+  flex-grow: 1;
+  height: 100%;
+  border: none;
+  background-color: transparent;
+  color: var(--color3);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  
+}
+.newEventButtons button:first-child {
+  border-right: var(--borderColor);
+}
+.newEventButtons button:hover {
+  background-color: var(--color2);
+  color: var(--color5);
+}
+.newEventButtons button.active {
+  background-color: var(--color5);
+  color: var(--color3);
+}
+.newEventButtons button:not(.active) {
+  background-color: transparent;
+  color: var(--color3);
+}
+
+.userModal {
+  position: fixed;
+  top: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.editModal {
+  background: var(--color7);
+  border:var(--borderColor);
+  overflow: hidden;
+  width: 30rem;
+  height: auto;
+  border-radius: 10px;
+  padding: 2rem;
+  overflow-y: scroll;
+}
+.editModal hr {
+  margin: 1rem 0 1rem 0;
+  opacity: 25%;
+}
+.editModal h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+.editModal form input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  background-color: transparent;
+  border: var(--borderColor);
+  border-radius: 4px;
+}
+.editProfileButtonModal {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.editProfileButtonModal button {
+  padding: 10px 20px;
+  border: var(--borderColor);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.editProfileButtonModal button:hover {
+  background: var(--color3);
+  color: var(--color5);
+  font-weight: 600;
+}

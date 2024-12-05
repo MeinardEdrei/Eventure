@@ -81,7 +81,7 @@ body {
   max-height: 200px; /* Limit the height of the dropdown */
   overflow-y: auto; /* Add vertical scrollbar when content exceeds max-height */
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #888 #f1f1f1; /* For Firefox */
+  scrollbar-color: #7b3eac #392549; /* For Firefox */
 }
 .dropdown-menu::-webkit-scrollbar {
   width: 10px;
@@ -99,7 +99,15 @@ body {
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+.dropdown-menu .add-dept::placeholder,
+.dropdown-menu .add-partner::placeholder{
+  color: rgb(255, 255, 255);
+}
+.dropdown-menu .add-dept:focus,
+.dropdown-menu .add-partner:focus{
+  border: 1px solid #e4c7ffb3;
 
+}
 
 .dropdown-item {
   display: block;
@@ -111,7 +119,7 @@ body {
   border: none;
   cursor: pointer;
   color: #ffffff;
-  opacity: 0.7;
+  opacity: 0.5;
   transition: all 0.3s ease;
 }
 .dropdown-item:hover {
@@ -122,7 +130,9 @@ body {
 }
 
 .dropdown-item.selected {
-  background-color: #9333ea;
+  background-color: #9148cd;
+  font-weight: bold;
+  opacity: 0.9;
 }
 
 /* Per Box */

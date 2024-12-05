@@ -164,12 +164,18 @@ const Page = () => {
     <div className="createEvent-mnc">
       <form onSubmit={handleSubmit} className="event-content">
         <div className="text-container">
-          <h1>Create a New Event</h1>
-          <p>
-            Create a unique and engaging event that caters to your specific
-            needs.
-          </p>
+          <div>
+            <h1>Create a New Event</h1>
+            <p>
+              Create a unique and engaging event that caters to your specific
+              needs.
+            </p>
+          </div>
+          <div className="line-container w-[100%] h-auto">
+            <hr className="border border-white/50" />
+          </div>
         </div>
+
         <div className="input-containers flex flex-row w-[100%] gap-8">
           {/* Left Side */}
           <div className="left-container flex flex-col w-[50%] gap-4 ">
@@ -247,7 +253,7 @@ const Page = () => {
               <label>Description</label>
               <textarea
                 rows="8"
-                className="overflow-hidden"
+                className="overflow-y-auto max-h-[29vh]"
                 ref={descriptionRef}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

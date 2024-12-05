@@ -113,7 +113,7 @@ const Header = () => {
                 ) : (
                     <>
                         <Link className='xl:flex lg:flex' href='/Events'>Discover</Link>
-                        <Link className='xl:flex lg:flex' href='/New-Calendar'>Calendar</Link>
+                        <Link className='xl:flex lg:flex' href='/Calendar'>Calendar</Link>
                         <Link className='xl:flex lg:flex' href='/New-Notification'>Notifications</Link>
                     </>
                 )}
@@ -155,8 +155,8 @@ const Header = () => {
                                     <>
                                     <Link onClick={() => setDropDownOpen(false)} href='/UserProfile' className='flex justify-start w-full font-normal max-h-[3em] text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
                                     <div className='pb-2 md:block lg:hidden'>
-                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='\Events'>Events</Link>
-                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
+                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Events'>Events</Link>
+                                        <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Calendar'>Calendar</Link>
                                         <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Notification</Link>
                                     </div>
                                     </>
@@ -178,7 +178,7 @@ const Header = () => {
                         <div className='flex flex-col p-2'>
                             <div className='pb-2'>
                                 <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Events'>Events</Link>
-                                <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href=''>Calendar</Link>
+                                <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Calendar'>Calendar</Link>
                             </div>
                             <hr className='border-t border-white/30 my-0' />
                             <Link onClick={() => setDropDownOpen(false)} href='/Login' className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md font-semibold'>Login</Link>

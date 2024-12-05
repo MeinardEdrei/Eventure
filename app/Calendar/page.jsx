@@ -1,15 +1,58 @@
 'use client';
+import axios from 'axios';
 import '../css/newCalendar.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  getDay,
+  addMonths,
+  subMonths,
+} from "date-fns";
 
-function NewCalendar() {
+function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [events, setEvents] = useState({});
 
-  const events = {
-    '2024-12-25': ['Unite and Ignite: Acquaintance Party 2024', 'Herons Night'],
-    '2024-12-31': ['New Year’s Eve Celebration'],
-  };
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/event/events"
+        );
+
+        const formattedEvents = response.data.reduce((acc, event) => {
+          const eventDate = format(new Date(event.dateStart), "yyyy-MM-dd");
+          const eventTitle = event.title;
+
+          // If the date key doesn't exist, create it
+          if (!acc[eventDate]) {
+            acc[eventDate] = [];
+          }
+
+          // Push the event description into the array for that date
+          acc[eventDate].push(eventTitle);
+          return acc;
+        }, {});
+
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+        alert(error.message);
+        setEvents({});
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // const events = {
+  //   '2024-12-25': ['Unite and Ignite: Acquaintance Party 2024', 'Herons Night'],
+  //   '2024-12-31': ['New Year’s Eve Celebration'],
+  // };
 
   const daysInMonth = new Date(
     currentDate.getFullYear(),
@@ -35,10 +78,6 @@ function NewCalendar() {
     );
   };
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
-
   const renderCalendarDays = () => {
     const calendarDays = [];
 
@@ -54,7 +93,7 @@ function NewCalendar() {
         currentDate.getMonth(),
         day
       );
-      const dateString = formatDate(date);
+      const dateString = format(date, 'yyyy-MM-dd');
       const hasEvent = events[dateString];
 
       calendarDays.push(
@@ -148,4 +187,4 @@ function NewCalendar() {
   );
 }
 
-export default NewCalendar;
+export default Calendar;

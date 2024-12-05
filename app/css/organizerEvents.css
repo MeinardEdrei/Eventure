@@ -198,7 +198,7 @@ hr {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-left: 1.5rem;
+  /* margin-left: 1.5rem; */
 }
 
 .guestDetails h6 {
@@ -251,10 +251,11 @@ hr {
   gap: 0.5rem;
 }
 .exportToExcel button {
-  width: 13rem;
-  height: 2.5rem;
-  border: var(--borderColor);
-  border-radius: 10px;
+  background-color: white;
+  font-weight: 600;
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -262,14 +263,12 @@ hr {
 }
 .exportToExcel button:hover {
   font-weight: 600;
-  background-color: var(--color5);
-  color: var(--color3);
+  background-color: #adadad;
 }
 .eventScanner button {
-  width: 13rem;
-  height: 2.5rem;
-  border: var(--borderColor);
-  border-radius: 10px;
+  background-color: #898989;
+  color: rgb(0, 0, 0, 0.7);
+  border-radius: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -277,7 +276,7 @@ hr {
 }
 .eventScanner button:hover {
   font-weight: 600;
-  background-color: var(--color5);
+  background-color: #404040;
   color: var(--color3);
 }
 .buttons {
@@ -286,17 +285,21 @@ hr {
   align-items: center;
 }
 
-.guestDetails button {
-  border: var(--borderColor);
-  border-radius: 10px;
-  width: 7rem;
-  padding: 5px 0;
+.guestDetails .present-btn, 
+.guestDetails .undo-btn{
+  background-color: #00ff00;
+  color: #000;
+  /* border: var(--borderColor); */
+  border-radius: 5px;
+  /* width: 7rem; */
+  padding: 0.2rem 0.6rem;
   transition: var(--transition);
 }
 
-.guestDetails button:hover {
-  background-color: var(--color5);
-  font-weight: 600;
+.guestDetails .present-btn:hover,
+.guestDetails .undo-btn:hover {
+  background-color: #008b00;
+  color: #ffffff;
 }
 
 /*button*/

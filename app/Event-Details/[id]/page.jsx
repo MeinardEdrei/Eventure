@@ -8,14 +8,16 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import { Html5Qrcode } from "html5-qrcode";
 import { ChevronDown, X, Pencil } from "lucide-react";
+import RegistrationPage from "./RegistrationPage";
 import SharePage from "./SharePage";
 import MorePage from "./MorePage";
-import { useRouter } from 'next/navigation';
+import EditEventModal from "./EditEventModal";
+import { useRouter } from "next/navigation";
 
 function OrganizerEvents() {
   const { data: session } = useSession();
   const { id } = useParams();
-    const router = useRouter();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState("Overview");
   const [activeButton, setActiveButton] = useState("Overview");
@@ -33,6 +35,8 @@ function OrganizerEvents() {
   const [message, setMessage] = useState("");
   const [notificationImage, setNotificationImage] = useState(null);
   const [evaluationForm, setEvaluationForm] = useState([]);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleSelect = (option) => {
     setSelected(option);
@@ -256,66 +260,68 @@ function OrganizerEvents() {
     }
   };
 
-    // HANDLE CANCEL EVENT
-    const handleCancelEvent = async () => {
-        try {
-            const res = await axios.delete(`http://localhost:5000/api/event/${id}/cancel-event`);
-            if (res.status === 200) {
-                alert(res.data.message);
-                router.push("/My-Events");
-            }
-        } catch (error) {
-            if (error.response.status === 400) {
-                alert("Event not found");
-            }
-        }
+  // HANDLE CANCEL EVENT
+  const handleCancelEvent = async () => {
+    try {
+      const res = await axios.delete(
+        `http://localhost:5000/api/event/${id}/cancel-event`
+      );
+      if (res.status === 200) {
+        alert(res.data.message);
+        router.push("/My-Events");
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        alert("Event not found");
+      }
     }
+  };
 
-    // HANDLE EXPORT TO EXCEL
-    const handleExportToExcel = async () => {
-        try {
-            const registrationForm = await axios.get(`http://localhost:5000/api/registration/${id}/registration-form`);
-            
-            const sheetsData = registrationForm.data.map(entry => ({
-            name: entry.name || 'N/A',
-            email: entry.email || 'N/A',
-            schoolId: entry.school_Id || 'N/A',
-            section: entry.section || 'N/A',
-            eventId: (entry.event_Id || entry.event_id || '').toString(),
-            eventTitle: entry.event_Title || entry.event_title || 'N/A',
-            registeredTime: entry.registered_time || entry.registered_Time || 'N/A',
-            }));
+  // HANDLE EXPORT TO EXCEL
+  const handleExportToExcel = async () => {
+    try {
+      const registrationForm = await axios.get(
+        `http://localhost:5000/api/registration/${id}/registration-form`
+      );
 
-            try {
-                const res = await axios.post(
-                    'http://localhost:5000/api/registration/excel',
-                    sheetsData,  
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        responseType: 'blob',
-                    }
-                );
+      const sheetsData = registrationForm.data.map((entry) => ({
+        name: entry.name || "N/A",
+        email: entry.email || "N/A",
+        schoolId: entry.school_Id || "N/A",
+        section: entry.section || "N/A",
+        eventId: (entry.event_Id || entry.event_id || "").toString(),
+        eventTitle: entry.event_Title || entry.event_title || "N/A",
+        registeredTime: entry.registered_time || entry.registered_Time || "N/A",
+      }));
 
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', `${res.fileName}.xlsx`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-            } catch (error) {
-                if (error.status === 400) {
-                    alert("No one attended yet.");
-                }
-            }
-            
-        } catch (error) {
-            console.log(error);
+      try {
+        const res = await axios.post(
+          "http://localhost:5000/api/registration/excel",
+          sheetsData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            responseType: "blob",
+          }
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `${res.fileName}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        if (error.status === 400) {
+          alert("No one attended yet.");
         }
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
 
   // SEND NOTIFICATION
   const handleSendNotification = async (e) => {
@@ -430,12 +436,25 @@ function OrganizerEvents() {
                       </p>
                     </div>
                   </div>
+                  {/* Edit Event */}
                   <div className="flex flex-row justify-end">
-                    <button className="py-[0.5rem] px-6 flex flex-row items-center gap-2">
+                    <button
+                      className="py-[0.5rem] px-6 flex flex-row items-center gap-2"
+                      onClick={() => setIsEditModalOpen(true)}
+                    >
                       <Pencil size={20} strokeWidth={1.5} />
                       Edit
                     </button>
                   </div>
+
+                  {/* Edit Modal */}
+                  <EditEventModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    event={event}
+                    eventId={id}
+                    onUpdateSuccess={fetchData}
+                  />
                 </div>
               </div>
 
@@ -444,10 +463,11 @@ function OrganizerEvents() {
               </div>
 
               {/* Event Details */}
-              <div>
+              <div className="flex flex-col gap-2">
                 <div className="organizerHeader">
                   <h6 className="text-[1.3rem] font-semibold">Event Details</h6>
                 </div>
+
                 <div className="statContainer">
                   <div className="bg-gradient-to-b from-[#e29fff] to-[#452c5c] rounded-[15px]">
                     <div className="eventStatistic">
@@ -500,14 +520,14 @@ function OrganizerEvents() {
               </div>
 
               {/* Event Partners */}
-              <div>
+              <div className="flex flex-col gap-4">
                 <div className="">
                   <div className="text-[1.3rem] font-semibold">
                     Event Partners
                   </div>
-                  <div className="organizerDescription">
+                  {/* <div className="organizerDescription">
                     Add hosts, special guests, and event managers.
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="guestContainer">
@@ -546,288 +566,11 @@ function OrganizerEvents() {
 
           {/* REGISTRATION PAGE */}
           {activeButton === "Registration" && (
-            <>
-              <hr />
-              <div className="section">
-                <div className="w-[60%]">
-                  <div className="text-[1.3rem] font-semibold">
-                    Attendees List
-                  </div>
-                  <div className="organizerDescription">
-                    Manage and view participant details for streamlined event
-                    coordination.
-                  </div>
-                </div>
-
-                {/* Toggle Button Container */}
-                <div className="toggleButtonContainer">
-                  <button
-                    className={`toggleButton ${
-                      selectedSection === "waiting" ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedSection("waiting")}
-                  >
-                    Waiting
-                  </button>
-                  <button
-                    className={`toggleButton ${
-                      selectedSection === "attending" ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedSection("attending")}
-                  >
-                    Going
-                  </button>
-                  <button
-                    className={`toggleButton ${
-                      selectedSection === "attended" ? "active" : ""
-                    }`}
-                    onClick={() => setSelectedSection("attended")}
-                  >
-                    Attended
-                  </button>
-                </div>
-              </div>
-
-              {/* SEARCH BAR SECTION */}
-              <div className="searchBarContainer">
-                <div className="searchBar">
-                  <input
-                    type="text"
-                    name=""
-                    id="searchBar"
-                    placeholder="Search by name..."
-                  />
-                </div>
-                <button type="submit">Search</button>
-              </div>
-
-              {/* ATTENDEES LIST: ATTENDED SECTION */}
-              <div className="contentSection">
-                {selectedSection === "waiting" && (
-                  <div className="guestContainer">
-                    {participants.find((p) => p.status === "Waiting")?.email
-                      .length > 0 ? (
-                      participants
-                        .find((p) => p.status === "Waiting")
-                        ?.email.map((email, index) => (
-                          <div key={index}>
-                            <div className="guestDetails">
-                              <h6>
-                                {
-                                  participants.find(
-                                    (p) => p.status === "Waiting"
-                                  ).name[index]
-                                }
-                              </h6>
-                              <p>{email}</p>
-                              <div className="buttons">
-                                <button
-                                  onClick={() =>
-                                    handleApproveParticipant(email)
-                                  }
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleDisapproveParticipant(email)
-                                  }
-                                >
-                                  Disapprove
-                                </button>
-                              </div>
-                            </div>
-                            {index <
-                              participants.find((p) => p.status === "Waiting")
-                                .email.length -
-                                1 && (
-                              <div className="smallhr">
-                                <hr />
-                              </div>
-                            )}
-                          </div>
-                        ))
-                    ) : (
-                      <>
-                        <div>No pending attendees right now.</div>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* ATTENDEES LIST: ATTENDING SECTION */}
-                {selectedSection === "attending" && (
-                  <div className="attendeeList">
-                    <div className="guestContainer">
-                      {participants.find((p) => p.status === "Going")?.email
-                        .length > 0 ? (
-                        participants
-                          .find((p) => p.status === "Going")
-                          .email.map((email, index) => (
-                            <div key={index}>
-                              <div className="guestDetails">
-                                <h6>
-                                  {
-                                    participants.find(
-                                      (p) => p.status === "Going"
-                                    ).name[index]
-                                  }
-                                </h6>
-                                <p>{email}</p>
-                                <div className="buttons">
-                                  <button
-                                    type="submit"
-                                    onClick={() => handlePresentButton(email)}
-                                  >
-                                    Present
-                                  </button>
-                                </div>
-                              </div>
-                              {index <
-                                participants.find((p) => p.status === "Going")
-                                  .email.length -
-                                  1 && (
-                                <div className="smallhr">
-                                  <hr />
-                                </div>
-                              )}
-                            </div>
-                          ))
-                      ) : (
-                        <div>No attendees right now.</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* ATTENDEES LIST: ATTENDED SECTION */}
-                {selectedSection === "attended" && (
-                  <div className="attendeeList">
-                    <div className="guestContainer">
-                      {participants.find((p) => p.status === "Attended")?.email
-                        .length > 0 ? (
-                        participants
-                          .find((p) => p.status === "Attended")
-                          ?.email.map((email, index) => (
-                            <div key={index}>
-                              <div className="guestDetails">
-                                <h6>
-                                  {
-                                    participants.find(
-                                      (p) => p.status === "Attended"
-                                    ).name[index]
-                                  }
-                                </h6>
-                                <p>{email}</p>
-                                <div className="buttons">
-                                  <button
-                                    onClick={() => handleUndoPresent(email)}
-                                  >
-                                    Undo
-                                  </button>
-                                </div>
-                              </div>
-                              {index <
-                                participants.find(
-                                  (p) => p.status === "Attended"
-                                ).email.length -
-                                  1 && (
-                                <div className="smallhr">
-                                  <hr />
-                                </div>
-                              )}
-                            </div>
-                          ))
-                      ) : (
-                        <>
-                          <div>Attendees are still in line right now.</div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <hr />
-              <div className="text-[1.3rem] font-semibold">
-                Event Attendance
-              </div>
-              <div className="organizerDescription">
-                Efficiently track attendee check-ins and monitor participation
-                in real-time during events.
-              </div>
-
-              <div className="w-full flex flex-col justify-center items-center">
-                <div className="flex flex-col justify-center items-center w-[80%]">
-                  {/* Scan Result Message */}
-                  {scanMessage && (
-                    <div
-                      className="scanMessage flex w-full"
-                      style={{
-                        backgroundColor:
-                          scanMessage.includes("Error") ||
-                          scanMessage.includes("not")
-                            ? "red"
-                            : scanMessage.includes("scanned")
-                            ? "#B66503"
-                            : "green",
-                        padding: "10px",
-                        margin: "10px 0",
-                        borderRadius: "5px",
-                      }}
-                    >
-                      {scanMessage}
-                    </div>
-                  )}
-
-                  {/* QR Code Scanner Container */}
-                  <div
-                    id="reader"
-                    className="mt-[.5vw] mb-[2vw]"
-                    style={{
-                      width: "100%",
-                      display: isScannerActive ? "block" : "none",
-                    }}
-                  ></div>
-                  <style>{`
-                                    #reader video {
-                                        transform: scaleX(-1);
-                                    }
-                                `}</style>
-                </div>
-              </div>
-
-              <div className="attendanceButtons">
-                <div className="eventScanner">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      toggleScanner(e);
-                      setSelectedSection("attending");
-                    }}
-                  >
-                    {isScannerActive ? "Stop Scanning" : "Start QR Scanner"}
-                  </button>
-                </div>
-                <div className="exportToExcel">
-                  <button 
-                                        onClick={handleExportToExcel}
-                                    >
-                                        Export to Excel
-                                    </button>
-                </div>
-              </div>
-              <hr />
-
-              {/* Toggle Restriction */}
-              <div className="text-[1.3rem] font-semibold">
-                Toggle Registration
-              </div>
-              <div className="organizerDescription">
-                Enable or disable event registration with a single click for
-                flexible attendee management.
-              </div>
-            </>
+            <RegistrationPage
+              participants={participants}
+              fetchData={fetchData}
+              eventId={id}
+            />
           )}
 
           {/* SHARE PAGE */}

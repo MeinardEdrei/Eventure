@@ -99,21 +99,24 @@ const ViewEventModal = ({
   };
 
   // For modal see requirements
-  const parsedFiles = JSON.parse(eventData.requirementFiles);
-  const parsedFilesArray = parsedFiles.map((file) => [file]);
+  const parsedFiles = (() => {
+    try {
+      return JSON.parse(eventData.requirementFiles || "[]");
+    } catch (error) {
+      console.error("Error parsing requirement files:", error);
+      return [];
+    }
+  })();
 
-  const requirements = (fileName) => {
-    // const cleanFileName = getCleanFileName(fileName[0]);
-    return parsedFilesArray.map((fileName, index) => {
-      return {
-        id: index,
-        text: fileName,
-        completed: true,
-      };
-    });
+  const requirements = () => {
+    return parsedFiles.map((fileName, index) => ({
+      id: index,
+      text: [fileName], 
+      completed: true,
+    }));
   };
 
-  const requirementsList = requirements(parsedFilesArray);
+  const requirementsList = requirements();
 
   return (
     <div

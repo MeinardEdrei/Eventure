@@ -1,0 +1,22 @@
+.event-name input,
+.event-location input,
+.event-capacity input,
+.event-description textarea {
+  background-color: transparent;
+  border: 1px solid rgba(255, 240, 240, 0.3);
+  border-radius: 8px;
+  width: 100%;
+}
+
+.event-name input:focus,
+.event-location input:focus,
+.event-capacity input:focus,
+.event-description textarea:focus {
+  background-color: rgba(85, 97, 87, 0.3);
+  border: 2px solid #e4c7ffb3;
+  outline: none; /* Removes the default outline for better focus styles */
+}
+
+/* .event-description textarea {
+  resize: vertical;
+} */

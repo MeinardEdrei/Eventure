@@ -26,12 +26,14 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    
 }
 hr {
     margin: 1rem 0 0 0;
     opacity: 25%;
 }
 .semiheader {
+    line-height: 1.25rem;
     font-weight: 700;
     font-size: 18px;
 }
@@ -108,14 +110,13 @@ hr {
     background-color: var(--color5);
     font-weight: 600;
 }
-.eventSection {
-    margin-top: 1rem;
+.profileEventSection {
     display: flex;
     gap: 1rem;
     flex-direction: row;
     flex-wrap: wrap;
 }
-.eventContainer {
+.profileEventContainer {
     width: 24.5rem;
     height: 9rem;
     border: var(--borderColor);
@@ -124,21 +125,29 @@ hr {
     flex-direction: row;
     overflow: hidden;
 }
-.eventImage img{
-    width: 9rem;
-    height: 9rem;
+.profileEventImage img{
+    width: 10rem;
+    height: 10rem;
     border-radius: 10px;
+    object-fit: cover;
     border-right: var(--borderColor);
 }
-.eventDetails {
+.profileEventDetails {
     margin: 0 0 0 .75rem;
+    width: 15rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
-.eventDetails p {
+.profileEventDetails p {
     line-height: 1rem;
     opacity: 50%;
+}
+.eventSectionContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 .modalOverlay {
     position: fixed;

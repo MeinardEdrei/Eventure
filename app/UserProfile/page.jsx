@@ -65,45 +65,47 @@ function UserProfile() {
 
                 <hr />
 
-                {attendedEvents.length > 0 && (
-                    attendedEvents.map((event, index) => {
-                        const eventDate = new Date(event.date);
-                        const isPastEvent = eventDate < new Date();
+                <div className="eventSectionContainer">
+                    {attendedEvents.length > 0 && (
+                        attendedEvents.map((event, index) => {
+                            const eventDate = new Date(event.date);
+                            const isPastEvent = eventDate < new Date();
 
-                        if (selectedSection === 'upcoming' && !isPastEvent) {
-                            return (
-                                <div key={index} className="eventSection">
-                                    <div className="eventContainer">
-                                        <div className="eventImage">
-                                            <img src="/heronsNight.jpg" alt={event.title} />
-                                        </div>
-                                        <div className="eventDetails">
-                                            <div className="semiheader">{event.title}</div>
-                                            <p>{event.location}</p>
-                                            <p>{eventDate.toLocaleDateString()}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        } else if (selectedSection === 'past' && isPastEvent) {
-                            return (
-                                <div key={index} className="eventSection">
-                                    <div className="eventContainer">
-                                        <div className="eventImage">
-                                            <img src="/heronsNight.jpg" alt={event.title} />
-                                        </div>
-                                        <div className="eventDetails">
-                                            <div className="semiheader">{event.title}</div>
-                                            <p>{event.location}</p>
-                                            <p>{eventDate.toLocaleDateString()}</p>
+                            if (selectedSection === 'upcoming' && !isPastEvent) {
+                                return (
+                                    <div key={index} className="profileEventSection">
+                                        <div className="profileEventContainer">
+                                            <div className="profileEventImage">
+                                                <img src="/heronsNight.jpg" alt={event.title} />
+                                            </div>
+                                            <div className="profileEventDetails">
+                                                <div className="semiheader">{event.title}</div>
+                                                <p>{event.location}</p>
+                                                <p>{eventDate.toLocaleDateString()}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            );
-                        }
-                        return null; 
-                    })
-                )}
+                                );
+                            } else if (selectedSection === 'past' && isPastEvent) {
+                                return (
+                                    <div key={index} className="profileEventSection">
+                                        <div className="profileEventContainer">
+                                            <div className="profileEventImage">
+                                                <img src="/heronsNight.jpg" alt={event.title} />
+                                            </div>
+                                            <div className="profileEventDetails">
+                                                <div className="semiheader">{event.title}</div>
+                                                <p>{event.location}</p>
+                                                <p>{eventDate.toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            return null; 
+                        })
+                    )}
+                </div>
             </div>
 
             {/* Modal */}

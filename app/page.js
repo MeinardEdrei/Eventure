@@ -13,6 +13,19 @@ export default function Home() {
   const [event, setEvent] = useState([]);
 
   useEffect(() => {
+    const updateEvents = async () => {
+      try {
+        await axios.post("http://localhost:5000/api/event/update-status");
+      } catch (error) {
+        if (error.status === 404) {
+          alert("No events found");
+        }
+      }
+    }
+    updateEvents();
+  }, []);
+
+  useEffect(() => {
     if (status !== "loading") {
       setIsLoaded(true);
       if (session?.user?.role == "Admin") {

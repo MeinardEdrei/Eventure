@@ -28,6 +28,24 @@ namespace BackendProject.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
+        [HttpPost("update-status")]
+        public async Task<IActionResult> UpdateStatus()
+        {
+            var events = await _context.Events
+            .Where(e => e.Status == "Approved" && e.DateStart > DateTime.Now)
+            .ToListAsync();
+
+            if (events.Count == 0) return NoContent();
+
+            foreach (var eventItem in events)
+            {
+                eventItem.Status = "Ended"; 
+            }
+            
+            await _context.SaveChangesAsync();
+            return Ok(new {message = "Status updated" });
+        }
+
         // ----------------POST api/event/create------------------- 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)

@@ -30,11 +30,11 @@ namespace BackendProject.Controllers
             public int EventId { get; set; }
         }
 
-        [HttpGet("{id}/my-ticket")]
-        public async Task<IActionResult> GetTicket(int id)
+        [HttpGet("{id}/{eventId}/my-ticket")]
+        public async Task<IActionResult> GetTicket(int id, int eventId)
         {
             var ticketDetails = await _context.RForms
-                .Where(e => e.User_Id == id)
+                .Where(e => e.User_Id == id && e.Event_Id == eventId)
                 .Select(r => new 
                 {
                     // RForm details

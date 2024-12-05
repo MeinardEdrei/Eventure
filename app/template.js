@@ -10,7 +10,7 @@ export default function Template({ children }) {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        {pathname !== '/Login' && pathname !== '/Register' && <Header />}
+        {pathname !== '/Login' && pathname !== '/Register' && pathname !== '/Forgot-Password' &&<Header />}
         {children}
       </main>
       <div className="mt-auto mb-[5%]">

@@ -236,7 +236,36 @@ function EventNewPage() {
             </div>
 
             <hr />
+            <h1 className="newPostEvaluationTitle">Post Evaluation</h1>
+            <div className="newPostEvaluation">
+              
+              <div className="newPostEvaluationDisplay">
+                <img src="heronsNight.jpg" alt="" />
+                <div className="newPostEvaluationDetails">
+                <h1>UMak Jammers: Concert for a cause</h1>
+                <p>Answer Post Evaluation</p>
+              </div>
+              </div>
+              
+              <div className="newPostEvaluationDisplay">
+                <img src="heronsNight.jpg" alt="" />
+                <div className="newPostEvaluationDetails">
+                <h1>Unite and Ignite: Acquaintance Party 2024</h1>
+                <p>Answer Post Evaluation</p>
+              </div>
+              </div>
 
+              <div className="newPostEvaluationDisplay">
+                <img src="heronsNight.jpg" alt="" />
+                <div className="newPostEvaluationDetails">
+                <h1>UMak Jammers: Concert for a cause</h1>
+                <p>Answer Post Evaluation</p>
+              </div>
+              </div>
+
+            </div>
+
+            <hr />
             {/* Navigation Buttons */}
             <div className="navButtons">
               <ul>
@@ -288,7 +317,8 @@ function EventNewPage() {
                 }
 
                 return eventsToDisplay.map((event) => (
-                  <div key={event.id} className="newEventContainer">
+                  <div key={event.id} className="newContainerNeto">
+                    <div key={event.id} className="newEventContainerContainer">
                     <div className="newEventDisplay">
                       <div className="newEventImage">
                         <img
@@ -299,10 +329,10 @@ function EventNewPage() {
                       <div className="newEventDetails">
                         <h1>{event.title}</h1>
                         <div className="paragraph">
-                          <p className="text-sm text-white/40 overflow-hidden text-ellipsis whitespace-nowrap">
+                          <p className="text-base text-white/40 overflow-hidden text-ellipsis whitespace-nowrap">
                             {event.location}
                           </p>
-                          <p className="mt-2 text-xs text-white/50">
+                          <p className="mt-2 text-base text-white/50">
                             {new Date(event.dateStart).toLocaleDateString(
                               "en-US",
                               {
@@ -314,7 +344,7 @@ function EventNewPage() {
                           </p>
                         </div>
                         <button
-                          className="bg-[#D9D9D9] text-black text-xs font-semibold px-7 py-2 rounded-lg mt-3"
+                          className="text-white text-base font-semibold px-7 py-2 rounded-lg mt-3 border" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
                           onClick={() => {
                             setSelectedEvent(event);
                             handleEventClick(event);
@@ -325,6 +355,8 @@ function EventNewPage() {
                       </div>
                     </div>
                   </div>
+                  </div>
+                  
                 ));
               })()}
             </div>

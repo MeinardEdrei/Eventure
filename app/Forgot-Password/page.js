@@ -9,7 +9,8 @@ export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showReEnterPassword, setShowReEnterPassword] = useState(false);
   const [error, setError] = useState("");
   const { data: session } = useSession();
 
@@ -38,8 +39,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 backdrop-blur-lg bg-[#1C1C1C]/40 p-8 rounded-2xl border border-[#F7F0FF]/10">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-[#F7F0FF] mb-2">Welcome Back</h2>
-          <p className="text-[#F7F0FF]/60">Sign in to your account</p>
+          <h2 className="text-4xl font-bold text-[#F7F0FF] mb-2">Reset Password</h2>
+          <p className="text-[#F7F0FF]/60">Reset your password in case you forgot</p>
         </div>
 
         {error && (
@@ -64,23 +65,45 @@ export default function Login() {
             </div>
 
             <div className="relative group">
-              <input
+            <input
                 className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                type={showResetPassword ? "text" : "password"}
+                placeholder="Reset Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowResetPassword(!showResetPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showResetPassword ? "Hide" : "Show"}
               </button>
+
               <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
             </div>
+
+            <div className="relative group">
+            <input
+                className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
+                type={showReEnterPassword ? "text" : "password"}
+                placeholder="Re-enter Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowReEnterPassword(!showReEnterPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200"
+              >
+                {showReEnterPassword ? "Hide" : "Show"}
+              </button>
+
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+            </div>
+
           </div>
 
           <button
@@ -91,11 +114,11 @@ export default function Login() {
           </button>
 
           <div className="flex flex-col items-center space-y-2 text-sm">
-            <Link href="/Forgot-Password" className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200">
-              Forgot password?
-            </Link>
             <Link href="/Register" className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200">
               Don't have an account? <span className="underline">Sign up</span>
+            </Link>
+            <Link href="/Login" className="text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200">
+              Return to Log in
             </Link>
             <Link href="/" className="text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200">
               Return to Homepage

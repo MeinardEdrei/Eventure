@@ -18,7 +18,7 @@ function EventNewPage() {
   const [noEvents, setNoEvents] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(null);
   const [formData, setFormData] = useState({
     name: session?.user?.username,
     email: session?.user?.email,
@@ -44,11 +44,11 @@ function EventNewPage() {
     }
   };
 
-  const fetchRegistration = async () => {
+  const fetchRegistration = async (event) => {
     try {
       // CHECK REGISTRATION
       const registration = await axios.get(
-        `http://localhost:5000/api/ticket/${session?.user?.id}/my-ticket`
+        `http://localhost:5000/api/ticket/${session?.user?.id}/${event?.id}/my-ticket`
       );
       if (registration.status === 404) {
         setIsRegistered(false);
@@ -58,13 +58,13 @@ function EventNewPage() {
     } catch (error) {
       if (error.status === 404) {
         setNoEvents(true);
+        setIsRegistered(false);
       }
     }
   };
 
   useEffect(() => {
     fetchEvents();
-    fetchRegistration();
   }, [session]);
 
   // FILTER EVENTS
@@ -173,7 +173,9 @@ function EventNewPage() {
     }
   };
 
-  const handleEventClick = () => {
+  const handleEventClick = async (event) => {
+    console.log(event)
+    await fetchRegistration(event);
     setIsModalOpen(true);
   };
 
@@ -314,8 +316,8 @@ function EventNewPage() {
                         <button
                           className="bg-[#D9D9D9] text-black text-xs font-semibold px-7 py-2 rounded-lg mt-3"
                           onClick={() => {
-                            handleEventClick();
                             setSelectedEvent(event);
+                            handleEventClick(event);
                           }}
                         >
                           View Details

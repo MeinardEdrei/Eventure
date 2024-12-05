@@ -1,19 +1,19 @@
 'use client';
 import React, { useEffect, useState } from 'react'
-import "../../css/ticket.css";
+import "../../../css/ticket.css";
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
 
 function Ticket() {
-  const { id } = useParams();
+  const { userID, eventID } = useParams();
   const { data: session } = useSession();
   const [ticketDetails, setTicketDetails] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/ticket/${id}/my-ticket`);
+      const res = await axios.get(`http://localhost:5000/api/ticket/${userID}/${eventID}/my-ticket`);
       setTicketDetails(res.data);
     } catch (error) {
       console.log(error);

@@ -405,7 +405,7 @@ function EventNewPage() {
                     Request to join
                   </button>
                 ) : (
-                  <Link href={`/Ticket/${session?.user?.id}`}>
+                  <Link href={`/Ticket/${session?.user?.id}/${selectedEvent.id}`}>
                     <button className="checkTicket">My ticket</button>
                   </Link>
                 )}

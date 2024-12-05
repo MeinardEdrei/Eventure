@@ -153,7 +153,7 @@ const Header = () => {
                             <div className='p-2'>
                                 {session?.user?.role != "Admin" && (
                                     <>
-                                    <Link onClick={() => setDropDownOpen(false)} href='/UserProfile' className='flex justify-start w-full font-normal max-h-[3em] text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
+                                    <Link onClick={() => setDropDownOpen(false)} href='/New-Profile' className='flex justify-start w-full font-normal max-h-[3em] text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2'>Profile</Link>
                                     <div className='pb-2 md:block lg:hidden'>
                                         <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Events'>Events</Link>
                                         <Link className='block text-white text-sm hover:bg-gray-100 hover:text-black px-4 py-2 hover:rounded-md' href='/Calendar'>Calendar</Link>

@@ -201,5 +201,84 @@ namespace BackendProject.Controllers
             
             return Ok(new { message = "User deleted successfully." });
         }
+
+        [HttpGet("{id}/get-user")]
+        public async Task<ActionResult<Event>> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound(new { message = "User not found." });
+
+            return Ok(user);
+        }
+
+        [HttpPost("{id}/update-profile")]
+        public async Task<IActionResult> UpdateProfile(int id, [FromForm] UpdateProfileDto updateDto)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound(new { message = "User not found." });
+
+            // Username validation
+            if (!string.IsNullOrEmpty(updateDto.Username))
+            {
+                if (updateDto.Username.Length < 3)
+                {
+                    return BadRequest(new { message = "Username must be at least 3 characters long." });
+                }
+
+                var existingUsername = await _context.Users.AnyAsync(u => 
+                    u.Username == updateDto.Username && u.Id != id);
+                
+                if (existingUsername)
+                {
+                    return BadRequest(new { message = "Username is already taken." });
+                }
+
+                user.Username = updateDto.Username;
+            }
+
+            // Optional: Make profile image update optional
+            if (updateDto.ProfileImage != null && updateDto.ProfileImage.Length > 0)
+            {
+                try
+                {
+                    var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    
+                    if (!Directory.Exists(uploadDir))
+                    {
+                        Directory.CreateDirectory(uploadDir);
+                    }
+
+                    var fileName = $"{Guid.NewGuid()}_{updateDto.ProfileImage.FileName}";
+                    var filePath = Path.Combine(uploadDir, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await updateDto.ProfileImage.CopyToAsync(stream);
+                    }
+
+                    user.Profile_Image = fileName;
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, new { message = "Error uploading image", error = ex.Message });
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                return Ok(new 
+                { 
+                    message = "Profile updated successfully", 
+                    profile_Image = user.Profile_Image,
+                    username = user.Username
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error updating profile", error = ex.Message });
+            }
+        }
     }
 }

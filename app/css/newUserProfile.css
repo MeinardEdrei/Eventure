@@ -143,7 +143,7 @@
 .newEventButtons {
   border: var(--borderColor);
   border-radius: 10px;
-  width: 12rem;
+  width: 20rem;
   height: 2.5rem;
   display: flex;
   justify-content: space-evenly;
@@ -163,6 +163,9 @@
   
 }
 .newEventButtons button:first-child {
+  border-right: var(--borderColor);
+}
+.newEventButtons button + button {
   border-right: var(--borderColor);
 }
 .newEventButtons button:hover {

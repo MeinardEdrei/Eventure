@@ -439,7 +439,7 @@ function OrganizerEvents() {
                   {/* Edit Event */}
                   <div className="flex flex-row justify-end">
                     <button
-                      className="py-[0.5rem] px-6 flex flex-row items-center gap-2"
+                      className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
                       onClick={() => setIsEditModalOpen(true)}
                     >
                       <Pencil size={20} strokeWidth={1.5} />

@@ -297,27 +297,21 @@ const Page = () => {
                   {/* <label>Start</label> */}
                   <div className="date-time">
                     <div className="date">
-                      <div className="input-with-icon">
-                        <Calendar className="input-icon" />
                         <input
-                          className=" text-white p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
+                          className="p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
                           type="date"
                           value={dateStart}
                           onChange={(e) => setDateStart(e.target.value)}
                           required
                         />
-                      </div>
                     </div>
                     <div className="time">
-                      <div className="input-with-icon">
-                        <Clock className="input-icon" />
                         <input
                           type="time"
                           value={timeStart}
                           onChange={(e) => setTimeStart(e.target.value)}
                           required
                         />
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -327,26 +321,20 @@ const Page = () => {
                   {/* <label>End</label> */}
                   <div className="date-time">
                     <div className="date">
-                      <div className="input-with-icon">
-                        <Calendar className="input-icon" />
                         <input
                           type="date"
                           value={dateEnd}
                           onChange={(e) => setDateEnd(e.target.value)}
                           required
                         />
-                      </div>
                     </div>
                     <div className="time">
-                      <div className="input-with-icon">
-                        <Clock className="input-icon" />
                         <input
                           type="time"
                           value={timeEnd}
                           onChange={(e) => setTimeEnd(e.target.value)}
                           required
                         />
-                      </div>
                     </div>
                   </div>
                 </div>

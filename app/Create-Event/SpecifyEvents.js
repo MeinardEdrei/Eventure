@@ -3,7 +3,7 @@ import "./SpecifyEvents.css";
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useSession } from "next-auth/react";
-import { ChevronDown, Send } from "lucide-react";
+import { ChevronDown, Send, X } from "lucide-react";
 // import { Label } from "@/components/ui/label";
 
 const EventSettingsPanel = ({
@@ -259,7 +259,7 @@ const EventSettingsPanel = ({
                           className="tag-remove"
                           onClick={() => handleDepartmentToggle(dept)}
                         >
-                          ×
+                          <X size={11} />
                         </button>
                       </span>
                     ))}
@@ -284,7 +284,7 @@ const EventSettingsPanel = ({
 
               {/* New Dropdown UI for Departments with Filterable Input */}
               <div className="relative w-[100%]">
-                <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[rgba(91,85,97,0.3)] font-bold border border-[rgba(255,240,240,0.3)] rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-linear">
+                <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[rgba(85,97,91,0.3)] font-bold border border-[rgba(255,240,240,0.3)] rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-linear">
                   <input
                     type="text"
                     placeholder="Select Departments..."
@@ -333,7 +333,7 @@ const EventSettingsPanel = ({
                       />
                       <button
                         onClick={handleAddCustomDepartment}
-                        className="text-white hover:text-[#d19fff] mr-4"
+                        className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
                       >
                         <Send size={19} />
                       </button>
@@ -463,7 +463,7 @@ const EventSettingsPanel = ({
             <div className="box">
               <label className="label-container">
                 <span className="label-icon">
-                  <i className="fa fa-location-arrow" aria-hidden="true"></i>
+                  <i className="fa fa-users" aria-hidden="true"></i>
                 </span>
                 <span>Partnership</span>
               </label>
@@ -475,7 +475,7 @@ const EventSettingsPanel = ({
                       className="tag-remove"
                       onClick={() => handlePartnershipToggle(partnership)}
                     >
-                      ×
+                      <X size={11} />
                     </button>
                   </span>
                 ))}
@@ -526,7 +526,7 @@ const EventSettingsPanel = ({
                       />
                       <button
                         onClick={handleAddCustomPartnership}
-                        className="text-white hover:text-[#d19fff] mr-4"
+                        className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
                       >
                         <Send size={19} />
                       </button>

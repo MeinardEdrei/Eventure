@@ -69,8 +69,6 @@ body {
 }
 .event-name input,
 .input-cont input,
-.date input,
-.time input,
 .input-containers textarea {
   background-color: transparent;
   /* background-color: #463951; */
@@ -78,6 +76,16 @@ body {
   padding: 0.75rem;
   /* border: 1px solid #ad63d8; */
   border: 1px solid rgb(255, 240, 240, 0.3);
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+}
+.date input,
+.time input{
+  background-color: #3c3c3c;
+  color: #fff;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 8px;
   width: 100%;
   outline: none;

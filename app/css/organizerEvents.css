@@ -88,7 +88,7 @@ hr {
   opacity: 50%;
   /* margin: -3.5rem 0 0 0; */
 }
-.overviewDetails button {
+.overviewDetails .edit-btn {
   background-color: #606060;
   /* border: 1px solid #949494; */
   border-radius: 5px;
@@ -100,7 +100,7 @@ hr {
   align-items: center;
   justify-content: center;
 }
-.overviewDetails button:hover {
+.overviewDetails .edit-btn:hover {
   background-color: #434343;
   box-shadow: none;
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../css/Edit-Event-Modal.css";
 import axios from "axios";
 import Button from "@mui/material/Button";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import { X, Upload, Send, ChevronDown } from "lucide-react";
 
 const EditEventModal = ({
@@ -10,6 +11,8 @@ const EditEventModal = ({
   event,
   eventId,
   onUpdateSuccess,
+  requireApproval,
+  setRequireApproval,
 }) => {
   const [editedEvent, setEditedEvent] = useState({
     title: "",
@@ -30,9 +33,19 @@ const EditEventModal = ({
     colleges: [],
   });
 
+  const [campusType, setCampusType] = useState("On Campus");
+  const EventOptions = ["On Campus", "Off Campus"];
+  const handleSelect = (option) => {
+    setCampusType(option);
+    handleChange({ target: { name: "campusType", value: option } });
+  };
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false);
+
   const [previewImage, setPreviewImage] = useState(null);
 
   // Dropdown states
+  const [isVisibilityDropdownOpen, setIsVisibilityDropdownOpen] = useState(false);
   const [isCollegesOpen, setIsCollegesOpen] = useState(false);
   const [collegesFilter, setCollegesFilter] = useState("");
   const [customCollegeInput, setCustomCollegeInput] = useState("");
@@ -82,7 +95,7 @@ const EditEventModal = ({
         partnerships: event.partnerships ? JSON.parse(event.partnerships) : [],
         hostedBy: event.hostedBy ? JSON.parse(event.hostedBy) : [],
         eventImage: null,
-        colleges: event.colleges ? JSON.parse(event.colleges) : [],
+        colleges: event.hostedBy ? JSON.parse(event.hostedBy) : [],
       });
 
       // Set initial preview image
@@ -167,11 +180,11 @@ const EditEventModal = ({
       setIsPartnershipOpen(false);
     }
   };
-    const filteredPartnerships = partnerships.filter(
-      (partnership) =>
-        partnership.toLowerCase().includes(partnershipFilter.toLowerCase()) &&
-        !editedEvent.partnerships.includes(partnership)
-    );
+  const filteredPartnerships = partnerships.filter(
+    (partnership) =>
+      partnership.toLowerCase().includes(partnershipFilter.toLowerCase()) &&
+      !editedEvent.partnerships.includes(partnership)
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -214,41 +227,41 @@ const EditEventModal = ({
     }
   };
 
-
-
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-[#252525] rounded-lg p-8 w-[80vw] max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-[#252525] rounded-lg p-8 w-[87vw] max-h-[80vh] overflow-y-auto relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:text-gray-300"
+          className="absolute top-4 right-4 text-red-300 hover:text-red-500"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6 text-white">Edit Event</h2>
+        <h2 className="text-[2rem] font-bold mb-6 text-white">Edit Event</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Input Main Container */}
-          <div className="flex flex-row w-[100%] gap-8">
+          <div className="flex flex-row w-[100%] gap-8 mb-8">
             {/* Left Side */}
             <div className="flex flex-col w-[50%] gap-4">
               {/* Image Upload Section */}
-              <div className="bg-transparent border-2 rounded-[8px] border-dashed p-6 flex justify-center">
+              <div
+                onClick={() => document.getElementById("eventImage").click()}
+                className="bg-transparent hover:bg-[rgba(255,255,255,0.05)] border-2 rounded-[8px] border-dashed p-6 flex justify-center cursor-pointer"
+              >
                 <div className="relative">
                   {previewImage && (
                     <img
                       src={previewImage}
                       alt="Event Preview"
-                      className="w-64 h-64 object-cover rounded-lg"
+                      className="w-64 h-64 hover:opacity-60 object-cover rounded-lg"
                     />
                   )}
                   <label
                     htmlFor="eventImage"
-                    className="absolute bottom-0 right-0 bg-white/70 p-2 rounded-full cursor-pointer"
+                    className="absolute bottom-0 right-0 bg-transparent p-2 rounded-full cursor-pointer"
                   >
                     <input
                       type="file"
@@ -258,13 +271,13 @@ const EditEventModal = ({
                       onChange={handleChange}
                       className="hidden"
                     />
-                    <Upload size={24} className="text-black" />
+                    {/* <Upload size={24} className="text-black" /> */}
                   </label>
                 </div>
               </div>
 
               <div className="event-name">
-                <label className="block mb-2">Event Title</label>
+                <label className="block mb-2">Event Name</label>
                 <input
                   type="text"
                   name="title"
@@ -281,7 +294,7 @@ const EditEventModal = ({
                   name="description"
                   value={editedEvent.description}
                   onChange={handleChange}
-                  className="overflow-y-auto min-h-[26vh] w-full bg-[#2C2C2C] text-white p-2 rounded h-32"
+                  className="overflow-y-auto min-h-[22vh] w-full bg-[#2C2C2C] text-white p-2 rounded h-32"
                   required
                 />
               </div>
@@ -289,25 +302,56 @@ const EditEventModal = ({
 
             {/* Right Side */}
             <div className="flex flex-col w-[50%] gap-4">
-              {/* Part: Off Campus Event */}
               <div className="flex flex-row w-full">
-                <div>
-                  <label className="block mb-2">Campus Type</label>
-                  <select
-                    name="campusType"
-                    value={editedEvent.campusType}
-                    onChange={handleChange}
-                    className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                    required
-                  >
-                    <option value="On Campus">On Campus</option>
-                    <option value="Off Campus">Off Campus</option>
-                  </select>
+                <div className="relative w-[100%]">
+                  <label className="block mb-2">Event Details</label>
+
+                  {/* Event Option Dropdown */}
+                  <div className="relative">
+                    <div
+                      className={`w-full bg-[#5b55614d] text-white p-2 border border-[#fff0f04d] rounded flex justify-between items-center cursor-pointer ${
+                        isEventDropdownOpen ? "rounded-b-none" : ""
+                      }`}
+                      onClick={() =>
+                        setIsEventDropdownOpen(!isEventDropdownOpen)
+                      }
+                    >
+                      <span>{campusType}</span>
+                      <ChevronDown
+                        size={20}
+                        className={`transform transition-transform ${
+                          isEventDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </div>
+
+                    {isEventDropdownOpen && (
+                      <div className="absolute top-full left-0 w-full bg-[#6d3998] z-10 rounded-b-lg shadow-lg">
+                        {EventOptions.map((option) => (
+                          <div
+                            key={option}
+                            className={`p-2 hover:bg-purple-700 ${
+                              campusType === option ? "bg-purple-800" : ""
+                            }`}
+                            onClick={() => {
+                              setCampusType(option);
+                              handleChange({
+                                target: { name: "campusType", value: option },
+                              });
+                              setIsEventDropdownOpen(false);
+                            }}
+                          >
+                            {option}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Radio Button: Curriculum, Organization, College */}
                 <div className="ml-4 flex flex-col justify-end">
-                  <label className="block mb-2 text-white">Event Type</label>
+                  {/* <label className="block mb-2 text-white">Event Type</label> */}
                   <div className="bg-[#2C2C2C] border border-[#FFF0F0]/30 px-4 py-2 rounded-lg flex items-center">
                     <div className="flex space-x-4">
                       {options.map((option) => (
@@ -329,7 +373,7 @@ const EditEventModal = ({
                                 },
                               });
                             }}
-                            className="form-radio h-4 w-4 text-purple-600 bg-gray-800 border-gray-600 focus:ring-purple-500 focus:ring-2"
+                            className="form-radio h-3 w-3 accent-purple-500 text-purple-600 bg-gray-800 border-gray-600 "
                           />
                           <span>{option.label}</span>
                         </label>
@@ -342,9 +386,18 @@ const EditEventModal = ({
               <div className="flex flex-col gap-4">
                 <div className="flex flex-row gap-4 w-full">
                   {/* Left Divider */}
-                  <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 p-5 flex flex-col w-[100%] gap-[1rem]">
+                  <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 p-5 flex flex-col w-[100%] gap-[1.5rem]">
+                    {/* Event Location */}
                     <div className="event-location">
-                      <label className="block mb-2">Location</label>
+                      <label className="label-container">
+                        <span className="label-icon">
+                          <i
+                            className="fa fa-location-arrow"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span>Event Venue</span>
+                      </label>
                       <input
                         type="text"
                         name="location"
@@ -354,26 +407,35 @@ const EditEventModal = ({
                         required
                       />
                     </div>
+
                     {/* College Dropdown */}
                     <div className="w-full">
-                      <label className="block mb-2">Colleges</label>
-                      <div className="flex flex-col gap-2">
+                      <label className="label-container">
+                        <span className="label-icon">
+                          <i
+                            className="fa fa-graduation-cap"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span>Colleges</span>
+                      </label>
+                      <div className="flex flex-col">
                         {/* College Tag Container */}
-                        <div className="flex flex-wrap items-center gap-1">
+                        <div className="flex flex-wrap items-center gap-1 mb-1">
                           {editedEvent.colleges.map((college) => (
                             <span
                               key={college}
-                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center"
+                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center gap-2"
                             >
                               {college}
                               <button
-                                className=""
+                                className="tag-remove"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   handleCollegeToggle(college);
                                 }}
                               >
-                                ×
+                                <X size={11} />
                               </button>
                             </span>
                           ))}
@@ -407,11 +469,13 @@ const EditEventModal = ({
                             </button>
                           </div>
 
+                          {/* Dropdown Menu */}
                           {isCollegesOpen && (
-                            <div className="absolute z-10 w-full bg-[#2C2C2C] border border-gray-600 rounded mt-1 shadow-lg">
+                            <div className="dropdown-menu">
+                              {/* Add College Input */}
                               <div className="flex items-center p-2 bg-[#6d3998]">
                                 <input
-                                  className="flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
+                                  className="flex w-full bg-transparent border-gray-300 px-2 py-1 mr-2 text-white outline-none"
                                   type="text"
                                   placeholder="Add college"
                                   value={customCollegeInput}
@@ -426,7 +490,7 @@ const EditEventModal = ({
                                 />
                                 <button
                                   onClick={handleAddCustomCollege}
-                                  className="text-white hover:text-[#d19fff] mr-4"
+                                  className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
                                 >
                                   <Send size={19} />
                                 </button>
@@ -435,9 +499,9 @@ const EditEventModal = ({
                               {filteredColleges.map((college) => (
                                 <button
                                   key={college}
-                                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 ${
+                                  className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
                                     editedEvent.colleges.includes(college)
-                                      ? "bg-gray-600"
+                                      ? "bg-[#6d3998]"
                                       : ""
                                   }`}
                                   onClick={() => handleCollegeToggle(college)}
@@ -451,22 +515,39 @@ const EditEventModal = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="requireApproval"
-                        checked={editedEvent.requireApproval}
-                        onChange={handleChange}
-                        className="mr-2"
-                      />
-                      <label>Require Approval</label>
+                    {/* Require Approval */}
+                    <div className="">
+                      <div className="toggle-div">
+                        <label className="label-container">
+                          <span className="label-icon">
+                            <i className="fa fa-check" aria-hidden="true"></i>
+                          </span>
+                          <span>Require Approval</span>
+                        </label>
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            checked={requireApproval}
+                            onChange={(e) =>
+                              setRequireApproval(e.target.checked)
+                            }
+                          />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
                     </div>
                   </div>
 
                   {/* Right Divider */}
-                  <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 p-5 flex flex-col w-[100%] gap-[1rem]">
+                  <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 p-5 flex flex-col w-[100%] gap-[1.5rem]">
+                    {/* Capacity */}
                     <div className="event-capacity">
-                      <label className="block mb-2">Max Capacity</label>
+                      <label className="label-container">
+                        <span className="label-icon">
+                          <i className="fa fa-users" aria-hidden="true"></i>
+                        </span>
+                        <span>Capacity</span>
+                      </label>
                       <input
                         type="number"
                         name="maxCapacity"
@@ -476,41 +557,88 @@ const EditEventModal = ({
                         required
                       />
                     </div>
+
+                    {/* Visibility Dropdown */}
                     <div>
-                      <label className="block mb-2">Visibility</label>
-                      <select
-                        name="visibility"
-                        value={editedEvent.visibility}
-                        onChange={handleChange}
-                        className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                        required
-                      >
-                        <option value="Public">Public</option>
-                        <option value="Private">Private</option>
-                      </select>
+                      <label className="label-container">
+                        <span className="label-icon">
+                          <i className="fa fa-globe" aria-hidden="true"></i>
+                        </span>
+                        <span>Visibilty</span>
+                      </label>
+                      <div className="relative w-full">
+                        <div
+                          className={`w-full bg-[#5b55614d] text-white p-2 border border-[#fff0f04d] rounded flex justify-between items-center cursor-pointer ${
+                            isVisibilityDropdownOpen ? "rounded-b-none" : ""
+                          }`}
+                          onClick={() =>
+                            setIsVisibilityDropdownOpen(
+                              !isVisibilityDropdownOpen
+                            )
+                          }
+                        >
+                          <span>{editedEvent.visibility}</span>
+                          <ChevronDown
+                            size={20}
+                            className={`transform transition-transform ${
+                              isVisibilityDropdownOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+
+                        {isVisibilityDropdownOpen && (
+                          <div className="absolute top-full left-0 w-full bg-[#6d3998] z-10 rounded-b-lg shadow-lg">
+                            {["Public", "Private", "Custom"].map((option) => (
+                              <div
+                                key={option}
+                                className={`p-2 hover:bg-purple-700 ${
+                                  editedEvent.visibility === option
+                                    ? "bg-purple-800"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  handleChange({
+                                    target: {
+                                      name: "visibility",
+                                      value: option,
+                                    },
+                                  });
+                                  setIsVisibilityDropdownOpen(false);
+                                }}
+                              >
+                                {option}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Partnership Dropdown */}
                     <div className="w-full">
-                      <label className="block mb-2">Partnership</label>
-
-                      <div className="flex flex-col gap-2">
+                      <label className="label-container">
+                        <span className="label-icon">
+                          <i className="fa fa-users" aria-hidden="true"></i>
+                        </span>
+                        <span>Partnership</span>
+                      </label>
+                      <div className="flex flex-col">
                         {/* Tag Container */}
-                        <div className="flex flex-wrap items-center gap-1">
+                        <div className="flex flex-wrap items-center gap-1 mb-1">
                           {editedEvent.partnerships.map((partnership) => (
                             <span
                               key={partnership}
-                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center"
+                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center gap-2"
                             >
                               {partnership}
                               <button
-                                className=""
+                                className="tag-remove"
                                 onClick={(e) => {
                                   e.preventDefault();
                                   handlePartnershipToggle(partnership);
                                 }}
                               >
-                                ×
+                                <X size={11} />
                               </button>
                             </span>
                           ))}
@@ -543,12 +671,12 @@ const EditEventModal = ({
                               />
                             </button>
                           </div>
-
+                          {/* Dropdown Menu */}
                           {isPartnershipOpen && (
-                            <div className="absolute z-10 w-full bg-[#2C2C2C] border border-gray-600 rounded mt-1 shadow-lg">
+                            <div className="dropdown-menu">
                               <div className="flex items-center p-2 bg-[#6d3998]">
                                 <input
-                                  className="flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
+                                  className="flex w-full bg-transparent border-gray-300 px-2 py-1 mr-2 text-white outline-none"
                                   type="text"
                                   placeholder="Add partnership"
                                   value={customPartnershipInput}
@@ -563,7 +691,7 @@ const EditEventModal = ({
                                 />
                                 <button
                                   onClick={handleAddCustomPartnership}
-                                  className="text-white hover:text-[#d19fff] mr-4"
+                                  className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
                                 >
                                   <Send size={19} />
                                 </button>
@@ -572,11 +700,11 @@ const EditEventModal = ({
                               {filteredPartnerships.map((partnership) => (
                                 <button
                                   key={partnership}
-                                  className={`w-full text-left px-4 py-2 hover:bg-gray-700 ${
+                                  className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
                                     editedEvent.partnerships.includes(
                                       partnership
                                     )
-                                      ? "bg-gray-600"
+                                      ? "bg-[#6d3998]"
                                       : ""
                                   }`}
                                   onClick={() =>
@@ -596,53 +724,58 @@ const EditEventModal = ({
 
                 {/* Date & Time */}
                 <div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block mb-2">Start Date</label>
-                      <input
-                        type="date"
-                        name="dateStart"
-                        value={editedEvent.dateStart}
-                        onChange={handleChange}
-                        className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                        required
-                      />
+                  <div className="bg-transparent border rounded-[10px] border-[#FFF0F0]/30 p-6 flex flex-row gap-10 justify-center">
+                    <div className="flex flex-col gap-8 items-center justify-center">
+                      <label className="">Start</label>
+                      <label className="">End</label>
                     </div>
-                    <div>
-                      <label className="block mb-2">End Date</label>
-                      <input
-                        type="date"
-                        name="dateEnd"
-                        value={editedEvent.dateEnd}
-                        onChange={handleChange}
-                        className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                        required
-                      />
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block mb-2">Start Time</label>
-                      <input
-                        type="time"
-                        name="timeStart"
-                        value={editedEvent.timeStart}
-                        onChange={handleChange}
-                        className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-2">End Time</label>
-                      <input
-                        type="time"
-                        name="timeEnd"
-                        value={editedEvent.timeEnd}
-                        onChange={handleChange}
-                        className="w-full bg-[#2C2C2C] text-white p-2 rounded"
-                        required
-                      />
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <input
+                            type="date"
+                            name="dateStart"
+                            value={editedEvent.dateStart}
+                            onChange={handleChange}
+                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="date"
+                            name="dateEnd"
+                            value={editedEvent.dateEnd}
+                            onChange={handleChange}
+                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <input
+                            type="time"
+                            name="timeStart"
+                            value={editedEvent.timeStart}
+                            onChange={handleChange}
+                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="time"
+                            name="timeEnd"
+                            value={editedEvent.timeEnd}
+                            onChange={handleChange}
+                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
+                            required
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -650,21 +783,28 @@ const EditEventModal = ({
             </div>
           </div>
 
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              width: "100%",
-              marginTop: "1rem",
-              backgroundColor: "white",
-              color: "black",
-              "&:hover": {
-                backgroundColor: "gray",
-              },
-            }}
-          >
-            Update Event
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                width: "100%",
+                borderRadius: "0.5rem",
+                fontSize: "1rem",
+                fontWeight: "bold",
+                padding: "0.75rem 1rem",
+                marginTop: "1rem",
+                backgroundColor: "#9c9c9c",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "white",
+                  color: "black",
+                },
+              }}
+            >
+              Update Event
+            </Button>
+          </div>
         </form>
       </div>
     </div>

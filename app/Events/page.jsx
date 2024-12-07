@@ -235,35 +235,39 @@ function EventNewPage() {
               )}
             </div>
 
-            <hr />
-            <h1 className="newPostEvaluationTitle">Post Evaluation</h1>
-            <div className="newPostEvaluation">
-              
-              <div className="newPostEvaluationDisplay">
-                <img src="heronsNight.jpg" alt="" />
-                <div className="newPostEvaluationDetails">
-                <h1>UMak Jammers: Concert for a cause</h1>
-                <p>Answer Post Evaluation</p>
-              </div>
-              </div>
-              
-              <div className="newPostEvaluationDisplay">
-                <img src="heronsNight.jpg" alt="" />
-                <div className="newPostEvaluationDetails">
-                <h1>Unite and Ignite: Acquaintance Party 2024</h1>
-                <p>Answer Post Evaluation</p>
-              </div>
-              </div>
+            {session && 
+            <>
+              <hr />
+              <h1 className="newPostEvaluationTitle">Post Evaluation</h1>
+              <div className="newPostEvaluation">
+                
+                <div className="newPostEvaluationDisplay">
+                  <img src="heronsNight.jpg" alt="" />
+                  <div className="newPostEvaluationDetails">
+                  <h1>UMak Jammers: Concert for a cause</h1>
+                  <p>Answer Post Evaluation</p>
+                </div>
+                </div>
+                
+                <div className="newPostEvaluationDisplay">
+                  <img src="heronsNight.jpg" alt="" />
+                  <div className="newPostEvaluationDetails">
+                  <h1>Unite and Ignite: Acquaintance Party 2024</h1>
+                  <p>Answer Post Evaluation</p>
+                </div>
+                </div>
 
-              <div className="newPostEvaluationDisplay">
-                <img src="heronsNight.jpg" alt="" />
-                <div className="newPostEvaluationDetails">
-                <h1>UMak Jammers: Concert for a cause</h1>
-                <p>Answer Post Evaluation</p>
-              </div>
-              </div>
+                <div className="newPostEvaluationDisplay">
+                  <img src="heronsNight.jpg" alt="" />
+                  <div className="newPostEvaluationDetails">
+                  <h1>UMak Jammers: Concert for a cause</h1>
+                  <p>Answer Post Evaluation</p>
+                </div>
+                </div>
 
-            </div>
+              </div>
+            </>
+            }
 
             <hr />
             {/* Navigation Buttons */}

@@ -18,7 +18,7 @@ function EventNewPage() {
   const [noEvents, setNoEvents] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isRegistered, setIsRegistered] = useState(null);
+  const [statusCode, setStatusCode] = useState(null);
   const [formData, setFormData] = useState({
     name: session?.user?.username,
     email: session?.user?.email,
@@ -51,14 +51,16 @@ function EventNewPage() {
         `http://localhost:5000/api/ticket/${session?.user?.id}/${event?.id}/my-ticket`
       );
       if (registration.status === 404) {
-        setIsRegistered(false);
+        setStatusCode(404);
+      } else if (registration.status === 202){
+        setStatusCode(202);
       } else {
-        setIsRegistered(true);
+        setStatusCode(200);
       }
     } catch (error) {
       if (error.status === 404) {
         setNoEvents(true);
-        setIsRegistered(false);
+        setStatusCode(404);
       }
     }
   };
@@ -161,6 +163,7 @@ function EventNewPage() {
         }
 
         alert("Joined Event Successfully!");
+        setIsModalOpen(false);
       } else {
         alert(res.data.message);
       }
@@ -172,6 +175,17 @@ function EventNewPage() {
       );
     }
   };
+
+  // HANDLE CANCEL REGISTRATION
+  const handleCancelRegistration = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/registration/${session?.user?.id}/${id}/cancel-registration`);
+      if (response.status === 200) alert("Registration cancelled successfully");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleEventClick = async (event) => {
     console.log(event)
@@ -433,17 +447,24 @@ function EventNewPage() {
               </div>
               <hr />
               <div className="eventButtons">
-                {!isRegistered ? (
+                {statusCode === 404 ? (
                   <button
                     className="requestJoin"
                     onClick={() => handleJoinEvent(selectedEvent.id)}
                   >
                     Request to join
                   </button>
+                ) : statusCode === 202 ? (
+                  <>
+                  <button onClick={() => handleCancelRegistration(selectedEvent.id)}>Cancel Registration</button>
+                  </>
                 ) : (
-                  <Link href={`/Ticket/${session?.user?.id}/${selectedEvent.id}`}>
-                    <button className="checkTicket">My ticket</button>
-                  </Link>
+                  <>
+                    <Link href={`/Ticket/${session?.user?.id}/${selectedEvent.id}`}>
+                      <button className="checkTicket">My ticket</button>
+                    </Link>
+                    <button onClick={() => handleCancelRegistration(selectedEvent.id)}>Cancel Registration</button>
+                  </>
                 )}
               </div>
             </div>

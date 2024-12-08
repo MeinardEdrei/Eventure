@@ -61,6 +61,10 @@ namespace BackendProject.Controllers
                 })
                 .FirstOrDefaultAsync();
 
+            if (ticketDetails?.Status == "Waiting")
+            {
+                return StatusCode(202, new{ message = "Your ticket is waiting for approval" });
+            }
             if (ticketDetails == null) 
             {
                 return NotFound(new { message = "Ticket not found." });

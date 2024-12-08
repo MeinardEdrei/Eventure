@@ -133,6 +133,23 @@ namespace BackendProject.Controllers
             return Ok(Form);
         }
 
+        [HttpDelete("{userID}/{eventID}/cancel-registration")]
+        public async Task<IActionResult> CancelRegistration(int userID, int eventID)
+        {
+            var userEvent = await _context.RForms
+                .Where(e => e.User_Id == userID && e.Event_Id == eventID)
+                .FirstOrDefaultAsync();
+
+            if (userEvent == null) return NotFound(new { message = "User not found" });
+
+            _context.RForms.Remove(userEvent);
+            await _context.SaveChangesAsync();
+
+            await UpdateAttendeeCount(eventID);
+            
+            return Ok(new { message = "Registration cancelled successfully" });
+        }
+
         [HttpPost("excel")]
         public IActionResult ExportToExcel([FromBody] List<ExcelSheetsDto> entries)
         {

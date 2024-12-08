@@ -15,22 +15,21 @@ const EditEventModal = ({
   setRequireApproval,
 }) => {
   const [editedEvent, setEditedEvent] = useState({
-    title: "",
-    description: "",
-    dateStart: "",
-    dateEnd: "",
-    timeStart: "",
-    timeEnd: "",
-    location: "",
-    maxCapacity: "",
-    campusType: "",
-    eventType: "",
-    visibility: "",
-    requireApproval: false,
-    partnerships: [],
-    hostedBy: [],
-    eventImage: null,
-    colleges: [],
+    title: "" || event.title,
+    description: "" || event.description,
+    dateStart: "" || event.dateStart,
+    dateEnd: "" || event.dateEnd,
+    timeStart: "" || event.timeStart,
+    timeEnd: "" || event.timeEnd,
+    location: "" || event.location,
+    maxCapacity: "" || event.maxCapacity,
+    campusType: "" || event.campusType,
+    eventType: "" || event.eventType,
+    visibility: "" || event.visibility,
+    requireApproval: event.requireApproval,
+    partnerships: [] || event.partnerships,
+    hostedBy: [] || event.hostedBy,
+    eventImage: null || event.eventImage,
   });
 
   const [campusType, setCampusType] = useState("On Campus");
@@ -94,8 +93,8 @@ const EditEventModal = ({
         requireApproval: event.requireApproval || false,
         partnerships: event.partnerships ? JSON.parse(event.partnerships) : [],
         hostedBy: event.hostedBy ? JSON.parse(event.hostedBy) : [],
-        eventImage: null,
-        colleges: event.hostedBy ? JSON.parse(event.hostedBy) : [],
+        eventImage: event.eventImage || "",
+        status: event.status,
       });
 
       // Set initial preview image
@@ -133,9 +132,9 @@ const EditEventModal = ({
   const handleCollegeToggle = (college) => {
     setEditedEvent((prev) => ({
       ...prev,
-      colleges: prev.colleges.includes(college)
-        ? prev.colleges.filter((c) => c !== college)
-        : [...prev.colleges, college],
+      hostedBy: prev.hostedBy.includes(college)
+        ? prev.hostedBy.filter((c) => c !== college)
+        : [...prev.hostedBy, college],
     }));
     setIsCollegesOpen(false);
     setCollegesFilter("");
@@ -145,7 +144,7 @@ const EditEventModal = ({
     if (customCollegeInput.trim()) {
       setEditedEvent((prev) => ({
         ...prev,
-        colleges: [...prev.colleges, customCollegeInput.trim()],
+        hostedBy: [...prev.hostedBy, customCollegeInput.trim()],
       }));
       setCustomCollegeInput("");
       setIsCollegesOpen(false);
@@ -155,7 +154,7 @@ const EditEventModal = ({
   const filteredColleges = colleges.filter(
     (college) =>
       college.toLowerCase().includes(collegesFilter.toLowerCase()) &&
-      !editedEvent.colleges.includes(college)
+      !editedEvent.hostedBy.includes(college)
   );
 
   // Partnership Dropdown Handlers
@@ -194,7 +193,6 @@ const EditEventModal = ({
       // Append all edited event details
       Object.keys(editedEvent).forEach((key) => {
         if (
-          key === "colleges" ||
           key === "partnerships" ||
           key === "hostedBy"
         ) {
@@ -206,8 +204,13 @@ const EditEventModal = ({
         }
       });
 
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(key, value)
+      // }
+      // console.log(editedEvent)
+
       const res = await axios.put(
-        `http://localhost:5000/api/event/${eventId}/update`,
+        `http://localhost:5000/api/event/${eventId}/update-event`,
         formData,
         {
           headers: {
@@ -422,7 +425,7 @@ const EditEventModal = ({
                       <div className="flex flex-col">
                         {/* College Tag Container */}
                         <div className="flex flex-wrap items-center gap-1 mb-1">
-                          {editedEvent.colleges.map((college) => (
+                          {editedEvent.hostedBy.map((college) => (
                             <span
                               key={college}
                               className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center gap-2"
@@ -500,7 +503,7 @@ const EditEventModal = ({
                                 <button
                                   key={college}
                                   className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
-                                    editedEvent.colleges.includes(college)
+                                    editedEvent.hostedBy.includes(college)
                                       ? "bg-[#6d3998]"
                                       : ""
                                   }`}

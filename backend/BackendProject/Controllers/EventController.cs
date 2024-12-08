@@ -309,5 +309,57 @@ namespace BackendProject.Controllers
 
             return Ok(notifications);
         }
+
+        [HttpPut("{id}/update-event")]
+        public async Task<IActionResult> UpdateEvent(int id, [FromForm] EventsDto eventsDto)
+        {
+            var @event = await _context.Events.FindAsync(id);
+            if (@event == null) return NotFound(new { message = "Event not found." });
+Console.Write(@event.EventImage);
+            var eventImage = @event.EventImage;
+            var uploadedFile = eventsDto.EventImage;
+            string fileName = null!;
+
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                fileName = uploadedFile.FileName; 
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                var filePathToDelete = Path.Combine(uploadPath, eventImage);
+                var filePath = Path.Combine(uploadPath, fileName);
+                
+                // Delete the old Event Image
+                if (System.IO.File.Exists(filePathToDelete))
+                {
+                    System.IO.File.Delete(filePathToDelete);
+                }
+
+                // Save the file
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+            }
+
+            @event.Title = eventsDto.Title;
+            @event.Description = eventsDto.Description;
+            @event.DateStart = eventsDto.DateStart;
+            @event.DateEnd = eventsDto.DateEnd;
+            @event.TimeStart = eventsDto.TimeStart;
+            @event.TimeEnd = eventsDto.TimeEnd;
+            @event.Location = eventsDto.Location;
+            @event.MaxCapacity = eventsDto.MaxCapacity;
+            @event.CampusType = eventsDto.CampusType;
+            @event.EventType = eventsDto.EventType;
+            @event.Visibility = eventsDto.Visibility;
+            @event.RequireApproval = eventsDto.RequireApproval;
+            @event.Partnerships = eventsDto.Partnerships;
+            @event.HostedBy = eventsDto.HostedBy;
+            @event.EventImage = !string.IsNullOrEmpty(fileName) ? fileName : @event.EventImage;
+
+            _context.Events.Update(@event);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event updated successfully." });
+        }
     }
 }

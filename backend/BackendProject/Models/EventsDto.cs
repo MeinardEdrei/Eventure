@@ -48,8 +48,7 @@ namespace BackendProject.Models
         [Required]
         public required string Partnerships { get; set; }
 
-        [Required]
-        public required IFormFile EventImage { get; set; }
+        public IFormFile? EventImage { get; set; }
 
         [Required]
         public int OrganizerId { get; set; }

@@ -29,6 +29,20 @@ namespace BackendProject.Controllers
             // _emailService = emailService;
         }
 
+        public async Task UpdateAttendeeCount(int eventId)
+        {
+            var eventEntity = await _context.Events.FindAsync(eventId);
+            if (eventEntity != null)
+            {
+                var attendees = await _context.RForms
+                    .Where(r => r.Event_Id == eventId && (r.Status == "Going" || r.Status == "Attended"))
+                    .CountAsync();
+
+                eventEntity.AttendeesCount = attendees;
+                await _context.SaveChangesAsync();
+            }
+        }
+
         // ----------------------REGISTRATION FORM--------------------------------
         [HttpPost("join")]
         public async Task<IActionResult> JoinEvent([FromForm] RFormDto rformDto)
@@ -86,10 +100,8 @@ namespace BackendProject.Controllers
             _context.RForms.Add(attendee);
             await _context.SaveChangesAsync();
 
-            // +1 to Attendees
-            eventToJoin.AttendeesCount += 1; 
-            _context.Events.Update(eventToJoin); 
-            await _context.SaveChangesAsync(); 
+            // Update Attendees Count
+            await UpdateAttendeeCount(eventToJoin.Id);
 
             var userJoined = await _context.Users.FindAsync(rformDto.User_Id);
             if (userJoined != null) {

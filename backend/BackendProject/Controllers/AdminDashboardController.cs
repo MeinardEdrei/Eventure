@@ -85,7 +85,6 @@ namespace BackendProject.Controllers
               eventCounts[date.Month - 1]++;
           }
       }
-
       
       return Ok(eventCounts);
     }

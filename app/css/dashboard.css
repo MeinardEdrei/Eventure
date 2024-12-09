@@ -1,7 +1,7 @@
 /* Icon Colors */
-.bi-eye, .bi-clock, .bi-person-add { color: #E0E0E0; }
+.bi-clock, .bi-person-add { color: #9E9E9E; }
 .bi-check-circle, .bi-check-circle-fill { color: #32A287; }
-.bi-pencil-square { color: #E8A87C; }
+.bi-pencil-square { color: #F39C12; }
 .bi-x-circle-fill { color: #9E2A2B; }
 
 /* Dashboard Container */
@@ -9,102 +9,175 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 15px;
   width: 100%;
 }
 
 /* Subcontainer */
 .dashboard-subcontainer {
-  min-height: 300px;
-  width: 86%;
+  width: 85%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, auto);
+  gap: 12px;
+  margin-top: 15px;
 }
 
-/* Greetings */
-.greetings {
-  margin: 3px 0 18px 10px;
+/* Dashboard Text */
+.dashboard-text {
+  grid-column: span 5;
+  height: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
 }
-.greetings h1 {
+.dashboard-text h1 {
   font-size: 22px;
   font-weight: 600;
   color: #E0E0E0;
+  margin-left: 5px;
+}
+.dashboard-type {
+  height: 45px;
+  width: 510px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1b1423;
+  display: flex;
+  border-radius: 8px;
+}
+.export-sy {
+  display: flex;
+  height: inherit;
+  width: 50%;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: #1b1423;
+  display: flex;
+  border-radius: 8px;
+}
+.dashboard-type-dropdown {
+  display: flex;
+  height: inherit;
+  width: 50%;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: #1b1423;
+  display: flex;
+  border-radius: 8px;
+}
+.type {
+  height: 75%;
+  width: 30%;
+  background-color: #271D33;
+  border-radius: 5px;
+  padding-left: 4px;
+  z-index: 3;
+  font-size: 9px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Events Summary */
-.events-summary-container {
-  height: 175px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
 .events-summary {
-  height: 163px;
-  width: 240px;
-  background-color: #221a2a;
-  border-radius: 30px;
-  padding: 21px 20px 21px 30px;
+  height: 120px;
+  width: 250px;
+  background-color: #1b1423;
+  border-radius: 15px;
+  padding: 0px 20px 0px 30px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
 }
 .events-summary .components {
   display: flex;
-  gap: 130px;
+  align-items: center;
 }
 .events-summary h2, .events-summary p {
   color: #E0E0E0;
-}
+} 
 .events-summary h2 {
-  margin: 8px 0 5px;
-  font-size: 33px;
+  font-size: 21px;
   font-weight: 600;
 }
 .events-summary p {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
 }
 
 /* Statistics Container */
-.statistics-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 .statistics-container .components { gap: 21px; }
 
 /* Heading Styles */
-.upcoming-events h3, .active-organizations h3, .events-overview h3 {
-  font-size: 15px;
+.upcoming-events, .active-organizations, .quick-links {
+  display: block;
+  padding-top: 20px;
+}
+.upcoming-events h3, .active-organizations h3, .events-overview h3, .registered-students h3, .quick-links h3, .export h3 {
+  color: #E0E0E0;
+  font-size: 14px;
   font-weight: 500;
 }
-.upcoming-events h2, .active-organizations h2 {
+.upcoming-events h2, .active-organizations h2, .quick-links h2 {
   text-align: center;
-  margin: 25px 10px 0px 0px;
+  margin-top: 15px;
 }
 
-/* Additional Container */
-.additionals {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 20%;
+/* Chart */
+.events-chart {
+  grid-column: span 3;
+  grid-row: span 3;
+  border-radius: 15px;
+  background-color: #1b1423;
+  padding: 20px 25px;
 }
-
-/* Events Overview */
-.events-overview {
-  height: 346px;
-  width: 80%;
-  border-radius: 40px;
-  background-color: #221a2a;
-  padding: 21px 35px;
-}
-.events-overview .statistics {
+.events-chart .statistics {
   width: 100%;
-  height: 90%;
+  height: 80%;
 }
-.events-overview .export {
+.events-chart .export {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .export button {
   margin-right: 15px;
+}
+.statistics {
+  margin-top: 10px;
+}
+
+/* Registered Students */
+.registered-students {
+  grid-row: span 3;
+  background-color: #1b1423;
+  border-radius: 15px;
+  padding: 20px 20px 21px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.registered-students-text {
+  width: 100%;
+  text-align: start;
+}
+.registered-students-text h2 {
+  font-size: 22px;
   font-weight: 600;
+}
+.barStats {
+  height: 80%;
+  width: 63%;
+}
+
+/* Quick Links */
+.quick-icons {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 20px;
 }

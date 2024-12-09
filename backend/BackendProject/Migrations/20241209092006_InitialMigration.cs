@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BackendProject.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRegistrationEventRelationship : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,13 +21,18 @@ namespace BackendProject.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    CampusType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EventType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Title = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Start = table.Column<TimeSpan>(type: "time(6)", nullable: false),
-                    End = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    DateStart = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DateEnd = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    TimeStart = table.Column<TimeSpan>(type: "time(6)", nullable: false),
+                    TimeEnd = table.Column<TimeSpan>(type: "time(6)", nullable: false),
                     Location = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     MaxCapacity = table.Column<int>(type: "int", nullable: false),
@@ -44,7 +49,9 @@ namespace BackendProject.Migrations
                     OrganizerId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AttendeesCount = table.Column<int>(type: "int", nullable: false)
+                    AttendeesCount = table.Column<int>(type: "int", nullable: false),
+                    RequirementFiles = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -83,6 +90,32 @@ namespace BackendProject.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_users", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "evaluation_form",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    EventId = table.Column<int>(type: "int", nullable: false),
+                    OrganizerId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Description = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evaluation_form", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_evaluation_form_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -131,7 +164,12 @@ namespace BackendProject.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     EventId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NotificationImage = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Message = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -152,33 +190,130 @@ namespace BackendProject.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "evaluation_question",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    EvaluationFormId = table.Column<int>(type: "int", nullable: false),
+                    Category = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Question = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evaluation_question", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_evaluation_question_evaluation_form_EvaluationFormId",
+                        column: x => x.EvaluationFormId,
+                        principalTable: "evaluation_form",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "user_events",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
+                    User_Id = table.Column<int>(type: "int", nullable: false),
+                    Event_Id = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_user_events", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_user_events_Events_EventId",
-                        column: x => x.EventId,
+                        name: "FK_user_events_Events_Event_Id",
+                        column: x => x.Event_Id,
                         principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_events_registration_form_User_Id",
+                        column: x => x.User_Id,
+                        principalTable: "registration_form",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_user_events_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "evaluation_answer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AttendeeId = table.Column<int>(type: "int", nullable: false),
+                    EvaluationFormId = table.Column<int>(type: "int", nullable: false),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    Answer = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evaluation_answer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_evaluation_answer_evaluation_form_EvaluationFormId",
+                        column: x => x.EvaluationFormId,
+                        principalTable: "evaluation_form",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_evaluation_answer_evaluation_question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "evaluation_question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_evaluation_answer_users_AttendeeId",
+                        column: x => x.AttendeeId,
+                        principalTable: "users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.InsertData(
+                table: "users",
+                columns: new[] { "Id", "Attended_Events", "Created_At", "Created_Events", "Department", "Email", "Password", "Profile_Image", "Role", "Section", "Status", "Student_Number", "Username" },
+                values: new object[] { 1, 0, new DateTime(2024, 12, 9, 17, 20, 4, 977, DateTimeKind.Local).AddTicks(7428), 0, "Administration", "admin@umak.edu.ph", "$2a$11$L9Y/x.3uusLr3.g3TOvFvuAPv8UHrH6I1BUNQfrwDTuFAq/ADHYDK", "", "Admin", "AdminSection", "Approved", "ADMIN001", "Admin" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_answer_AttendeeId",
+                table: "evaluation_answer",
+                column: "AttendeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_answer_EvaluationFormId",
+                table: "evaluation_answer",
+                column: "EvaluationFormId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_answer_QuestionId",
+                table: "evaluation_answer",
+                column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_form_EventId",
+                table: "evaluation_form",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_evaluation_question_EvaluationFormId",
+                table: "evaluation_question",
+                column: "EvaluationFormId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_notifications_EventId",
@@ -196,9 +331,14 @@ namespace BackendProject.Migrations
                 column: "Event_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_events_EventId",
+                name: "IX_user_events_Event_Id",
                 table: "user_events",
-                column: "EventId");
+                column: "Event_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_events_User_Id",
+                table: "user_events",
+                column: "User_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_events_UserId",
@@ -210,19 +350,28 @@ namespace BackendProject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "notifications");
+                name: "evaluation_answer");
 
             migrationBuilder.DropTable(
-                name: "registration_form");
+                name: "notifications");
 
             migrationBuilder.DropTable(
                 name: "user_events");
 
             migrationBuilder.DropTable(
-                name: "Events");
+                name: "evaluation_question");
+
+            migrationBuilder.DropTable(
+                name: "registration_form");
 
             migrationBuilder.DropTable(
                 name: "users");
+
+            migrationBuilder.DropTable(
+                name: "evaluation_form");
+
+            migrationBuilder.DropTable(
+                name: "Events");
         }
     }
 }

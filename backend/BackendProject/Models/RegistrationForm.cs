@@ -11,9 +11,11 @@ namespace BackendProject.Models
         public int Id { get; set; }
 
         [Required]
+        [Column("User_Id")]
         public required int User_Id { get; set; }
 
         [Required]
+        [Column("Event_Id")]
         public required int Event_Id { get; set; }
 
         [Required]
@@ -47,5 +49,7 @@ namespace BackendProject.Models
         //NAVIGATION PROPERTIES
         [ForeignKey("Event_Id")]
         public Event? Event { get; set; }
+
+        public ICollection<UEvent> UEvents { get; set; } = new List<UEvent>();
     }
 }

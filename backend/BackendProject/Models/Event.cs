@@ -51,7 +51,6 @@ public partial class Event
     public string RequirementFiles { get; set;} = null!;
 
     // Eager Loading Navigatiion Props
-    public ICollection<UEvent> UserEvents { get; set; } = new List<UEvent>();
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     public ICollection<RForm> RForms { get; set; } = new List<RForm>();
 }

@@ -14,13 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     const updateEvents = async () => {
-      try {
-        await axios.post("http://localhost:5000/api/event/update-status");
-      } catch (error) {
-        if (error.status === 404) {
-          alert("No events found");
-        }
-      }
+      await axios.post("http://localhost:5000/api/event/update-status");
     }
     updateEvents();
   }, []);
@@ -43,7 +37,7 @@ export default function Home() {
       console.log(res.data)
     } catch (error) {
       if (error.status === 404) {
-        alert("No events found");
+        console.log("No events found");
       }
     }
   };
@@ -103,7 +97,8 @@ export default function Home() {
         className="rounded-[70px] h-[585px] w-full object-cover"
         style={{ 
           backgroundImage: `url(http://localhost:5000/api/event/uploads/${highlights[0]?.eventImage})`, 
-          backgroundSize: 'auto', 
+          backgroundSize: 'cover', 
+          backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center'
         }} 
         alt="Event Image" 

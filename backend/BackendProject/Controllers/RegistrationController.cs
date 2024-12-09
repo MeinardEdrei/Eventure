@@ -57,27 +57,9 @@ namespace BackendProject.Controllers
                 return NotFound(new { message = "No Event Found" });
             }
 
-            if (eventToJoin.AttendeesCount == eventToJoin.MaxCapacity) {
-                var waitlisted = new RForm
-                {
-                    User_Id = rformDto.User_Id,
-                    Event_Id = rformDto.Event_Id,
-                    Event_Title = rformDto.Event_Title,
-                    Name = rformDto.Name,
-                    Email = rformDto.Email, 
-                    School_Id = rformDto.School_Id,  
-                    Section = rformDto.Section,
-                    Status = "Waiting",
-                    Ticket = rformDto.Ticket,
-                    Registered_Time = rformDto.Registered_Time,
-                };
-                _context.RForms.Add(waitlisted);
-                await _context.SaveChangesAsync();
-                return Ok(new { 
-                    message = "Event is full. You have been added to the waitlist.", 
-                    status = "Waiting" 
-                });
-            }
+            var userStatus = "";
+            if (eventToJoin.AttendeesCount == eventToJoin.MaxCapacity) {userStatus = "Waiting";}
+            else {userStatus = "Going";}
 
             // GENERATE QR CODE 
             var data = rformDto.School_Id.ToString();
@@ -92,7 +74,7 @@ namespace BackendProject.Controllers
                 Email = rformDto.Email, 
                 School_Id = rformDto.School_Id,  
                 Section = rformDto.Section,
-                Status = "Going",
+                Status = userStatus,
                 Ticket = qrCodeImage,
                 Registered_Time = rformDto.Registered_Time,
             };
@@ -100,22 +82,24 @@ namespace BackendProject.Controllers
             _context.RForms.Add(attendee);
             await _context.SaveChangesAsync();
 
+            if (userStatus == "Waiting")
+            {
+                return Ok(new { 
+                    message = "Event is full. You have been added to the waitlist.", 
+                    status = "Waiting" 
+                });
+            }
+
             // Update Attendees Count
             await UpdateAttendeeCount(eventToJoin.Id);
-
-            var userJoined = await _context.Users.FindAsync(rformDto.User_Id);
-            if (userJoined != null) {
-                userJoined.Attended_Events += 1;
-                _context.Users.Update(userJoined);
-                await _context.SaveChangesAsync();
-            }
 
             // Insert to user_events
             var userEvent = new UEvent
             {
-                UserId = rformDto.User_Id,
-                EventId = rformDto.Event_Id,
-                Status = "Going"
+                RForm_Id = attendee.Id,
+                User_Id = rformDto.User_Id,
+                Event_Id = rformDto.Event_Id,
+                Status = userStatus
             };
             _context.UEvents.Add(userEvent);
             await _context.SaveChangesAsync(); 

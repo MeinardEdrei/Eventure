@@ -10,14 +10,13 @@ namespace BackendProject.Models
         public int Id { get; set; }
 
         [Required]
-        [Column("UserId")]
-        [ForeignKey("User")]
-        public required int UserId { get; set; }
+        public required int RForm_Id { get; set; }
 
         [Required]
-        [Column("EventId")]
-        [ForeignKey("Event")]
-        public required int EventId { get; set; }
+        public required int User_Id { get; set; }
+
+        [Required]
+        public required int Event_Id { get; set; }
 
         [Required]
         [Column("Status")]
@@ -25,8 +24,11 @@ namespace BackendProject.Models
 
 
         // Eager Loading Navigatiion Props
-        public User? User { get; set; }
+        [ForeignKey("Event_Id")]
         public Event? Event { get; set; }
+
+        [ForeignKey("RForm_Id")]
+        public RForm? RForm { get; set; }
     }
 }
 

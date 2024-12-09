@@ -27,24 +27,15 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 0.5em;
+  gap: 1.5em;
 }
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #ffffff;
-  opacity: 0.7;
-}
-
 /* Dropdown Styles */
 .dropdown-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 3.5rem;
+  height: 3rem;
   padding: 0.5rem 1rem;
   background-color: rgb(91, 85, 97, 0.3);
   font-weight: bold;
@@ -100,13 +91,12 @@ body {
   background: #555;
 }
 .dropdown-menu .add-dept::placeholder,
-.dropdown-menu .add-partner::placeholder{
+.dropdown-menu .add-partner::placeholder {
   color: rgb(255, 255, 255);
 }
 .dropdown-menu .add-dept:focus,
-.dropdown-menu .add-partner:focus{
+.dropdown-menu .add-partner:focus {
   border: 1px solid #e4c7ffb3;
-
 }
 
 .dropdown-item {
@@ -138,7 +128,7 @@ body {
 /* Per Box */
 .box {
   /* background-color: #463951; */
-  background-color: transparent;
+  /* background-color: transparent; */
   border-radius: 8px;
   /* margin-bottom: 12px; */
   /* padding: 10px; */
@@ -148,15 +138,23 @@ body {
 .label-container {
   display: flex;
   align-items: center;
-  margin-bottom: 80px;
+  /* margin-bottom: 80px; */
   color: #ffffff;
   opacity: 0.5;
+}
+.label-container::placeholder {
+  color: rgba(255, 0, 0, 0.7); /* Adjust the opacity for visibility */
+  opacity: 1;
 }
 
 .label-icon i {
   margin-right: 12px;
   font-size: 1.2em; /* Adjust size */
   color: #ffffff; /* Adjust color */
+}
+.fa-location-arrow {
+  color: #cccccc;
+  font-size: 1.2rem;
 }
 
 /* Input Styles */
@@ -247,8 +245,8 @@ body {
 
 .toggle {
   position: relative;
-  width: 48px;
-  height: 25px;
+  width: 40px;
+  height: 20px;
 }
 
 .toggle input {
@@ -263,7 +261,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: transparent;
+  background-color: #565656;
   border: 1px solid #ffffff;
   transition: 0.8s;
   border-radius: 30px;
@@ -272,10 +270,10 @@ body {
 .toggle-slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
+  height: 12px;
+  width: 12px;
   left: 4px;
-  bottom: 4px;
+  bottom: 3.5px;
   background-color: #ffffff;
   transition: 0.4s;
   border-radius: 100%;
@@ -286,5 +284,5 @@ body {
   /* background-color: #6b21a8; */
 }
 .toggle input:checked + .toggle-slider:before {
-  transform: translateX(22px);
+  transform: translateX(19px);
 }

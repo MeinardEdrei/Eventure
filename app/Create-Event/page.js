@@ -263,7 +263,7 @@ const Page = () => {
           </div>
 
           {/* Right Side */}
-          <div className="right-container flex flex-col w-[50%] gap-4 ">
+          <div className="right-container flex flex-col w-[50%] gap-[1.5rem] ">
             {/* Event's Detail */}
             <EventSettingsPanel
               venue={venue}
@@ -285,6 +285,7 @@ const Page = () => {
             />
 
             {/* Input Event Schedule */}
+
             <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 py-6 flex flex-row justify-center w-[100%] gap-[4rem]">
               <div className="flex flex-col gap-[2.5rem] items-center justify-center">
                 <label>Start</label>
@@ -297,21 +298,21 @@ const Page = () => {
                   {/* <label>Start</label> */}
                   <div className="date-time">
                     <div className="date">
-                        <input
-                          className="p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
-                          type="date"
-                          value={dateStart}
-                          onChange={(e) => setDateStart(e.target.value)}
-                          required
-                        />
+                      <input
+                        className="p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
+                        type="date"
+                        value={dateStart}
+                        onChange={(e) => setDateStart(e.target.value)}
+                        required
+                      />
                     </div>
                     <div className="time">
-                        <input
-                          type="time"
-                          value={timeStart}
-                          onChange={(e) => setTimeStart(e.target.value)}
-                          required
-                        />
+                      <input
+                        type="time"
+                        value={timeStart}
+                        onChange={(e) => setTimeStart(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                 </div>
@@ -321,20 +322,20 @@ const Page = () => {
                   {/* <label>End</label> */}
                   <div className="date-time">
                     <div className="date">
-                        <input
-                          type="date"
-                          value={dateEnd}
-                          onChange={(e) => setDateEnd(e.target.value)}
-                          required
-                        />
+                      <input
+                        type="date"
+                        value={dateEnd}
+                        onChange={(e) => setDateEnd(e.target.value)}
+                        required
+                      />
                     </div>
                     <div className="time">
-                        <input
-                          type="time"
-                          value={timeEnd}
-                          onChange={(e) => setTimeEnd(e.target.value)}
-                          required
-                        />
+                      <input
+                        type="time"
+                        value={timeEnd}
+                        onChange={(e) => setTimeEnd(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                 </div>
@@ -342,7 +343,7 @@ const Page = () => {
             </div>
 
             {/* See Requirements */}
-            <div className="requirements-wrapper">
+            {/* <div className="requirements-wrapper">
               <button
                 type="button"
                 className="requirements-button"
@@ -364,7 +365,7 @@ const Page = () => {
                 </svg>
                 See All Requirements
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 

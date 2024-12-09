@@ -17,6 +17,8 @@ namespace BackendProject.Data
         public required DbSet<EvaluationQuestion> EvaluationQuestions { get; set; }
         public required DbSet<EvaluationAnswer> EvaluationAnswers { get; set; }
 
+        // REGISTRATION FORM,
+        // USER EVENTS relationship to EVENTS TABLE
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Event>()
@@ -25,7 +27,46 @@ namespace BackendProject.Data
                 .HasForeignKey(r => r.Event_Id)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<RForm>()
+                .HasMany(e => e.UEvents)
+                .WithOne(r => r.RForm)
+                .HasForeignKey(r => r.RForm_Id)
+                .OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(modelBuilder);
+            SeedData(modelBuilder);
+        }
+
+        // AUTOMATE ADMIN ACCOUNT CREATION
+        private void SeedData(ModelBuilder modelBuilder)
+        {
+            try 
+            {
+                var seedUser = new User
+                {
+                    Id = 1,
+                    Username = Environment.GetEnvironmentVariable("ADMIN_USERNAME") ?? String.Empty,
+                    Email = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? String.Empty,
+                    Student_Number = Environment.GetEnvironmentVariable("ADMIN_NUMBER") ?? String.Empty,
+                    Section = Environment.GetEnvironmentVariable("ADMIN_SECTION") ?? String.Empty,
+                    Department = Environment.GetEnvironmentVariable("ADMIN_DEPARTMENT") ?? String.Empty,
+                    Password = BCrypt.Net.BCrypt.HashPassword(
+                        Environment.GetEnvironmentVariable("ADMIN_SECRET")) ?? String.Empty,
+                    Role = Environment.GetEnvironmentVariable("ADMIN_ROLE") ?? String.Empty,
+                    Status = Environment.GetEnvironmentVariable("ADMIN_STATUS") ?? String.Empty,
+                    Profile_Image = String.Empty,
+                    Attended_Events = 0,
+                    Created_Events = 0,
+                    Created_At = DateTime.Now
+                };
+
+                modelBuilder.Entity<User>().HasData(seedUser);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in SeedData: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+            }
         }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241128034751_NewEventCreation")]
-    partial class NewEventCreation
+    [Migration("20241209113609_FixUserEvents")]
+    partial class FixUserEvents
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,107 @@ namespace BackendProject.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Answer");
+
+                    b.Property<int>("AttendeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("AttendeeId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<int>("EvaluationFormId")
+                        .HasColumnType("int")
+                        .HasColumnName("EvaluationFormId");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int")
+                        .HasColumnName("QuestionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttendeeId");
+
+                    b.HasIndex("EvaluationFormId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("evaluation_answer");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationForm", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Description");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int")
+                        .HasColumnName("EventId");
+
+                    b.Property<int>("OrganizerId")
+                        .HasColumnType("int")
+                        .HasColumnName("OrganizerId");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("evaluation_form");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Category");
+
+                    b.Property<int>("EvaluationFormId")
+                        .HasColumnType("int")
+                        .HasColumnName("EvaluationFormId");
+
+                    b.Property<string>("Question")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Question");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluationFormId");
+
+                    b.ToTable("evaluation_question");
+                });
 
             modelBuilder.Entity("BackendProject.Models.Event", b =>
                 {
@@ -84,6 +185,10 @@ namespace BackendProject.Migrations
                     b.Property<bool>("RequireApproval")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("RequirementFiles")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -98,11 +203,16 @@ namespace BackendProject.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Visibility")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -115,9 +225,21 @@ namespace BackendProject.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("CreatedAt");
+
                     b.Property<int>("EventId")
                         .HasColumnType("int")
                         .HasColumnName("EventId");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("longtext")
+                        .HasColumnName("Message");
+
+                    b.Property<string>("NotificationImage")
+                        .HasColumnType("longtext")
+                        .HasColumnName("NotificationImage");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -151,7 +273,8 @@ namespace BackendProject.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<int>("Event_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("Event_Id");
 
                     b.Property<string>("Event_Title")
                         .IsRequired()
@@ -183,7 +306,8 @@ namespace BackendProject.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<int>("User_Id")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("User_Id");
 
                     b.HasKey("Id");
 
@@ -200,24 +324,25 @@ namespace BackendProject.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EventId")
-                        .HasColumnType("int")
-                        .HasColumnName("EventId");
+                    b.Property<int>("Event_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RForm_Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("Status");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("UserId");
+                    b.Property<int>("User_Id")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("Event_Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("RForm_Id");
 
                     b.ToTable("user_events");
                 });
@@ -284,6 +409,80 @@ namespace BackendProject.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Attended_Events = 0,
+                            Created_At = new DateTime(2024, 12, 9, 19, 36, 8, 282, DateTimeKind.Local).AddTicks(8363),
+                            Created_Events = 0,
+                            Department = "Administration",
+                            Email = "admin@umak.edu.ph",
+                            Password = "$2a$11$ot/F.ReOl1reu5OsuItlmurIp9c1Mmb6mJNvwJJCMW.JjdmNXTIPG",
+                            Profile_Image = "",
+                            Role = "Admin",
+                            Section = "AdminSection",
+                            Status = "Approved",
+                            Student_Number = "ADMIN001",
+                            Username = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationAnswer", b =>
+                {
+                    b.HasOne("BackendProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("AttendeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendProject.Models.EvaluationForm", "EvaluationForm")
+                        .WithMany("EvaluationAnswers")
+                        .HasForeignKey("EvaluationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendProject.Models.EvaluationQuestion", "EvaluationQuestion")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EvaluationForm");
+
+                    b.Navigation("EvaluationQuestion");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationForm", b =>
+                {
+                    b.HasOne("BackendProject.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationQuestion", b =>
+                {
+                    b.HasOne("BackendProject.Models.EvaluationForm", "EvaluationForm")
+                        .WithMany("EvaluationQuestions")
+                        .HasForeignKey("EvaluationFormId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EvaluationForm");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.Event", b =>
+                {
+                    b.HasOne("BackendProject.Models.User", null)
+                        .WithMany("Event")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("BackendProject.Models.Notification", b =>
@@ -319,20 +518,27 @@ namespace BackendProject.Migrations
             modelBuilder.Entity("BackendProject.Models.UEvent", b =>
                 {
                     b.HasOne("BackendProject.Models.Event", "Event")
-                        .WithMany("UserEvents")
-                        .HasForeignKey("EventId")
+                        .WithMany()
+                        .HasForeignKey("Event_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BackendProject.Models.User", "User")
-                        .WithMany("UserEvents")
-                        .HasForeignKey("UserId")
+                    b.HasOne("BackendProject.Models.RForm", "RForm")
+                        .WithMany("UEvents")
+                        .HasForeignKey("RForm_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Event");
 
-                    b.Navigation("User");
+                    b.Navigation("RForm");
+                });
+
+            modelBuilder.Entity("BackendProject.Models.EvaluationForm", b =>
+                {
+                    b.Navigation("EvaluationAnswers");
+
+                    b.Navigation("EvaluationQuestions");
                 });
 
             modelBuilder.Entity("BackendProject.Models.Event", b =>
@@ -340,15 +546,18 @@ namespace BackendProject.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("RForms");
+                });
 
-                    b.Navigation("UserEvents");
+            modelBuilder.Entity("BackendProject.Models.RForm", b =>
+                {
+                    b.Navigation("UEvents");
                 });
 
             modelBuilder.Entity("BackendProject.Models.User", b =>
                 {
-                    b.Navigation("Notifications");
+                    b.Navigation("Event");
 
-                    b.Navigation("UserEvents");
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

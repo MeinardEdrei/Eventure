@@ -40,8 +40,7 @@ function Calendar() {
 
         setEvents(formattedEvents);
       } catch (error) {
-        console.error("Failed to fetch events:", error);
-        alert(error.message);
+        console.log("Failed to fetch events:", error);
         setEvents({});
       }
     };

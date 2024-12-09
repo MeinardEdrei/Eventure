@@ -67,7 +67,7 @@ function EventNewPage() {
 
   useEffect(() => {
     fetchEvents();
-  }, [session]);
+  }, []);
 
   // FILTER EVENTS
   const filteredEvents = () => {
@@ -188,7 +188,6 @@ function EventNewPage() {
   }
 
   const handleEventClick = async (event) => {
-    console.log(event)
     await fetchRegistration(event);
     setIsModalOpen(true);
   };

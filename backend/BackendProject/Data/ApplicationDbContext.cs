@@ -16,6 +16,7 @@ namespace BackendProject.Data
         public required DbSet<EvaluationForm> EvaluationForms { get; set; }
         public required DbSet<EvaluationQuestion> EvaluationQuestions { get; set; }
         public required DbSet<EvaluationAnswer> EvaluationAnswers { get; set; }
+        public required DbSet<SchoolYear> SchoolYears { get; set; }
 
         // REGISTRATION FORM,
         // USER EVENTS relationship to EVENTS TABLE

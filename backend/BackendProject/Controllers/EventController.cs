@@ -46,6 +46,64 @@ namespace BackendProject.Controllers
             return Ok(new {message = "Status updated" });
         }
 
+        public async Task<string> DetermineSemester(DateTime EventDateStart, DateTime EventDateEnd)
+        {
+            var schoolYear = await _context.SchoolYears
+                .Where(s => s.IsArchived == false)
+                .FirstOrDefaultAsync();
+
+            if (schoolYear == null) return "Unknown";
+
+            DateTime syDateStart = schoolYear.DateStart;
+            DateTime syDateEnd = schoolYear.DateEnd;
+
+            // First Semester: Start of the SY - December 15
+            if (EventDateStart.Month >= syDateStart.Month && EventDateEnd.Month <= 12)
+            {
+                // Specifically for Start of the SY, check if it's before the start day
+                if (EventDateStart.Month == syDateStart.Month && EventDateStart.Day < syDateStart.Day)
+                {
+                    return "Second"; // If before start date, it belongs to previous semester
+                }
+                
+                // Specifically for December, check if it's before or on December 15
+                if (EventDateStart.Month == 12 && EventDateStart.Day <= 15)
+                {
+                    return "First";
+                }
+                
+                // For months between start month and December
+                if (EventDateStart.Month > syDateStart.Month && EventDateEnd.Month < 12)
+                {
+                    return "First";
+                }
+            }
+            
+            // Second Semester: January 20 - June
+            if (EventDateStart.Month >= 1 && EventDateEnd.Month <= syDateEnd.Month)
+            {
+                // Specifically for January, check if it's before January 20
+                if (EventDateStart.Month == 1 && EventDateStart.Day < 20)
+                {
+                    return "First";
+                }
+                
+                // Specifically for end month, check if it's before or on end day
+                if (EventDateEnd.Month == syDateEnd.Month && EventDateEnd.Day <= syDateEnd.Day)
+                {
+                    return "Second";
+                }
+                
+                // For months between January and end month
+                if (EventDateStart.Month >= 1 && EventDateStart.Month < syDateEnd.Month)
+                {
+                    return "Second";
+                }
+            }
+
+            return "Unknown";
+        }
+
         // ----------------POST api/event/create------------------- 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] EventsDto eventsDto)
@@ -100,8 +158,21 @@ namespace BackendProject.Controllers
             // ----------------------END OF HANDLE FILE UPLOAD-------------------------------- 
 
             // ----------------------CREATE NEW EVENT--------------------------------
+
+            // SCHOOL YEAR
+            DateTime currentDate = DateTime.Now;
+            var schoolYear = await _context.SchoolYears
+                .FirstOrDefaultAsync(s => currentDate >= s.DateStart && currentDate <= s.DateEnd);
+            if (schoolYear == null) throw new Exception("No school year found for the current date.");
+
+            // SEMESTER
+            var semesterValue = await DetermineSemester(eventsDto.DateStart, eventsDto.DateEnd);
+            
+            // NEW EVENT
             var newEvent = new Event
             {
+                SchoolYearId = schoolYear.Id,
+                Semester = semesterValue,
                 CampusType = eventsDto.CampusType,
                 EventType = eventsDto.EventType,
                 Title = eventsDto.Title,
@@ -315,7 +386,7 @@ namespace BackendProject.Controllers
         {
             var @event = await _context.Events.FindAsync(id);
             if (@event == null) return NotFound(new { message = "Event not found." });
-Console.Write(@event.EventImage);
+
             var eventImage = @event.EventImage;
             var uploadedFile = eventsDto.EventImage;
             string fileName = null!;
@@ -360,6 +431,62 @@ Console.Write(@event.EventImage);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event updated successfully." });
+        }
+
+        [HttpPost("new-school-year")]
+        public async Task<IActionResult> NewSchoolYear([FromForm] SchoolYearDto schoolYearDto)
+        {
+            // Validate School Year Range
+            var validate = await _context.SchoolYears
+                .Where(s => (s.DateStart <= schoolYearDto.DateStart && s.DateEnd >= schoolYearDto.DateStart) ||
+                            (s.DateStart >= schoolYearDto.DateStart && s.DateStart <= schoolYearDto.DateEnd))
+                .FirstOrDefaultAsync();
+
+            if (validate != null) 
+                return Conflict("The start date of the new school year cannot be within the range of an existing school year.");
+
+            // Check Duplication
+            var checkDuplicate = await _context.SchoolYears
+                .Where(s => s.DateStart == schoolYearDto.DateStart && s.DateEnd == schoolYearDto.DateEnd)
+                .FirstOrDefaultAsync();
+
+            if (checkDuplicate != null) 
+                return Conflict("A school year with the same start and end date already exists.");
+
+            // Create New School Year
+            var newSchoolYear = new SchoolYear
+            {
+                DateStart = schoolYearDto.DateStart,
+                DateEnd = schoolYearDto.DateEnd,
+                IsArchived = false
+            };
+            _context.SchoolYears.Add(newSchoolYear);
+            await _context.SaveChangesAsync();
+
+
+            // Archive Previous School Years
+            var oldSchoolYears = await _context.SchoolYears
+                .Where(e => e.DateStart != schoolYearDto.DateStart 
+                    && e.DateEnd != schoolYearDto.DateEnd).ToListAsync();
+
+            foreach (var oldSchoolYear in oldSchoolYears)
+            {
+                oldSchoolYear.IsArchived = true;
+                _context.SchoolYears.Update(oldSchoolYear);
+            }
+
+            // Archive all events associated with this school year
+            var eventsToArchive = await _context.Events
+                .Where(e => e.SchoolYearId != newSchoolYear.Id).ToListAsync();
+                
+            foreach (var eventToArchive in eventsToArchive)
+            {
+                eventToArchive.Status = "Archived";
+                _context.Events.Update(eventToArchive);
+            }
+            
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "New School Year Added!" });
         }
     }
 }

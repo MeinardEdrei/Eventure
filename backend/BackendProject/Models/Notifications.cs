@@ -24,10 +24,13 @@ namespace BackendProject.Models
     public required string Type { get; set; }
 
     [Column("NotificationImage")]
-    public string? NotificationImage { get; set; }
+    public required string NotificationImage { get; set; }
 
     [Column("Message")]
-    public string? Message { get; set; }
+    public required string Message { get; set; }
+
+    [Column("Status")]
+    public required string Status { get; set; }
 
     [Column("CreatedAt")]
     public DateTime? CreatedAt { get; set; }

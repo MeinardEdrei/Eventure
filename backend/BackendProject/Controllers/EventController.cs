@@ -276,8 +276,10 @@ namespace BackendProject.Controllers
             {
                 UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
+                NotificationImage = "fwvsdv.jpg",
                 Message = "Your event has been approved.",
-                Type = "All",
+                Type = "Organizer",
+                Status = "Approved",
                 CreatedAt = DateTime.Now,
             };
 
@@ -303,7 +305,11 @@ namespace BackendProject.Controllers
             {
                 UserId = eventToApprove.OrganizerId,
                 EventId = eventToApprove.Id,
+                NotificationImage = "fwvsdv.jpg",
                 Type = "Organizer",
+                Status = "Pre-Approved",
+                Message = "Your event has been pre-approved.",
+                CreatedAt = DateTime.Now,
             };
 
             _context.Notifications.Add(notifications);
@@ -358,18 +364,22 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> GetNotification()
         {
             var notifications = await _context.Notifications
+                .Take(5)
                 .Select(n => new NotificationsDto
                 {
                     Id = n.Id,
                     UserId = n.UserId,
                     EventId = n.EventId,
                     Type = n.Type,
+                    Message = n.Message,
+                    Status = n.Status,
                     UserName = n.User.Username,
                     EventTitle = n.Event.Title,
                     EventDesc = n.Event.Description,
                     EventImage = n.Event.EventImage,
                     EventDate = n.Event.DateStart,
                     EventLocation = n.Event.Location,
+                    CreatedAt = n.CreatedAt,
                 })
                 .ToListAsync();
 
@@ -487,6 +497,43 @@ namespace BackendProject.Controllers
             
             await _context.SaveChangesAsync();
             return Ok(new { message = "New School Year Added!" });
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchEvents([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("Search query is required");
+            }
+
+            try 
+            {
+                var events = await _context.Events
+                    .Where(e => 
+                        (e.Title.Contains(query) || 
+                        e.Description.Contains(query) || 
+                        e.Location.Contains(query)) &&
+                        e.Status == "Approved"
+                    )
+                    .Take(5) // Limit to 5 results
+                    .Select(e => new 
+                    {
+                        e.Id,
+                        e.Title,
+                        e.Description,
+                        e.Location,
+                        e.EventImage,
+                        e.DateStart
+                    })
+                    .ToListAsync();
+
+                return Ok(events);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Search failed", error = ex.Message });
+            }
         }
     }
 }

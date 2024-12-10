@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import "../css/dashboard.css";
 import axios from 'axios';
+import AddSchoolYearModal from "./app/AdminDashboard/AddSchoolYearModal";
 import { Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -18,29 +19,37 @@ import {
 
 ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElement, Title, Tooltip, Legend);
 
-function OrganizerDashboard() {
+function AdminDashboard() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [schoolYear, setSchoolYear] = useState([]);
   const [semester, setSemester] = useState("");
+  const [department, setDepartment] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const [organizerData, setOrganizerData] = useState({
+  const [adminData, setAdminData] = useState({
     eventStatus: [],
     eventsCount: [],
     onCampusCounts: [],
     offCampusCounts: [],
   });
 
+  const refreshData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, [])
+
+
   // DASHBOARD DATA
   useEffect(() => {
     const fetchStatusCounts = async () => {
       try {
-        const organizerDataResponse = await axios.get('http://localhost:5000/api/organizerdashboard/organizer-data');
+        const adminDataResponse = await axios.get('http://localhost:5000/api/admindashboard/admin-data');
       
-        setOrganizerData(organizerDataResponse.data);
-        alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
+        setAdminData(adminDataResponse.data);
+        alert(JSON.stringify(adminDataResponse.data)); // See the full object structure
 
         // Default
-        setSchoolYear("2023 - 2024"); 
-        setSemester("1st - 2nd sem");
+        setSchoolYear("2023-2024"); 
+        setSemester("1st-2nd sem");
       } catch (error) {
         console.error('Error fetching status counts:', error);
       }
@@ -52,7 +61,7 @@ function OrganizerDashboard() {
   // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/organizerdashboard/export`, 
+      const response = await axios.post(`http://localhost:5000/api/adminreport/export`, 
         { responseType: 'blob' }
       );
       const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -75,9 +84,10 @@ function OrganizerDashboard() {
   // Function to send the selected values to the backend
   const sendType = async (dropdownValues) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/organizerdashboard/type', dropdownValues);
+      const response = await axios.post('http://localhost:5000/api/admindashboard/type', dropdownValues);
       setSchoolYear(response.data.SchoolYear);
       setSemester(response.data.Semester);
+      setDepartment(response.data.Department);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.errors) {
         console.error('Validation Errors:', error.response.data.errors);
@@ -90,15 +100,20 @@ function OrganizerDashboard() {
 
    // Handlers for each dropdown
    const handleSchoolYearChange = (e) => {
-    const value = e.target.value;
-    setSchoolYear(value);
-    sendType({ schoolYear: value, semester });
+    setSchoolYear(e.target.value);
+    sendType({ schoolYear: e.target.value, semester, department });
   };
 
   const handleSemesterChange = (e) => {
     const value = e.target.value;
     setSemester(value);
-    sendType({ schoolYear, semester: value });
+    sendType({ schoolYear, semester: value, department });
+  };
+
+  const handleDepartmentChange = (e) => {
+    const value = e.target.value;
+    setDepartment(value);
+    sendType({ schoolYear, semester, department: value });
   };
 
   // Reorder from August to July
@@ -106,15 +121,15 @@ function OrganizerDashboard() {
     let filteredLabels = [];
     let filteredData = dataArrays.map(() => []);
   
-    if (semester === "1st sem") {
+    if (semester === "First") {
       // For 1st semester: August to January
       filteredLabels = labels.slice(7, 12).concat(labels.slice(0, 1)); // August to January
       filteredData = dataArrays.map(dataArray => dataArray.slice(7, 12).concat(dataArray.slice(0, 1)));
-    } else if (semester === "2nd sem") {
+    } else if (semester === "Second") {
       // For 2nd semester: January to July
       filteredLabels = labels.slice(0, 7); // January to July
       filteredData = dataArrays.map(dataArray => dataArray.slice(0, 7));
-    } else if (semester === "1st - 2nd sem") {
+    } else if (semester === "FirstAndSecond") {
       // For 1st - 2nd semester: August to July
       filteredLabels = labels.slice(7).concat(labels.slice(0, 7)); // August to July
       filteredData = dataArrays.map(dataArray => dataArray.slice(7).concat(dataArray.slice(0, 7)));
@@ -134,10 +149,11 @@ function OrganizerDashboard() {
     const { filteredLabels, filteredData } = filterDataBySemester(
       semester, 
       originalLabels, 
-      organizerData.eventsCount, 
-      organizerData.onCampusCounts, 
-      organizerData.offCampusCounts
+      adminData.eventsCount, 
+      adminData.onCampusCounts, 
+      adminData.offCampusCounts
     );
+
 
     return {
       labels: filteredLabels,
@@ -205,10 +221,10 @@ function OrganizerDashboard() {
 
   // Start of Bar Chart
   const barData = {
-    labels: [""], // Example subset
+    labels: [""], 
     datasets: [
       {
-        data: [2750], 
+        data: [adminData.registeredStudents], 
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -278,28 +294,36 @@ function OrganizerDashboard() {
         
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>School Year {schoolYear} {semester} </h1>
+          <h1>School Year {schoolYear} {semester} {department}</h1>
           <div className='dashboard-type'>
             <div className='export-sy'>
               <div className='type'></div>
               <div className='type'></div>
-              <div className='type add-school-year'>
-                
+              <div className='type add-school-year' onClick={() => setIsModalOpen(true)}>
+                <button>
+                  School Year 
+                </button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                </svg>
               </div>
             </div>
             <div className='dashboard-type-dropdown'>
-              <div className='type organizer-export'>
-                <button>Export</button>
-              </div>
               <select id="school-year" name="school-year" className='type school-year' onChange={handleSchoolYearChange}>
-                <option value="2024 - 2025">2024-2025</option>
-                <option value="2023 - 2024">2023-2024</option>
-                <option value="2022 - 2023">2022-2023</option>
+                <option value="2024-2025">2024-2025</option>
+                <option value="2023-2024">2023-2024</option>
+                <option value="2022-2023">2022-2023</option>
               </select>
               <select id="semester" name="semester" className='type semester' onChange={handleSemesterChange}>
-                <option value="1st - 2nd sem">1st - 2nd</option>
-                <option value="1st sem">1st sem</option>
-                <option value="2nd sem">2nd sem</option>
+                <option value="FirstAndSecond">1st - 2nd</option>
+                <option value="First">1st sem</option>
+                <option value="Second">2nd sem</option>
+              </select>
+              <select id="department" name="department" className='type department' onChange={handleDepartmentChange}>
+                <option value="All">All</option>
+                <option value="CCIS">CCIS</option>
+                <option value="CLAS">CLAS</option>
+                <option value="CBFAS">CBFS</option>
               </select>
             </div>
           </div>
@@ -307,7 +331,7 @@ function OrganizerDashboard() {
 
         {/* Events Statuses */}
         {eventCounts.map((event, index) => (
-          <DashboardCard key={index} label={event.label} count={organizerData.eventStatus[index]} icon1={event.icon1} icon2={event.icon2} />
+          <DashboardCard key={index} label={event.label} count={adminData.eventStatus[index]} icon1={event.icon1} icon2={event.icon2} />
         ))}  
 
         {/* Event Overview */}
@@ -329,8 +353,8 @@ function OrganizerDashboard() {
         {/* Registered Students */}
         <div className='registered-students'>
           <div className='registered-students-text'>
-            <h3>Monthly Engagement</h3>
-            <h2>270</h2>
+            <h3>Registered Students</h3>
+            <h2>{adminData.registeredStudents}</h2>
           </div>
           <div className='barStats'>
             <Bar data={barData} options={barOptions} />
@@ -340,15 +364,15 @@ function OrganizerDashboard() {
         {/* Upcoming Events */}
         <div className='events-summary upcoming-events'>
           <h3>Upcoming Events</h3>
-          <h2>{organizerData.upcomingEvents}</h2>
+          <h2>{adminData.upcomingEvents}</h2>
         </div>
 
         {/* Active Organizations */}
         <div className='events-summary active-organizations'>
           <div className='components'>
-            <h3>Created Events</h3>
+            <h3>Active Organizations</h3>
           </div>
-          <h2>{organizerData.orgActive}</h2>
+          <h2>{adminData.activeCounts}</h2>
         </div>
 
         {/* Quick Links */}
@@ -376,8 +400,13 @@ function OrganizerDashboard() {
           </div>
         </div>
       </div>
+      <AddSchoolYearModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={refreshData}
+      />
     </div>
   )
 }
 
-export default OrganizerDashboard
+export default AdminDashboard

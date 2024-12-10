@@ -24,16 +24,14 @@ function AdminDashboard() {
   const [schoolYear, setSchoolYear] = useState([]);
   const [semester, setSemester] = useState([]);
   const [department, setDepartment] = useState([]);
-
-  const [statusCounts, setStatusCounts] = useState([]);
-  const [upcomingCounts, setUpcomingCounts] = useState([]);
-  const [activeCounts, setActiveCounts] = useState([]);
-
-  const [eventsCounts, setEventCounts] = useState([]);
-  const [onCampusCounts, setOnCampusCounts] = useState([]);
-  const [offCampusCounts, setOffCampusCounts] = useState([]);
-
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const [adminData, setAdminData] = useState({
+    eventStatus: [],
+    eventsCount: [],
+    onCampusCounts: [],
+    offCampusCounts: [],
+  });
 
   const refreshData = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
@@ -43,21 +41,14 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchStatusCounts = async () => {
       try {
-        const [statusResponse, upcomingResponse, activeResponse, eventResponse, onCampusResponse, offCampusResponse] = await Promise.all([
-          axios.get('http://localhost:5000/api/admindashboard/status'),
-          axios.get('http://localhost:5000/api/admindashboard/upcoming'),
-          axios.get('http://localhost:5000/api/admindashboard/active'),
-          axios.get('http://localhost:5000/api/admindashboard/event'),
-          axios.get('http://localhost:5000/api/admindashboard/on-campus'),
-          axios.get('http://localhost:5000/api/admindashboard/off-campus'),
-        ]);
+        const adminDataResponse = await axios.get('http://localhost:5000/api/admindashboard/admin-data');
+      
+        setAdminData(adminDataResponse.data);
+        alert(JSON.stringify(adminDataResponse.data)); // See the full object structure
 
-        setStatusCounts(statusResponse.data);
-        setUpcomingCounts(upcomingResponse.data);
-        setActiveCounts(activeResponse.data);
-        setEventCounts(eventResponse.data);
-        setOnCampusCounts(onCampusResponse.data);
-        setOffCampusCounts(offCampusResponse.data);
+        // Default
+        setSchoolYear("2023 - 2024"); 
+        setSemester("1st - 2nd sem");
       } catch (error) {
         console.error('Error fetching status counts:', error);
       }
@@ -110,9 +101,9 @@ function AdminDashboard() {
 
     const { reorderedLabels, reorderedData } = reorderForAugustToJuly(
       originalLabels,
-      eventsCounts,
-      onCampusCounts,
-      offCampusCounts
+      adminData.eventsCount,
+      adminData.onCampusCounts, 
+      adminData.offCampusCounts
     );
 
     return {
@@ -184,7 +175,7 @@ function AdminDashboard() {
     labels: [""], // Example subset
     datasets: [
       {
-        data: [2750], 
+        data: [adminData.registeredStudents], 
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -226,7 +217,7 @@ function AdminDashboard() {
     },
   };
 
-  const DashboardCard = ({ label, count, icon1, icon2 }) => (
+  const DashboardCard = ({ label, count, icon1 }) => (
     <div className={`events-summary ${label.toLowerCase()}`}>
       <div className="components">
         {icon1}
@@ -288,7 +279,7 @@ function AdminDashboard() {
 
         {/* Events Statuses */}
         {eventCounts.map((event, index) => (
-          <DashboardCard key={index} label={event.label} count={statusCounts[index]} icon1={event.icon1} icon2={event.icon2} />
+          <DashboardCard key={index} label={event.label} count={adminData.eventStatus[index]} icon1={event.icon1} />
         ))}  
 
         {/* Event Overview */}
@@ -311,7 +302,7 @@ function AdminDashboard() {
         <div className='registered-students'>
           <div className='registered-students-text'>
             <h3>Registered Students</h3>
-            <h2>2,750</h2>
+            <h2>{adminData.registeredStudents}</h2>
           </div>
           <div className='barStats'>
             <Bar data={barData} options={barOptions} />
@@ -321,7 +312,7 @@ function AdminDashboard() {
         {/* Upcoming Events */}
         <div className='events-summary upcoming-events'>
           <h3>Upcoming Events</h3>
-          <h2>{upcomingCounts}</h2>
+          <h2>{adminData.upcomingEvents}</h2>
         </div>
 
         {/* Active Organizations */}
@@ -329,7 +320,7 @@ function AdminDashboard() {
           <div className='components'>
             <h3>Active Organizations</h3>
           </div>
-          <h2>{activeCounts}</h2>
+          <h2>{adminData.activeCounts}</h2>
         </div>
 
         {/* Quick Links */}

@@ -20,10 +20,10 @@ function NewNotification() {
       <div className="notificationBody">
         <div className="notificationContainer">
           {/* HEADER */}
-          <div className="notificationHeader">
+          {/* <div className="notificationHeader">
             <h1>Notifications</h1>
             <p>Receive personalized notifications and reminders for all your events, keeping you informed and on schedule with timely updates right at your fingertips.</p>
-          </div>
+          </div> */}
 
           <div className="notificationMismo">
             {/* Filter Header */}

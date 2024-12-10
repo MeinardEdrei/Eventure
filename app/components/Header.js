@@ -114,7 +114,7 @@ const Header = () => {
                     <>
                         <Link className='xl:flex lg:flex' href='/Events'>Discover</Link>
                         <Link className='xl:flex lg:flex' href='/Calendar'>Calendar</Link>
-                        <Link className='xl:flex lg:flex' href='/New-Notification'>Notifications</Link>
+                        <Link className='xl:flex lg:flex' href='/Notification'>Notifications</Link>
                     </>
                 )}
             </div>

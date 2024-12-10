@@ -8,16 +8,16 @@ namespace BackendProject.Controllers
   [ApiController]
   [Route("api/[controller]")]
 
-  public class AdminDashboardController : ControllerBase 
+  public class OrganizerDashboardController : ControllerBase 
   {
     private readonly ApplicationDbContext _context;
     
-    public AdminDashboardController(ApplicationDbContext context) 
+    public OrganizerDashboardController(ApplicationDbContext context) 
     {
       _context = context;
     }
-    
-    [HttpGet("admin-data")]
+
+    [HttpGet("organizer-data")]
     public async Task<IActionResult> GetOrganizerData()
     {
       /* STATUS COUNTS */
@@ -52,9 +52,6 @@ namespace BackendProject.Controllers
 
       /* ACTIVE ORGANIZERS */
       var activeCount = await _context.Users.CountAsync(u => u.Role == "Organizer");
-
-      /* REGISTERED STUDENTS */
-      var registeredCount = await _context.Users.CountAsync(u => u.Role == "Student");
 
       /* EVENTS COUNTS */
       var eventDates = await _context.Events
@@ -98,7 +95,7 @@ namespace BackendProject.Controllers
 
       foreach (var e in offCampusDates)
       {
-          var date = e.DateStart;  
+          var date = e.DateStart;  // No need to parse if it's already DateTime
 
           // Get the month index (1-12, so subtract 1 for zero-based index)
           int monthIndex = date.Month - 1;
@@ -107,18 +104,17 @@ namespace BackendProject.Controllers
           offCampusCounts[monthIndex]++;
       }
 
-      var adminData = new
+      var organizerData = new
       {
           UpcomingEvents = upcomingCount,
           EventStatus = statusCounts,
-          ActiveCounts = activeCount,
+          orgActive = activeCount,
           EventsCount = eventCounts,
           OnCampusCounts = onCampusCounts,
           OffCampusCounts = offCampusCounts,
-          RegisteredStudents = registeredCount,
       };
 
-      return Ok(adminData);
+      return Ok(organizerData);
     }
   }
 }

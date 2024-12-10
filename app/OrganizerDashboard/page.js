@@ -18,32 +18,29 @@ import {
 
 ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElement, Title, Tooltip, Legend);
 
-function AdminDashboard() {
-  const [statusCounts, setStatusCounts] = useState([]);
-  const [upcomingCounts, setUpcomingCounts] = useState([]);
-  const [activeCounts, setActiveCounts] = useState([]);
-  const [eventsCounts, setEventCounts] = useState([]);
-  const [onCampusCounts, setOnCampusCounts] = useState([]);
-  const [offCampusCounts, setOffCampusCounts] = useState([]);
+function OrganizerDashboard() {
+  const [schoolYear, setSchoolYear] = useState([]);
+  const [semester, setSemester] = useState("");
 
+  const [organizerData, setOrganizerData] = useState({
+    eventStatus: [],
+    eventsCount: [],
+    onCampusCounts: [],
+    offCampusCounts: [],
+  });
+
+  // DASHBOARD DATA
   useEffect(() => {
     const fetchStatusCounts = async () => {
       try {
-        const [statusResponse, upcomingResponse, activeResponse, eventResponse, onCampusResponse, offCampusResponse] = await Promise.all([
-          axios.get('http://localhost:5000/api/admindashboard/status'),
-          axios.get('http://localhost:5000/api/admindashboard/upcoming'),
-          axios.get('http://localhost:5000/api/admindashboard/active'),
-          axios.get('http://localhost:5000/api/admindashboard/event'),
-          axios.get('http://localhost:5000/api/admindashboard/on-campus'),
-          axios.get('http://localhost:5000/api/admindashboard/off-campus'),
-        ]);
+        const organizerDataResponse = await axios.get('http://localhost:5000/api/organizerdashboard/organizer-data');
+      
+        setOrganizerData(organizerDataResponse.data);
+        alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
 
-        setStatusCounts(statusResponse.data);
-        setUpcomingCounts(upcomingResponse.data);
-        setActiveCounts(activeResponse.data);
-        setEventCounts(eventResponse.data);
-        setOnCampusCounts(onCampusResponse.data);
-        setOffCampusCounts(offCampusResponse.data);
+        // Default
+        setSchoolYear("2023 - 2024"); 
+        setSemester("1st - 2nd sem");
       } catch (error) {
         console.error('Error fetching status counts:', error);
       }
@@ -52,17 +49,15 @@ function AdminDashboard() {
     fetchStatusCounts();
   }, []);
 
+  // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/adminreport/export`, 
+      const response = await axios.post(`http://localhost:5000/api/organizerdashboard/export`, 
         { responseType: 'blob' }
       );
-
-      // Create a Blob URL for the PDF response and trigger download
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
 
-      // Create a link element to trigger a downloa
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', "EventReport.pdf");
@@ -71,79 +66,112 @@ function AdminDashboard() {
       link.click(); 
       link.remove(); 
 
-      // Revoke the URL after the download starts
       window.URL.revokeObjectURL(url);
     } catch(error) {
       console.log(error);
     }
   }
 
-  const lineData = {
-    labels: [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ], // Months of the year
-    datasets: [
-      {
-        label: "Events",
-        data: eventsCounts,
-        backgroundColor: "rgba(219,183,254,255)", 
-        borderColor: "rgba(219,183,254,255)", 
-        borderWidth: 1, 
-        tension: 0.4, 
-        fill: true, 
-      },
-      {
-        label: "In Campus",
-        data: onCampusCounts, 
-        backgroundColor: "rgba(54, 162, 235, 0.2)", 
-        borderColor: "rgba(54, 162, 235, 1)", 
-        borderWidth: 1,
-        tension: 0.4,
-        fill: true,
-      },
-      {
-        label: "Off Campus",
-        data: offCampusCounts, 
-        backgroundColor: "rgba(255, 159, 64, 0.2)", 
-        borderColor: "rgba(255, 159, 64, 1)", 
-        borderWidth: 1,
-        tension: 0.4,
-        fill: true,
-      },
-    ],
+  // Function to send the selected values to the backend
+  const sendType = async (dropdownValues) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/organizerdashboard/type', dropdownValues);
+      setSchoolYear(response.data.SchoolYear);
+      setSemester(response.data.Semester);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        console.error('Validation Errors:', error.response.data.errors);
+        console.error('Full error response:', error.response.data);
+      } else {
+        console.error('Error submitting data:', error);
+      }
+    }
   };
 
-  const barData = {
-    labels: [""], // Example subset
-    datasets: [
-      {
-        data: [547], 
-        backgroundColor: (context) => {
-          const chart = context.chart;
-          const { ctx, chartArea } = chart;
-  
-          if (!chartArea) {
-            return null; // Avoid issues when chart is initializing
-          }
-  
-          const gradient = ctx.createLinearGradient(
-            0, chartArea.bottom, // Start at bottom
-            0, chartArea.top    // End at top
-          );
-          gradient.addColorStop(0.05, "rgba(250, 253, 255, 1)");  
-          gradient.addColorStop(0.25, "rgba(192, 214, 250, 1)"); 
-          gradient.addColorStop(0.5, "rgba(225, 211, 250, 1)");  
-          gradient.addColorStop(0.75, "rgba(196, 232, 166, 1)"); 
-          gradient.addColorStop(0.95, "rgba(250, 236, 183, 1)");   
-  
-          return gradient;
-        },
-        borderWidth: 1,
-        borderRadius: 10,
-      },
-    ],
+   // Handlers for each dropdown
+   const handleSchoolYearChange = (e) => {
+    const value = e.target.value;
+    setSchoolYear(value);
+    sendType({ schoolYear: value, semester });
   };
+
+  const handleSemesterChange = (e) => {
+    const value = e.target.value;
+    setSemester(value);
+    sendType({ schoolYear, semester: value });
+  };
+
+  // Reorder from August to July
+  const filterDataBySemester = (semester, labels, ...dataArrays) => {
+    let filteredLabels = [];
+    let filteredData = dataArrays.map(() => []);
+  
+    if (semester === "1st sem") {
+      // For 1st semester: August to January
+      filteredLabels = labels.slice(7, 12).concat(labels.slice(0, 1)); // August to January
+      filteredData = dataArrays.map(dataArray => dataArray.slice(7, 12).concat(dataArray.slice(0, 1)));
+    } else if (semester === "2nd sem") {
+      // For 2nd semester: January to July
+      filteredLabels = labels.slice(0, 7); // January to July
+      filteredData = dataArrays.map(dataArray => dataArray.slice(0, 7));
+    } else if (semester === "1st - 2nd sem") {
+      // For 1st - 2nd semester: August to July
+      filteredLabels = labels.slice(7).concat(labels.slice(0, 7)); // August to July
+      filteredData = dataArrays.map(dataArray => dataArray.slice(7).concat(dataArray.slice(0, 7)));
+    }
+  
+    return { filteredLabels, filteredData };
+  };
+  
+  // Start of Line Chart
+  const lineData = (() => {
+    const originalLabels = [
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"
+    ];
+  
+    // Use the filterDataBySemester function to get the filtered labels and data based on the selected semester
+    const { filteredLabels, filteredData } = filterDataBySemester(
+      semester, 
+      originalLabels, 
+      organizerData.eventsCount, 
+      organizerData.onCampusCounts, 
+      organizerData.offCampusCounts
+    );
+
+    return {
+      labels: filteredLabels,
+      datasets: [
+        {
+          label: "Events",
+          data: filteredData[0],
+          backgroundColor: "rgba(219,183,254,255)", 
+          borderColor: "rgba(219,183,254,255)", 
+          borderWidth: 1, 
+          tension: 0.4, 
+          fill: true, 
+        },
+        {
+          label: "In Campus",
+          data: filteredData[1], 
+          backgroundColor: "rgba(54, 162, 235, 0.2)", 
+          borderColor: "rgba(54, 162, 235, 1)", 
+          borderWidth: 1,
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: "Off Campus",
+          data: filteredData[2], 
+          backgroundColor: "rgba(255, 159, 64, 0.2)", 
+          borderColor: "rgba(255, 159, 64, 1)", 
+          borderWidth: 1,
+          tension: 0.4,
+          fill: true,
+        },
+      ],
+    };
+  })();
 
   const lineOptions = {
     responsive: true,
@@ -173,6 +201,39 @@ function AdminDashboard() {
       }
     },
   };
+  // End of Line Chart
+
+  // Start of Bar Chart
+  const barData = {
+    labels: [""], // Example subset
+    datasets: [
+      {
+        data: [2750], 
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+  
+          if (!chartArea) {
+            return null; // Avoid issues when chart is initializing
+          }
+  
+          const gradient = ctx.createLinearGradient(
+            0, chartArea.bottom, // Start at bottom
+            0, chartArea.top    // End at top
+          );
+          gradient.addColorStop(0.05, "rgba(250, 253, 255, 1)");  
+          gradient.addColorStop(0.25, "rgba(192, 214, 250, 1)"); 
+          gradient.addColorStop(0.5, "rgba(225, 211, 250, 1)");  
+          gradient.addColorStop(0.75, "rgba(196, 232, 166, 1)"); 
+          gradient.addColorStop(0.95, "rgba(250, 236, 183, 1)");   
+  
+          return gradient;
+        },
+        borderWidth: 1,
+        borderRadius: 10,
+      },
+    ],
+  };
 
   const barOptions = {
     responsive: true,
@@ -200,7 +261,9 @@ function AdminDashboard() {
       </div>
     </div>
   );
+  // End of Bar Chart
 
+  // For conciseness
   const eventCounts = [
     { label: 'Pending', icon1: <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" fill="currentColor" className="bi bi-clock" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/></svg>, icon2: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="bi bi-eye" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/></svg> },
     { label: 'Pre-Approved', icon1: <svg xmlns="http://www.w3.org/2000/svg" width="37" height="37" fill="currentColor" className="bi bi-check-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/></svg>, icon2: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="bi bi-eye" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/></svg> },
@@ -212,29 +275,42 @@ function AdminDashboard() {
   return (
     <div className='dashboard-container'>
       <div className='dashboard-subcontainer'>
-        {/* Dashboard Text */}
+        
+        {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>Dashboard</h1>
+          <h1>School Year {schoolYear} {semester} </h1>
           <div className='dashboard-type'>
-            <select id="school-year" name="school-year" className='type school-year'>
-              <option value="2024-2025">2024-2025</option>
-              <option value="2023-2024">2023-2024</option>
-              <option value="2022-2023">2022-2023</option>
-            </select>
-            <select id="semester" name="semester" className='type semester'>
-              <option value="1st-sem">1st sem</option>
-              <option value="2nd-sem4">2nd sem</option>
-            </select>
-            <div className='type department'>CCIS</div>
+            <div className='export-sy'>
+              <div className='type'></div>
+              <div className='type'></div>
+              <div className='type add-school-year'>
+                
+              </div>
+            </div>
+            <div className='dashboard-type-dropdown'>
+              <div className='type organizer-export'>
+                <button>Export</button>
+              </div>
+              <select id="school-year" name="school-year" className='type school-year' onChange={handleSchoolYearChange}>
+                <option value="2024 - 2025">2024-2025</option>
+                <option value="2023 - 2024">2023-2024</option>
+                <option value="2022 - 2023">2022-2023</option>
+              </select>
+              <select id="semester" name="semester" className='type semester' onChange={handleSemesterChange}>
+                <option value="1st - 2nd sem">1st - 2nd</option>
+                <option value="1st sem">1st sem</option>
+                <option value="2nd sem">2nd sem</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Events Summary */}
+        {/* Events Statuses */}
         {eventCounts.map((event, index) => (
-          <DashboardCard key={index} label={event.label} count={statusCounts[index]} icon1={event.icon1} icon2={event.icon2} />
+          <DashboardCard key={index} label={event.label} count={organizerData.eventStatus[index]} icon1={event.icon1} icon2={event.icon2} />
         ))}  
 
-        {/* Chart */}
+        {/* Event Overview */}
         <div className='events-chart'>
           <div className='export'>
             <h3>Events Overview</h3>
@@ -254,17 +330,17 @@ function AdminDashboard() {
         <div className='registered-students'>
           <div className='registered-students-text'>
             <h3>Monthly Engagement</h3>
-            <h2>531</h2>
+            <h2>270</h2>
           </div>
           <div className='barStats'>
             <Bar data={barData} options={barOptions} />
           </div>
         </div>
         
-        {/* Upconming Events */}
+        {/* Upcoming Events */}
         <div className='events-summary upcoming-events'>
           <h3>Upcoming Events</h3>
-          <h2>{upcomingCounts}</h2>
+          <h2>{organizerData.upcomingEvents}</h2>
         </div>
 
         {/* Active Organizations */}
@@ -272,7 +348,7 @@ function AdminDashboard() {
           <div className='components'>
             <h3>Created Events</h3>
           </div>
-          <h2>{activeCounts}</h2>
+          <h2>{organizerData.orgActive}</h2>
         </div>
 
         {/* Quick Links */}
@@ -304,4 +380,4 @@ function AdminDashboard() {
   )
 }
 
-export default AdminDashboard
+export default OrganizerDashboard

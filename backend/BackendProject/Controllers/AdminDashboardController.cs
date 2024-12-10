@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendProject.Models;
+using System.Text.RegularExpressions;
 using BackendProject.Data;
+using Newtonsoft.Json;
 
 namespace BackendProject.Controllers 
 {
@@ -16,18 +18,89 @@ namespace BackendProject.Controllers
     {
       _context = context;
     }
-    
-    [HttpGet("admin-data")]
-    public async Task<IActionResult> GetOrganizerData()
+    public class DropdownChoicesDto
     {
-      /* STATUS COUNTS */
-      var pendingCount = await _context.Events.CountAsync(e => e.Status == "Pending");
-      var preApprovedCount = await _context.Events.CountAsync(e => e.Status == "Pre-Approved");
-      var approvedCount = await _context.Events.CountAsync(e => e.Status == "Approved");
-      var modified = await _context.Events.CountAsync(e => e.Status == "Modified");
-      var disapprovedCount = await _context.Events.CountAsync(e => e.Status == "Disapproved");
+        public string SchoolYear { get; set; }
+        public string Semester { get; set; }
+        public string Department { get; set; }
+    }
+    
+    [HttpPost("admin-data")]
+    public async Task<IActionResult> GetAdminData([FromBody] DropdownChoicesDto filters)
+    {
+        var schoolYearFilter = filters.SchoolYear;
+        var semesterFilter = filters.Semester;
+        var departmentFilter = filters.Department;
 
-      var statusCounts = new int[] { pendingCount, preApprovedCount, approvedCount, modified, disapprovedCount };
+        // var departmentCode = Regex.Match(departmentFilter ?? "", @"^(.*?)\s-\s")?.Groups[1]?.Value;
+
+        // Fetch necessary data first
+        var eventsQuery = _context.Events
+            .Include(e => e.SchoolYear) // Include SchoolYear for filtering
+            .Select(e => new
+            {
+                EventId = e.Id,
+                Status = e.Status,
+                SchoolYearId = e.SchoolYearId,
+                SchoolYear = e.SchoolYear != null
+                    ? $"{e.SchoolYear.DateStart.Year}-{e.SchoolYear.DateEnd.Year}"
+                    : "Unknown School Year",
+                Semester = e.Semester,
+                HostedBy = !string.IsNullOrEmpty(e.HostedBy) 
+                  ? string.Join(", ", JsonConvert.DeserializeObject<List<string>>(e.HostedBy))
+                  : string.Empty,  
+                DateStart = e.DateStart,
+                TimeStart = e.TimeStart
+            });
+
+        var eventsData = await eventsQuery.ToListAsync();
+
+        // Apply filtering in memory
+        if (!string.IsNullOrEmpty(schoolYearFilter))
+        {
+          eventsData = eventsData
+              .Where(e => e.SchoolYear == schoolYearFilter)
+              .ToList();
+        }
+
+        if (!string.IsNullOrEmpty(semesterFilter))
+        {
+          if (semesterFilter == "FirstAndSecond")
+          {
+              eventsData = eventsData
+                  .Where(e => e.Semester == "First" || e.Semester == "Second")
+                  .ToList();
+          }
+          else
+          {
+              eventsData = eventsData
+                  .Where(e => e.Semester == semesterFilter)
+                  .ToList();
+          }
+        }
+
+        if (!string.IsNullOrEmpty(departmentFilter))
+        {
+          if(departmentFilter == "All") 
+          {
+            eventsData = eventsData.ToList();
+          }
+          else 
+          {
+            eventsData = eventsData
+              .Where(e => !string.IsNullOrEmpty(e.HostedBy) && e.HostedBy.Split(' ')[0] == departmentFilter)
+              .ToList(); 
+          }
+        }
+      
+      /* STATUS COUNTS */
+      var pendingCount = eventsData.Count(e => e.Status == "Pending");
+        var preApprovedCount = eventsData.Count(e => e.Status == "Pre-Approved");
+        var approvedCount = eventsData.Count(e => e.Status == "Approved");
+        var modifiedCount = eventsData.Count(e => e.Status == "Modified");
+        var disapprovedCount = eventsData.Count(e => e.Status == "Disapproved");
+
+      var statusCounts = new int[] { pendingCount, preApprovedCount, approvedCount, modifiedCount, disapprovedCount };
 
       /* UPCOMING EVENTS */
       var now = DateTimeOffset.Now;
@@ -37,18 +110,13 @@ namespace BackendProject.Controllers
         .ToListAsync();
 
       // Perform the parsing and filtering in memory
-      var upcomingCount = events
-        .Where(e =>
-        {
-            if (e.DateStart != null && e.TimeStart != null &&
-                DateTime.TryParse(e.DateStart.ToString(), out var date) &&
-                TimeSpan.TryParse(e.TimeStart.ToString(), out var time))
-            {
-                return date.Add(time) > now;
-            }
-            return false;
-        })
-        .Count();
+      var upcomingCount = eventsData
+                .Where(e =>
+                    e.DateStart != null && e.TimeStart != null &&
+                    DateTime.TryParse(e.DateStart.ToString(), out var date) &&
+                    TimeSpan.TryParse(e.TimeStart.ToString(), out var time) &&
+                    date.Add(time) > now)
+                .Count();
 
       /* ACTIVE ORGANIZERS */
       var activeCount = await _context.Users.CountAsync(u => u.Role == "Organizer");
@@ -116,6 +184,7 @@ namespace BackendProject.Controllers
           OnCampusCounts = onCampusCounts,
           OffCampusCounts = offCampusCounts,
           RegisteredStudents = registeredCount,
+          Hihi = eventsQuery,
       };
 
       return Ok(adminData);

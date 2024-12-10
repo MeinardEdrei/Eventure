@@ -21,9 +21,9 @@ ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElem
 
 function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [schoolYear, setSchoolYear] = useState([]);
-  const [semester, setSemester] = useState([]);
-  const [department, setDepartment] = useState([]);
+  const [schoolYear, setSchoolYear] = useState("2024-2025");
+  const [semester, setSemester] = useState("FirstAndSecond");
+  const [department, setDepartment] = useState("All");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const refreshData = useCallback(() => {
@@ -39,23 +39,22 @@ function AdminDashboard() {
 
   // DASHBOARD DATA
   useEffect(() => {
-    const fetchStatusCounts = async () => {
+    const fetchFilteredData = async () => {
       try {
-        const adminDataResponse = await axios.get('http://localhost:5000/api/admindashboard/admin-data');
-      
-        setAdminData(adminDataResponse.data);
-        alert(JSON.stringify(adminDataResponse.data)); // See the full object structure
-
-        // Default
-        setSchoolYear("2023 - 2024"); 
-        setSemester("1st - 2nd sem");
+        const response = await axios.post('http://localhost:5000/api/admindashboard/admin-data', {
+          schoolYear,
+          semester,
+          department,
+        });
+        setAdminData(response.data);
+        // alert(JSON.stringify(response.data)); // See the full object structure
       } catch (error) {
-        console.error('Error fetching status counts:', error);
+        console.error('Error fetching filtered data:', error);
       }
     };
-
-    fetchStatusCounts();
-  }, []);
+  
+    fetchFilteredData();
+  }, [schoolYear, semester, department]);
 
   // REPORT GENERATION
   const exportPdf = async () => {
@@ -80,40 +79,17 @@ function AdminDashboard() {
     }
   }
 
-  // Function to send the selected values to the backend
-  const sendType = async (dropdownValues) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/admindashboard/type', dropdownValues);
-      setSchoolYear(response.data.SchoolYear);
-      setSemester(response.data.Semester);
-      setDepartment(response.data.Department);
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.errors) {
-        console.error('Validation Errors:', error.response.data.errors);
-        console.error('Full error response:', error.response.data);
-      } else {
-        console.error('Error submitting data:', error);
-      }
-    }
-  };
-
    // Handlers for each dropdown
-   const handleSchoolYearChange = (e) => {
-    const value = e.target.value;
-    setSchoolYear(value);
-    sendType({ schoolYear: value, semester, department });
+  const handleSchoolYearChange = (e) => {
+    setSchoolYear(e.target.value);
   };
-
+  
   const handleSemesterChange = (e) => {
-    const value = e.target.value;
-    setSemester(value);
-    sendType({ schoolYear, semester: value, department });
+    setSemester(e.target.value);
   };
-
+  
   const handleDepartmentChange = (e) => {
-    const value = e.target.value;
-    setDepartment(value);
-    sendType({ schoolYear, semester, department: value });
+    setDepartment(e.target.value);
   };
 
   // Reorder from August to July
@@ -293,7 +269,7 @@ function AdminDashboard() {
         
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>School Year {schoolYear} {semester} {department}</h1>
+          <h1>School Year {schoolYear}</h1>
           <div className='dashboard-type'>
             <div className='export-sy'>
               <div className='type'></div>
@@ -322,7 +298,7 @@ function AdminDashboard() {
                 <option value="All">All</option>
                 <option value="CCIS">CCIS</option>
                 <option value="CLAS">CLAS</option>
-                <option value="CBFAS">CBFS</option>
+                <option value="CTHM">CTHM</option>
               </select>
             </div>
           </div>
@@ -353,7 +329,6 @@ function AdminDashboard() {
         <div className='registered-students'>
           <div className='registered-students-text'>
             <h3>Registered Students</h3>
-            <h2>{adminData.registeredStudents}</h2>
             <h2>{adminData.registeredStudents}</h2>
           </div>
           <div className='barStats'>

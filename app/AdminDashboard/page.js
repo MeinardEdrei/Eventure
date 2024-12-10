@@ -33,10 +33,6 @@ function AdminDashboard() {
     offCampusCounts: [],
   });
 
-  const refreshData = useCallback(() => {
-    setRefreshTrigger(prev => prev + 1);
-  }, [])
-
   // DASHBOARD DATA
   useEffect(() => {
     const fetchStatusCounts = async () => {
@@ -60,7 +56,7 @@ function AdminDashboard() {
   // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/adminreport/export`, 
+      const response = await axios.post('http://localhost:5000/api/adminreport/export', 
         { responseType: 'blob' }
       );
       const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -80,18 +76,64 @@ function AdminDashboard() {
     }
   }
 
+  // Function to send the selected values to the backend
+  const sendType = async (dropdownValues) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/admindashboard/type', dropdownValues);
+      setSchoolYear(response.data.SchoolYear);
+      setSemester(response.data.Semester);
+      setDepartment(response.data.Department);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        console.error('Validation Errors:', error.response.data.errors);
+        console.error('Full error response:', error.response.data);
+      } else {
+        console.error('Error submitting data:', error);
+      }
+    }
+  };
+
+   // Handlers for each dropdown
+   const handleSchoolYearChange = (e) => {
+    const value = e.target.value;
+    setSchoolYear(value);
+    sendType({ schoolYear: value, semester, department });
+  };
+
+  const handleSemesterChange = (e) => {
+    const value = e.target.value;
+    setSemester(value);
+    sendType({ schoolYear, semester: value, department });
+  };
+
+  const handleDepartmentChange = (e) => {
+    const value = e.target.value;
+    setDepartment(value);
+    sendType({ schoolYear, semester, department: value });
+  };
+
   // Reorder from August to July
-  function reorderForAugustToJuly(labels, ...dataArrays) {
-    const augustIndex = labels.indexOf("August"); 
-    const reorderedLabels = labels.slice(augustIndex).concat(labels.slice(0, augustIndex));
-
-    const reorderedData = dataArrays.map(dataArray => 
-      dataArray.slice(augustIndex).concat(dataArray.slice(0, augustIndex))
-    );
-
-    return { reorderedLabels, reorderedData };
-  }
-
+  const filterDataBySemester = (semester, labels, ...dataArrays) => {
+    let filteredLabels = [];
+    let filteredData = dataArrays.map(() => []);
+  
+    if (semester === "First") {
+      // For 1st semester: August to January
+      filteredLabels = labels.slice(7, 12).concat(labels.slice(0, 1)); // August to January
+      filteredData = dataArrays.map(dataArray => dataArray.slice(7, 12).concat(dataArray.slice(0, 1)));
+    } else if (semester === "Second") {
+      // For 2nd semester: January to July
+      filteredLabels = labels.slice(0, 7); // January to July
+      filteredData = dataArrays.map(dataArray => dataArray.slice(0, 7));
+    } else if (semester === "FirstAndSecond") {
+      // For 1st - 2nd semester: August to July
+      filteredLabels = labels.slice(7).concat(labels.slice(0, 7)); // August to July
+      filteredData = dataArrays.map(dataArray => dataArray.slice(7).concat(dataArray.slice(0, 7)));
+    }
+  
+    return { filteredLabels, filteredData };
+  };
+  
   // Start of Line Chart
   const lineData = (() => {
     const originalLabels = [
@@ -107,11 +149,11 @@ function AdminDashboard() {
     );
 
     return {
-      labels: reorderedLabels,
+      labels: filteredLabels,
       datasets: [
         {
           label: "Events",
-          data: reorderedData[0],
+          data: filteredData[0],
           backgroundColor: "rgba(219,183,254,255)", 
           borderColor: "rgba(219,183,254,255)", 
           borderWidth: 1, 
@@ -120,7 +162,7 @@ function AdminDashboard() {
         },
         {
           label: "In Campus",
-          data: reorderedData[1], 
+          data: filteredData[1], 
           backgroundColor: "rgba(54, 162, 235, 0.2)", 
           borderColor: "rgba(54, 162, 235, 1)", 
           borderWidth: 1,
@@ -129,7 +171,7 @@ function AdminDashboard() {
         },
         {
           label: "Off Campus",
-          data: reorderedData[2], 
+          data: filteredData[2], 
           backgroundColor: "rgba(255, 159, 64, 0.2)", 
           borderColor: "rgba(255, 159, 64, 1)", 
           borderWidth: 1,
@@ -172,9 +214,10 @@ function AdminDashboard() {
 
   // Start of Bar Chart
   const barData = {
-    labels: [""], // Example subset
+    labels: [""], 
     datasets: [
       {
+        data: [adminData.registeredStudents], 
         data: [adminData.registeredStudents], 
         backgroundColor: (context) => {
           const chart = context.chart;
@@ -228,7 +271,6 @@ function AdminDashboard() {
       </div>
     </div>
   );
-  // End of Bar Chart
 
   // For conciseness
   const eventCounts = [
@@ -242,9 +284,10 @@ function AdminDashboard() {
   return (
     <div className='dashboard-container'>
       <div className='dashboard-subcontainer'>
+        
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>School Year 2024 - 2025</h1>
+          <h1>School Year {schoolYear} {semester} {department}</h1>
           <div className='dashboard-type'>
             <div className='export-sy'>
               <div className='type'></div>
@@ -254,24 +297,27 @@ function AdminDashboard() {
                   School Year 
                 </button>
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                 </svg>
               </div>
             </div>
             <div className='dashboard-type-dropdown'>
-              <select id="school-year" name="school-year" className='type school-year'>
+              <select id="school-year" name="school-year" className='type school-year' onChange={handleSchoolYearChange}>
                 <option value="2024-2025">2024-2025</option>
                 <option value="2023-2024">2023-2024</option>
                 <option value="2022-2023">2022-2023</option>
               </select>
-              <select id="semester" name="semester" className='type semester'>
-                <option value="1st-sem">1st sem</option>
-                <option value="2nd-sem4">2nd sem</option>
+              <select id="semester" name="semester" className='type semester' onChange={handleSemesterChange}>
+                <option value="FirstAndSecond">1st - 2nd</option>
+                <option value="First">1st sem</option>
+                <option value="Second">2nd sem</option>
               </select>
-              <select id="department" name="department" className='type department'>
+              <select id="department" name="department" className='type department' onChange={handleDepartmentChange}>
+                <option value="All">All</option>
                 <option value="CCIS">CCIS</option>
                 <option value="CLAS">CLAS</option>
-                <option value="CBFAS">CBFAS</option>
+                <option value="CBFAS">CBFS</option>
               </select>
             </div>
           </div>
@@ -303,6 +349,7 @@ function AdminDashboard() {
           <div className='registered-students-text'>
             <h3>Registered Students</h3>
             <h2>{adminData.registeredStudents}</h2>
+            <h2>{adminData.registeredStudents}</h2>
           </div>
           <div className='barStats'>
             <Bar data={barData} options={barOptions} />
@@ -313,6 +360,7 @@ function AdminDashboard() {
         <div className='events-summary upcoming-events'>
           <h3>Upcoming Events</h3>
           <h2>{adminData.upcomingEvents}</h2>
+          <h2>{adminData.upcomingEvents}</h2>
         </div>
 
         {/* Active Organizations */}
@@ -320,6 +368,7 @@ function AdminDashboard() {
           <div className='components'>
             <h3>Active Organizations</h3>
           </div>
+          <h2>{adminData.activeCounts}</h2>
           <h2>{adminData.activeCounts}</h2>
         </div>
 

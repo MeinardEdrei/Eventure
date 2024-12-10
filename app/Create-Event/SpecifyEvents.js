@@ -228,7 +228,7 @@ const EventSettingsPanel = ({
                 {/* <span>Event Venue</span> */}
                 <div className="relative w-full">
                   <i
-                    className="fa fa-location-arrow text-[8rem] absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"
+                    className="fa fa-location-arrow text-[1.2rem] absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"
                     aria-hidden="true"
                   ></i>
                   <input
@@ -346,7 +346,7 @@ const EventSettingsPanel = ({
                 {/* Dropdown Menu */}
                 {isDepartmentOpen && departmentsDropDown && (
                   <div className="dropdown-menu">
-                    <div className="flex items-center p-2 bg-[#6d3998]">
+                    <div className="flex items-center p-2 bg-[#7b7b7b]">
                       <input
                         className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
                         type="text"
@@ -363,7 +363,7 @@ const EventSettingsPanel = ({
                       />
                       <button
                         onClick={handleAddCustomDepartment}
-                        className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
+                        className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
                       >
                         <Send size={19} />
                       </button>
@@ -398,7 +398,7 @@ const EventSettingsPanel = ({
               <label className="label-container">
                 <div className="relative w-full">
                   <i
-                    className="fa fa-user-circle text-[1.2rem] absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"
+                    className="fa fa-expand text-[1.2rem] absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"
                     aria-hidden="true"
                   ></i>
                   <input
@@ -436,7 +436,7 @@ const EventSettingsPanel = ({
                   >
                     <span>{visibilityType}</span>
                     <ChevronDown
-                      size={20}
+                      size={25}
                       className={`transform transition-transform ${
                         isVisibilityDropdownOpen ? "rotate-180" : ""
                       }`}
@@ -444,12 +444,12 @@ const EventSettingsPanel = ({
                   </div>
 
                   {isVisibilityDropdownOpen && (
-                    <div className="absolute top-full left-0 w-full bg-[#6d3998] z-10 rounded-b-lg shadow-lg">
+                    <div className="absolute top-full left-0 w-full bg-[#414141] z-10 rounded-b-lg shadow-lg">
                       {["Public", "Private", "Custom"].map((option) => (
                         <div
                           key={option}
-                          className={`p-2 hover:bg-purple-700 ${
-                            visibilityType === option ? "bg-purple-800" : ""
+                          className={`p-2 hover:bg-[#656565] ${
+                            visibilityType === option ? "bg-[#7b7b7b]" : ""
                           }`}
                           onClick={() => {
                             setVisibilityType(option);
@@ -520,7 +520,7 @@ const EventSettingsPanel = ({
 
                 {isPartnershipOpen && (
                   <div className="dropdown-menu">
-                    <div className="flex items-center p-2 bg-[#6d3998]">
+                    <div className="flex items-center p-2 bg-[#7b7b7b]">
                       <input
                         className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
                         type="text"
@@ -537,7 +537,7 @@ const EventSettingsPanel = ({
                       />
                       <button
                         onClick={handleAddCustomPartnership}
-                        className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
+                        className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
                       >
                         <Send size={19} />
                       </button>

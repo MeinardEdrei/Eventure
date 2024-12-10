@@ -11,7 +11,7 @@
   --color5: #4a3b55;
   --color6: #705c7c;
   --color7: #01c70b;
-  --borderColor: 0.25px solid hsl(0, 0%, 25%);
+  --borderColor: 0.25px solid #404040;
   --font: Montserrat, Arial, Helvetica;
   --transition: all ease-in-out 200ms;
 }
@@ -30,7 +30,7 @@
 } */
 
 .org-list-mnc {
-  width: 87%;
+  width: 70%;
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@
 
 .eventTitle {
   font-weight: 900;
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: var(--color3);
 }
 
@@ -130,17 +130,18 @@
   justify-content: flex-start;
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--color4);
+  color: #ffffff;
 }
 
 .cards-container {
   display: flex;
   flex-direction: column;
   /* width: 70%; */
-  gap: .5%;
+  gap: 2rem;
 }
 
-.organizerEventCard {
+.organizerEventCard{
+/* .rejected-event-card { */
   width: 100%;
   max-width: 100%;
   height: auto;

@@ -15,10 +15,16 @@ import { ChevronDown, Check } from "lucide-react";
 //   ListBoxItem,
 // } from "react-aria-components";
 import Button from "@mui/material/Button";
-
 import RequirementsModal from "./SeeRequirement";
 import EventSettingsPanel from "./SpecifyEvents";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+
+
 
 const Page = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -160,6 +166,10 @@ const Page = () => {
     }
   };
 
+    const [startDateTime, setStartDateTime] = React.useState(dayjs(""));
+    const [endDateTime, setEndDateTime] = React.useState(dayjs(""));
+
+
   return (
     <div className="createEvent-mnc">
       <form onSubmit={handleSubmit} className="event-content">
@@ -263,7 +273,7 @@ const Page = () => {
           </div>
 
           {/* Right Side */}
-          <div className="right-container flex flex-col w-[50%] gap-[1.5rem] ">
+          <div className="right-container flex flex-col w-[50%] gap-[1.2rem] ">
             {/* Event's Detail */}
             <EventSettingsPanel
               venue={venue}
@@ -284,63 +294,67 @@ const Page = () => {
               setEventType={setEventType}
             />
 
-            {/* Input Event Schedule */}
-
-            <div className="bg-transparent border rounded-[8px] border-[#FFF0F0]/30 py-6 flex flex-row justify-center w-[100%] gap-[4rem]">
-              <div className="flex flex-col gap-[2.5rem] items-center justify-center">
-                <label>Start</label>
-                <label>End</label>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                {/* Start of Event */}
-                <div className="start-end-DT">
-                  {/* <label>Start</label> */}
-                  <div className="date-time">
-                    <div className="date">
-                      <input
-                        className="p-3 border border-[rgba(255,240,240,0.3)] rounded-lg w-full outline-none"
-                        type="date"
-                        value={dateStart}
-                        onChange={(e) => setDateStart(e.target.value)}
-                        required
+            {/* New Calendar Design*/}
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker"]}>
+                <div className="bg-[#4E4E4E]/30 p-6 border border-[#FFF0F0]/30 rounded-[8px] flex flex-row justify-center gap-4">
+                  {/* Start Calendar*/}
+                  <div>
+                    <div>
+                      <h3 className="text-[#ffffff]">Start of Event</h3>
+                    </div>
+                    <div>
+                      <DateTimePicker
+                        value={startDateTime}
+                        onChange={(newValue) => setStartDateTime(newValue)}
+                        sx={{
+                          backgroundColor: "#b8b8b8", // Set background color
+                          color: "black", // Set font color
+                          borderRadius: "4px", // Optional: Add border radius
+                          "& .MuiInputBase-root": {
+                            color: "black", // Change font color inside the input
+                          },
+                          "& .MuiInputBase-input": {
+                            color: "darkbblue", // Ensure the input text color is also updated
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none", // Remove the border when not focused
+                          },
+                        }}
                       />
                     </div>
-                    <div className="time">
-                      <input
-                        type="time"
-                        value={timeStart}
-                        onChange={(e) => setTimeStart(e.target.value)}
-                        required
+                  </div>
+
+                  {/* End Calendar*/}
+                  <div>
+                    <div>
+                      <h3 className="text-[#ffffff]">End of Event</h3>
+                    </div>
+                    <div>
+                      <DateTimePicker
+                        // label="End Date and Time"
+                        value={endDateTime}
+                        onChange={(newValue) => setEndDateTime(newValue)}
+                        sx={{
+                          backgroundColor: "#b8b8b8", // Set background color
+                          color: "black", // Set font color
+                          borderRadius: "4px", // Optional: Add border radius
+                          "& .MuiInputBase-root": {
+                            color: "black", // Change font color inside the input
+                          },
+                          "& .MuiInputBase-input": {
+                            color: "darkbblue", // Ensure the input text color is also updated
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none", // Remove the border when not focused
+                          },
+                        }}
                       />
                     </div>
                   </div>
                 </div>
-
-                {/* End of Event */}
-                <div className="start-end-DT">
-                  {/* <label>End</label> */}
-                  <div className="date-time">
-                    <div className="date">
-                      <input
-                        type="date"
-                        value={dateEnd}
-                        onChange={(e) => setDateEnd(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="time">
-                      <input
-                        type="time"
-                        value={timeEnd}
-                        onChange={(e) => setTimeEnd(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </DemoContainer>
+            </LocalizationProvider>
 
             {/* See Requirements */}
             {/* <div className="requirements-wrapper">
@@ -366,6 +380,27 @@ const Page = () => {
                 See All Requirements
               </button>
             </div> */}
+            <Button
+              sx={{
+                width: "100%",
+                // marginTop: "1.25rem",
+                padding: "0.5rem",
+                backgroundColor: "white",
+                opacity: 0.5,
+                borderRadius: "8px",
+                textAlign: "center",
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                color: "black",
+                "&:hover": {
+                  opacity: 1,
+                },
+              }}
+              type="submit"
+              variant="contained"
+            >
+              Create Event
+            </Button>
           </div>
         </div>
 
@@ -373,27 +408,6 @@ const Page = () => {
         {/* <div className="createEvent-btn"> */}
         {/* <button type="submit">Create Event</button> */}
         {/* </div> */}
-        <Button
-          sx={{
-            width: "20%",
-            marginTop: "1.25rem",
-            padding: "0.75rem",
-            backgroundColor: "white",
-            opacity: 0.5,
-            borderRadius: "9999px",
-            textAlign: "center",
-            fontSize: "1.25rem",
-            fontWeight: "bold",
-            color: "black",
-            "&:hover": {
-              opacity: 1,
-            },
-          }}
-          type="submit"
-          variant="contained"
-        >
-          Create Event
-        </Button>
 
         <RequirementsModal
           isOpen={isRequirementsModalOpen}

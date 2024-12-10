@@ -26,6 +26,10 @@ function AdminDashboard() {
   const [department, setDepartment] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  const refreshData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, [])
+  
   const [adminData, setAdminData] = useState({
     eventStatus: [],
     eventsCount: [],
@@ -140,10 +144,12 @@ function AdminDashboard() {
       "January", "February", "March", "April", "May", "June", 
       "July", "August", "September", "October", "November", "December"
     ];
-
-    const { reorderedLabels, reorderedData } = reorderForAugustToJuly(
-      originalLabels,
-      adminData.eventsCount,
+  
+    // Use the filterDataBySemester function to get the filtered labels and data based on the selected semester
+    const { filteredLabels, filteredData } = filterDataBySemester(
+      semester, 
+      originalLabels, 
+      adminData.eventsCount, 
       adminData.onCampusCounts, 
       adminData.offCampusCounts
     );
@@ -359,7 +365,6 @@ function AdminDashboard() {
         <div className='events-summary upcoming-events'>
           <h3>Upcoming Events</h3>
           <h2>{adminData.upcomingEvents}</h2>
-          <h2>{adminData.upcomingEvents}</h2>
         </div>
 
         {/* Active Organizations */}
@@ -367,7 +372,6 @@ function AdminDashboard() {
           <div className='components'>
             <h3>Active Organizations</h3>
           </div>
-          <h2>{adminData.activeCounts}</h2>
           <h2>{adminData.activeCounts}</h2>
         </div>
 

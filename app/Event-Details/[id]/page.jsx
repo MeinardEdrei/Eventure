@@ -537,11 +537,11 @@ function OrganizerEvents() {
                         <div className="guestDetails">
                           <h6>{partner}</h6>
                         </div>
-                        <div className="">
+                        {/* <div className="">
                           <button className="removeHostButton">
                             <X size={20} />
                           </button>
-                        </div>
+                        </div> */}
                       </div>
                       {/* {index < JSON.parse(event.partnerships).length - 1 && (
                         <div className="smallhr">

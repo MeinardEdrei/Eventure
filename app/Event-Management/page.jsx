@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ChevronDown, Check, CheckCheck, X, Info } from "lucide-react";
 import axios from "axios";
+import ConfirmationModal from "./ConfirmationModal";
 import ViewEventModal from "./ViewEventModal";
 import RejectReasonModal from "./RejectReasonModal";
 
@@ -17,7 +18,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CalendarOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -40,6 +41,12 @@ export default function EventApproval() {
   // For Event Modal
   const [viewEventModal, setViewEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // For Confirmation Modal
+  const [preApproveConfirmModal, setPreApproveConfirmModal] = useState(false);
+  const [approveConfirmModal, setApproveConfirmModal] = useState(false);
+  const [confirmationEventId, setConfirmationEventId] = useState(null);
+
   // For Reject Reason Modal
   const [rejectReasonModal, setRejectReasonModal] = useState(false);
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
@@ -108,30 +115,32 @@ export default function EventApproval() {
 
   const handleFileDownload = async (eventType, fileName) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/organizer/download/${eventType}/${fileName}`, {
-          responseType: 'blob' 
+      const response = await axios.get(
+        `http://localhost:5000/api/organizer/download/${eventType}/${fileName}`,
+        {
+          responseType: "blob",
         }
       );
 
       // Create download mechanism
       const url = window.URL.createObjectURL(
-        new Blob([response.data], { type: 'application/pdf' })
+        new Blob([response.data], { type: "application/pdf" })
       );
-  
+
       // Create temporary link
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', fileName);
-      
+      link.setAttribute("download", fileName);
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
-  
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('PDF Download Failed', error);
+      console.error("PDF Download Failed", error);
     }
   };
 
@@ -178,6 +187,16 @@ export default function EventApproval() {
     } catch (error) {
       console.error("Error rejecting event:", error);
     }
+  };
+
+  const openPreApproveConfirmModal = (eventId) => {
+    setConfirmationEventId(eventId);
+    setPreApproveConfirmModal(true);
+  };
+
+  const openApproveConfirmModal = (eventId) => {
+    setConfirmationEventId(eventId);
+    setApproveConfirmModal(true);
   };
 
   const openRejectReasonModal = (event) => {
@@ -303,8 +322,15 @@ export default function EventApproval() {
         {/* Latest Design */}
         <div className="cards-container flex flex-col w-full gap-2">
           {filteredEvents.length === 0 ? (
-            <div className="text-center w-full text-gray-500">
-              No events found in {selected} status
+            <div className="flex flex-col opacity-20 mt-14 items-center justify-center text-center w-full ] text-white">
+              <div>
+                <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-[1.2rem] font-bold">
+                  You don't have any {selected} events yet.
+                </p>
+              </div>
             </div>
           ) : (
             filteredEvents.map((event) => (
@@ -359,7 +385,7 @@ export default function EventApproval() {
                         <Check size={16} />
                         <button
                           className="text-[0.8rem]"
-                          onClick={() => handlePreApprove(event.id)}
+                          onClick={() => openPreApproveConfirmModal(event.id)}
                           disabled={event.status === "approved"}
                         >
                           Pre-approve
@@ -372,7 +398,7 @@ export default function EventApproval() {
                         </span>
                         <button
                           className="approve"
-                          onClick={() => handleApprove(event.id)}
+                          onClick={() => openApproveConfirmModal(event.id)}
                           disabled={event.status === "approved"}
                         >
                           Approve
@@ -410,7 +436,26 @@ export default function EventApproval() {
           )}
         </div>
 
-        {/* Modal with event data passed */}
+        {/* Confirmation Modals */}
+        <ConfirmationModal
+          isOpen={preApproveConfirmModal}
+          onClose={() => setPreApproveConfirmModal(false)}
+          onConfirm={() => handlePreApprove(confirmationEventId)}
+          title="Confirm Pre-Approval"
+          message="Are you sure you want to pre-approve this event?"
+          confirmButtonText="Pre-Approve"
+        />
+
+        <ConfirmationModal
+          isOpen={approveConfirmModal}
+          onClose={() => setApproveConfirmModal(false)}
+          onConfirm={() => handleApprove(confirmationEventId)}
+          title="Confirm Approval"
+          message="Are you sure you want to approve this event?"
+          confirmButtonText="Approve"
+        />
+
+        {/* View Event Modal */}
         <ViewEventModal
           isOpen={viewEventModal}
           onClose={closeEventModal}
@@ -420,6 +465,8 @@ export default function EventApproval() {
           handleReject={handleReject}
           handleFileDownload={handleFileDownload}
         />
+
+        {/* Reject Reason Modal */}
         <RejectReasonModal
           isOpen={rejectReasonModal}
           onClose={closeRejectReasonModal}

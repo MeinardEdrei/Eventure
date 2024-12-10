@@ -182,7 +182,7 @@ const Page = () => {
             </p>
           </div>
           <div className="line-container w-[100%] h-auto">
-            <hr className="border border-white/50" />
+            <hr className="border border-white/30" />
           </div>
         </div>
 
@@ -301,7 +301,9 @@ const Page = () => {
                   {/* Start Calendar*/}
                   <div>
                     <div>
-                      <h3 className="text-[#ffffff]">Start of Event</h3>
+                      <h3 className="text-[#f7f0ff] text-[0.9rem] font-semibold opacity-70">
+                        Start of Event
+                      </h3>
                     </div>
                     <div>
                       <DateTimePicker
@@ -328,7 +330,9 @@ const Page = () => {
                   {/* End Calendar*/}
                   <div>
                     <div>
-                      <h3 className="text-[#ffffff]">End of Event</h3>
+                      <h3 className="text-[#f7f0ff] text-[0.9rem] font-semibold opacity-70">
+                        End of Event
+                      </h3>
                     </div>
                     <div>
                       <DateTimePicker

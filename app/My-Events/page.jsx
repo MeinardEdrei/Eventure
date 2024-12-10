@@ -682,12 +682,15 @@ function MyEvents() {
 
           <div className="cards-container w-full">
             {filteredEvents.length === 0 ? (
-              <div className="flex flex-col opacity-20 items-center justify-center text-center w-full ] text-white">
+              <div className="flex flex-col opacity-20 items-center mt-9 justify-center text-center w-full ] text-white">
                 <div>
                   <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <p className="text-[1.2rem] font-bold"> You don't have any {selected} events.</p>
+                  <p className="text-[1.2rem] font-bold">
+                    {" "}
+                    You don't have any {selected} events yet.
+                  </p>
                 </div>
               </div>
             ) : (

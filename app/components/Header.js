@@ -269,7 +269,7 @@ const Header = () => {
                           <>
                             <Link
                               onClick={() => setDropDownOpen(false)}
-                              href="/New-Profile"
+                              href="/Profile"
                               className="flex justify-start w-full font-normal max-h-[3em] text-white text-sm transition-colors duration-200 ease-in-out hover:bg-slate-900 hover:text-white px-4 py-2 hover:rounded-md mt-2"
                             >
                               Profile

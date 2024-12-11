@@ -96,8 +96,8 @@ namespace BackendProject.Controllers
             });
         }
 
-        [HttpGet("userEvents/{id}")]
-        public async Task<IActionResult> GetEvents(int id)
+        [HttpGet("userAttendedEvents/{id}")]
+        public async Task<IActionResult> GetAttendedEvents(int id)
         {
             var attendedEvents = await _context.UEvents
                 .Where(ue => ue.User_Id == id)
@@ -105,12 +105,17 @@ namespace BackendProject.Controllers
                 .Select(ue => ue.Event)
                 .ToListAsync();
 
-            if (attendedEvents == null || !attendedEvents.Any())
-            {
-                return NotFound(new { message = "No events found for this user." });
-            }
-
             return Ok(attendedEvents);
+        }
+
+        [HttpGet("userCreatedEvents/{id}")]
+        public async Task<IActionResult> GetCreatedEvents(int id)
+        {
+            var createdEvents = await _context.Events
+                .Where(e => e.OrganizerId == id)
+                .ToListAsync();
+
+            return Ok(createdEvents);
         }
 
         [HttpGet("users")]

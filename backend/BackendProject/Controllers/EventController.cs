@@ -32,8 +32,10 @@ namespace BackendProject.Controllers
         public async Task<IActionResult> UpdateStatus()
         {
             var events = await _context.Events
-            .Where(e => e.Status == "Approved" && e.DateStart > DateTime.Now)
-            .ToListAsync();
+                .Where(e => e.Status == "Approved" && 
+                            (e.DateEnd < DateTime.Now || 
+                            (e.DateEnd == DateTime.Now && e.TimeEnd < DateTime.Now.TimeOfDay)))
+                .ToListAsync();
 
             if (events.Count == 0) return NoContent();
 

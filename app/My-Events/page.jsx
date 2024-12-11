@@ -19,6 +19,8 @@ import {
   CirclePlus,
   CalendarOff,
 } from "lucide-react";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
 
 function MyEvents() {
   const [selected, setSelected] = useState("Created");
@@ -29,7 +31,7 @@ function MyEvents() {
     "Modified",
     "Rejected",
   ];
-  
+
   // const { id } = useParams();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -70,6 +72,11 @@ function MyEvents() {
 
   const fetchData = async () => {
     try {
+      setLoading(true); // Set loading to true before fetching
+
+      // Simulate a 5-second delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       if (session) {
         const res = await axios.get(
           `http://localhost:5000/api/organizer/events/${session?.user?.id}`
@@ -86,8 +93,11 @@ function MyEvents() {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -203,8 +213,78 @@ function MyEvents() {
     setFilteredEvents(filtered);
   }, [selected, events, searchQuery, selectedSection]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="org-list-mnc">
+        {/* Header Skeleton */}
+        <div className="flex flex-col gap-2">
+          <Skeleton
+            variant="text"
+            sx={{
+              fontSize: "2rem",
+              backgroundColor: "rgba(255,255,255,0.1)",
+              width: "200px",
+            }}
+          />
 
+          {/* Status Toggle and Search Skeleton */}
+          <div className="flex flex-row gap-4 items-center justify-between mb-2">
+            <div className="flex flex-row gap-1 w-full">
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={50}
+                sx={{
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                }}
+              />
+            </div>
+            <div className="w-[30%]">
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={50}
+                sx={{
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="flex flex-col items-center w-[100%]">
+          <div className="content-wrapper flex flex-col items-start gap-4 w-[80%]">
+            <Skeleton
+              variant="text"
+              sx={{
+                fontSize: "1.5rem",
+                backgroundColor: "rgba(255,255,255,0.1)",
+                width: "150px",
+              }}
+            />
+
+            <div className="cards-container w-full space-y-4">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="w-full">
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={250}
+                    sx={{
+                      backgroundColor: "rgba(255,255,255,0.1)",
+                      borderRadius: "12px",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   // Render different event card based on status
   const renderEventCard = (event) => {
     switch (event.status) {

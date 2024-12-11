@@ -10,7 +10,6 @@ import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
 import ViewEventModal from "./ViewEventModal";
 import RejectReasonModal from "./RejectReasonModal";
-
 import {
   format,
   parseISO,
@@ -27,6 +26,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+
 
 export default function EventApproval() {
   const { data: session } = useSession();
@@ -61,7 +63,11 @@ export default function EventApproval() {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setLoading(true); // Set loading to true before fetching
+
+      // Simulate a 5-second delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const res = await axios.get(
         "http://localhost:5000/api/event/event-approval"
       );
@@ -219,9 +225,77 @@ export default function EventApproval() {
     setViewEventModal(false);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+if (loading) {
+  return (
+    <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
+      <div className="w-[82%] mb-10">
+        <div className="flex flex-row justify-between items-end mb-4">
+          <div>
+            <Skeleton
+              variant="text"
+              width={300}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+            <Skeleton
+              variant="text"
+              width={500}
+              height={20}
+              sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+            />
+          </div>
+          <Skeleton
+            variant="rectangular"
+            width={180}
+            height={50}
+            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+          />
+        </div>
+      </div>
+
+      <div className="box-maincontainer flex flex-col w-[50%] justify-center">
+        <div className="flex flex-row justify-between mb-4 items-center">
+          <Skeleton
+            variant="text"
+            width={200}
+            height={30}
+            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+          />
+          <div className="flex flex-row gap-4">
+            <Skeleton
+              variant="rectangular"
+              width={200}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+            <Skeleton
+              variant="rectangular"
+              width={200}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+          </div>
+        </div>
+
+        <div className="cards-container flex flex-col w-full gap-2">
+          {[1, 2, 3].map((item) => (
+            <Skeleton
+              key={item}
+              variant="rectangular"
+              width="100%"
+              height={200}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.1)",
+                marginBottom: "16px",
+                borderRadius: "12px",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="event-maincontainer flex flex-col justify-center items-center mt-5">

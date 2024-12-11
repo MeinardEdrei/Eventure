@@ -37,9 +37,9 @@ export default function NotificationDropdown() {
         let filteredNotifications;
 
         if (session?.user?.role === "Organizer") {
-          filteredNotifications = data.filter((data) => data.type === "Organizer" && (data.status === "Approved" || data.status === "Pre-Approved"));
+          filteredNotifications = data.filter((data) => data.status === "Approved" || data.status === "Pre-Approved" || data.status === "Rejected");
         } else {
-          filteredNotifications = data.filter((data) => data.type === "All" && data.status === "Approved");
+          filteredNotifications = data.filter((data) => data.status === "Approved");
         }
 
         filteredNotifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

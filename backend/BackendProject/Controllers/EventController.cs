@@ -272,6 +272,18 @@ namespace BackendProject.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
+            // REMOVE DUPLICATES
+            var checkDuplicate = await _context.Notifications
+                .Where(e => e.EventId == eventId && e.Status == "Approved")
+                .ToListAsync();
+            
+            if (checkDuplicate.Count > 0) {
+                foreach ( var duplicateItem in checkDuplicate) {
+                    _context.Notifications.Remove(duplicateItem);
+                }
+            }
+            await _context.SaveChangesAsync();
+
             eventToApprove.Status = "Approved";
 
             var notifications = new Notification
@@ -300,6 +312,18 @@ namespace BackendProject.Controllers
             {
                 return NotFound(new { message = "Event not found." });
             }
+
+            // REMOVE DUPLICATES
+            var checkDuplicate = await _context.Notifications
+                .Where(e => e.EventId == eventId && e.Status == "Pre-Approved")
+                .ToListAsync();
+            
+            if (checkDuplicate.Count > 0) {
+                foreach ( var duplicateItem in checkDuplicate) {
+                    _context.Notifications.Remove(duplicateItem);
+                }
+            }
+            await _context.SaveChangesAsync();
 
             eventToApprove.Status = "Pre-Approved";
 
@@ -330,7 +354,32 @@ namespace BackendProject.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
+            // REMOVE DUPLICATES
+            var checkDuplicate = await _context.Notifications
+                .Where(e => e.EventId == eventId && e.Status == "Rejected")
+                .ToListAsync();
+            
+            if (checkDuplicate.Count > 0) {
+                foreach ( var duplicateItem in checkDuplicate) {
+                    _context.Notifications.Remove(duplicateItem);
+                }
+            }
+            await _context.SaveChangesAsync();
+
             eventToReject.Status = "Rejected";
+            
+            var notifications = new Notification
+            {
+                UserId = eventToReject.OrganizerId,
+                EventId = eventToReject.Id,
+                NotificationImage = "fwvsdv.jpg",
+                Type = "Organizer",
+                Status = "Rejected",
+                Message = "Your event has been rejected.",
+                CreatedAt = DateTime.Now,
+            };
+
+            _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event Rejected." });

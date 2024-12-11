@@ -1,3 +1,4 @@
+// Event Details Page
 "use client";
 import "../../css/organizerEvents.css";
 import Image from "next/image";
@@ -436,6 +437,7 @@ function OrganizerEvents() {
                       </p>
                     </div>
                   </div>
+
                   {/* Edit Event */}
                   <div className="flex flex-row justify-end">
                     <button

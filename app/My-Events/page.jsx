@@ -1,9 +1,13 @@
+// My Events Page
 "use client";
 import { useEffect, useState } from "react";
 import "../css/organizerList.css";
 import Link from "next/link";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { Pencil } from "lucide-react";
+
 import PDFUploadModal from "./UploadModal";
+import EditEventModal from "../Event-Details/[id]/EditEventModal";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import {
@@ -25,6 +29,9 @@ function MyEvents() {
     "Modified",
     "Rejected",
   ];
+  
+  // const { id } = useParams();
+
   const [isOpen, setIsOpen] = useState(false);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -32,6 +39,7 @@ function MyEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // New state for Toggle and Search
   const [selectedSection, setSelectedSection] = useState("all");
@@ -226,7 +234,7 @@ function MyEvents() {
         />
       </div>
       <div className="cardDetails w-full">
-        <div className="flex flex-row justify-between items-start gap-10">
+        <div className="flex flex-row justify-between items-start">
           <div className="flex flex-col mb-4">
             <div className="cardTitle">{event.title}</div>
             <div className="cardInfo">
@@ -243,6 +251,29 @@ function MyEvents() {
         </div>
 
         <div className="flex flex-row gap-4 justify-end">
+          {/* Edit Event */}
+          <div className="flex flex-row justify-end">
+            <button
+              className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
+              onClick={() => {
+                setSelectedEvent(event);
+                setIsEditModalOpen(true);
+              }}
+            >
+              <Pencil size={20} strokeWidth={1.5} />
+              Edit
+            </button>
+          </div>
+
+          {/* Edit Modal */}
+          <EditEventModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            event={selectedEvent}
+            eventId={selectedEvent?.id}
+            onUpdateSuccess={fetchData}
+          />
+
           {/* Button: Upload Requirements */}
           <button
             type="button"
@@ -301,9 +332,33 @@ function MyEvents() {
           </div>
         </div>
 
+        {/* Buttons for Pending */}
         <div className="flex flex-row gap-4 justify-end">
+          {/* Edit Event */}
+          <div className="flex flex-row justify-end">
+            <button
+              className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
+              onClick={() => {
+                setSelectedEvent(event);
+                setIsEditModalOpen(true);
+              }}
+            >
+              <Pencil size={20} strokeWidth={1.5} />
+              Edit
+            </button>
+          </div>
+
+          {/* Edit Modal */}
+          <EditEventModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            event={selectedEvent}
+            eventId={selectedEvent?.id}
+            onUpdateSuccess={fetchData}
+          />
+
           {/* Button: See Details */}
-          <Link href={`/Event-Details/${event.id}`}>
+          {/* <Link href={`/Event-Details/${event.id}`}>
             <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
               <i
                 className="fa fa-info-circle text-[0.8rem]"
@@ -311,10 +366,10 @@ function MyEvents() {
               ></i>
               <button className="text-[0.8rem]">See Details</button>
             </div>
-          </Link>
+          </Link> */}
 
           {/* Button: Upload Requirements */}
-          {event.status === selected &&
+          {/* {event.status === selected &&
             (selected === "Pending" || selected === "Modified") && (
               <button
                 type="button"
@@ -336,7 +391,7 @@ function MyEvents() {
                     : "Manage Requirements"}
                 </p>
               </button>
-            )}
+            )} */}
         </div>
       </div>
     </div>

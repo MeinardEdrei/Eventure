@@ -89,10 +89,10 @@ hr {
   /* margin: -3.5rem 0 0 0; */
 }
 .overviewDetails .edit-btn {
-  background-color: #606060;
   /* border: 1px solid #949494; */
+  background-color: #606060;
   border-radius: 5px;
-  box-shadow: rgba(126, 126, 126, 0.3) 0px 3px 5px;
+  box-shadow: rgba(126, 126, 126, 0.3) 0px 2px 8px;
   transition: var(--transition);
   cursor: pointer;
   align-self: flex-end;
@@ -103,7 +103,6 @@ hr {
 .overviewDetails .edit-btn:hover {
   background-color: #434343;
   box-shadow: none;
-
 }
 
 .organizerHeader {
@@ -285,8 +284,8 @@ hr {
   align-items: center;
 }
 
-.guestDetails .present-btn, 
-.guestDetails .undo-btn{
+.guestDetails .present-btn,
+.guestDetails .undo-btn {
   background-color: #00ff00;
   color: #000;
   /* border: var(--borderColor); */

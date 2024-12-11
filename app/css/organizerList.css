@@ -198,6 +198,23 @@
   margin: 0.2rem 0;
 }
 
+.edit-btn {
+  /* border: 1px solid #949494; */
+  background-color: #606060;
+  border-radius: 5px;
+  box-shadow: rgba(126, 126, 126, 0.3) 0px 2px 8px;
+  transition: var(--transition);
+  cursor: pointer;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-btn:hover {
+  background-color: #434343;
+  box-shadow: none;
+}
+
 .edit-button-container {
   display: flex;
   align-items: center;

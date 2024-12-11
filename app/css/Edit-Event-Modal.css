@@ -36,18 +36,18 @@
   color: #ffffff; /* Adjust color */
 }
 
-/* Toggle Switch */
-.toggle-div {
+/* Require Approval: Toggle Switch */
+.toggle-container {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
   width: 100%;
 }
 
 .toggle {
   position: relative;
-  width: 48px;
-  height: 25px;
+  width: 40px;
+  height: 20px;
 }
 
 .toggle input {
@@ -62,8 +62,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: transparent;
-  border: 1px solid #9c9c9c;
+  background-color: #565656;
+  border: 1px solid #ffffff;
   transition: 0.8s;
   border-radius: 30px;
 }
@@ -71,10 +71,10 @@
 .toggle-slider:before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
+  height: 12px;
+  width: 12px;
   left: 4px;
-  bottom: 4px;
+  bottom: 3.5px;
   background-color: #ffffff;
   transition: 0.4s;
   border-radius: 100%;
@@ -85,17 +85,20 @@
   /* background-color: #6b21a8; */
 }
 .toggle input:checked + .toggle-slider:before {
-  transform: translateX(22px);
+  transform: translateX(19px);
 }
+
+
+
 .tag-remove:hover {
   color: #8f0000;
 }
 .dropdown-menu {
-  position: absolute;
+  position: relative;
   right: 0;
   margin-top: 0.4rem;
   width: 100%;
-  background-color: #54366c;
+  background-color: rgb(78, 78, 78, 0.3);
   /* border: 1px solid #e2e8f0; */
   border-radius: 0.4rem;
   box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1),
@@ -105,7 +108,7 @@
   overflow-x: hidden;
   overflow-y: auto; /* Add vertical scrollbar when content exceeds max-height */
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #7b3eac #392549; /* For Firefox */
+  scrollbar-color: #4E4E4E #272727; /* For Firefox */
 }
 .dropdown-icon {
   margin-left: 0.5rem;

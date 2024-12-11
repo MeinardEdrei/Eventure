@@ -1,19 +1,26 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  convertFromRaw,
+} from "draft-js";
+import "draft-js/dist/Draft.css";
 import { Calendar, Clock } from "lucide-react";
 import "../css/Create-Event.css";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { ChevronDown, Check } from "lucide-react";
-// import {
-//   ComboBox,
-//   Label,
-//   Input,
-//   // Button,
-//   Popover,
-//   ListBox,
-//   ListBoxItem,
-// } from "react-aria-components";
+import {
+  ChevronDown,
+  Check,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+} from "lucide-react";
 import Button from "@mui/material/Button";
 import RequirementsModal from "./SeeRequirement";
 import EventSettingsPanel from "./SpecifyEvents";
@@ -24,8 +31,145 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
+// Rich Text Editor Component
+const RichTextEditor = ({ value, onChange }) => {
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
+  const editorRef = useRef(null);
+  const containerRef = useRef(null);
 
+  // Handle text input and changes
+  const handleChange = (newEditorState) => {
+    setEditorState(newEditorState);
 
+    // Adjust container height
+    if (containerRef.current) {
+      containerRef.current.style.height = "auto";
+      containerRef.current.style.height = `${Math.min(
+        containerRef.current.scrollHeight,
+        window.innerHeight * 0.29
+      )}px`;
+    }
+
+    // Convert to raw content and pass to parent component
+    const contentState = newEditorState.getCurrentContent();
+    onChange(JSON.stringify(convertToRaw(contentState)));
+  };
+
+  // Improved key command handling
+  const handleKeyCommand = (command, editorState) => {
+    // Handle delete and backspace commands more explicitly
+    if (command === "delete" || command === "backspace") {
+      const contentState = editorState.getCurrentContent();
+      const selectionState = editorState.getSelection();
+
+      // If entire content is selected, create a new empty editor state
+      if (
+        selectionState.getAnchorOffset() === 0 &&
+        selectionState.getFocusOffset() ===
+          contentState.getLastBlock().getLength()
+      ) {
+        const newState = EditorState.createEmpty();
+        handleChange(newState);
+        return "handled";
+      }
+    }
+
+    // Default Draft.js key handling
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      handleChange(newState);
+      return "handled";
+    }
+    return "not-handled";
+  };
+
+  // Formatting button handlers
+  const toggleInlineStyle = (style) => {
+    handleChange(RichUtils.toggleInlineStyle(editorState, style));
+  };
+
+  const toggleBlockType = (blockType) => {
+    handleChange(RichUtils.toggleBlockType(editorState, blockType));
+  };
+
+  // Focus editor when clicked
+  const focusEditor = () => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  };
+
+  // Customizing the Buttons for the editor
+  const InlineStyleButton = ({ style, icon: Icon }) => (
+    <button
+      type="button"
+      onClick={() => toggleInlineStyle(style)}
+      className={`
+      mr-2 p-2 rounded-md transition-all duration-200 ease-in-out
+      flex items-center justify-center
+      ${
+        editorState.getCurrentInlineStyle().has(style)
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+      }
+    `}
+      aria-label={style.toLowerCase()}
+    >
+      <Icon size={16} strokeWidth={2} />
+    </button>
+  );
+
+  const BlockStyleButton = ({ blockType, icon: Icon }) => (
+    <button
+      type="button"
+      onClick={() => toggleBlockType(blockType)}
+      className={`
+      mr-2 p-2 rounded-md transition-all duration-200 ease-in-out
+      flex items-center justify-center
+      ${
+        RichUtils.getCurrentBlockType(editorState) === blockType
+          ? "bg-green-600 text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+      }
+    `}
+      aria-label={blockType.replace("-", " ")}
+    >
+      <Icon size={16} strokeWidth={2} />
+    </button>
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className="border rounded-[8px] border-white/30 p-3 rounded max-h-[auto]"
+    >
+      <div className="mb-2 flex items-center space-x-2">
+        <div className="flex flex-row items-center gap-1">
+          <InlineStyleButton style="BOLD" icon={Bold} />
+          <InlineStyleButton style="ITALIC" icon={Italic} />
+          <InlineStyleButton style="UNDERLINE" icon={Underline} />
+          <BlockStyleButton blockType="unordered-list-item" icon={List} />
+          <BlockStyleButton blockType="ordered-list-item" icon={ListOrdered} />
+        </div>
+      </div>
+
+      <div
+        onClick={() => editorRef.current?.focus()}
+        className="min-h-[20vh] max-h-[20vh] overflow-y-auto bg-[#4e4e4e4d] p-2 rounded"
+      >
+        <Editor
+          ref={editorRef}
+          editorState={editorState}
+          handleKeyCommand={handleKeyCommand}
+          onChange={handleChange}
+          // placeholder="Enter event description..."
+        />
+      </div>
+    </div>
+  );
+};
 const Page = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -166,9 +310,8 @@ const Page = () => {
     }
   };
 
-    const [startDateTime, setStartDateTime] = React.useState(dayjs(""));
-    const [endDateTime, setEndDateTime] = React.useState(dayjs(""));
-
+  const [startDateTime, setStartDateTime] = React.useState(dayjs(""));
+  const [endDateTime, setEndDateTime] = React.useState(dayjs(""));
 
   return (
     <div className="createEvent-mnc">
@@ -261,19 +404,12 @@ const Page = () => {
             {/* Input Event Description */}
             <div className="description">
               <label>Description</label>
-              <textarea
-                rows="8"
-                className="overflow-y-auto max-h-[29vh]"
-                ref={descriptionRef}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
+              <RichTextEditor value={description} onChange={setDescription} />
             </div>
           </div>
 
           {/* Right Side */}
-          <div className="right-container flex flex-col w-[50%] gap-[1.2rem] ">
+          <div className="right-container flex flex-col w-[50%] gap-[0.8rem] ">
             {/* Event's Detail */}
             <EventSettingsPanel
               venue={venue}
@@ -297,11 +433,11 @@ const Page = () => {
             {/* New Calendar Design*/}
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DemoContainer components={["DateTimePicker"]}>
-                <div className="bg-[#4E4E4E]/30 p-6 border border-[#FFF0F0]/30 rounded-[8px] flex flex-row justify-center gap-4">
+                <div className="bg-transparent p-6 border border-[#FFF0F0]/30 rounded-[8px] flex flex-row justify-center gap-11">
                   {/* Start Calendar*/}
                   <div>
                     <div>
-                      <h3 className="text-[#f7f0ff] text-[0.9rem] font-semibold opacity-70">
+                      <h3 className="text-[#f7f0ff] mb-2 text-[0.9rem] font-semibold opacity-70">
                         Start of Event
                       </h3>
                     </div>
@@ -310,11 +446,11 @@ const Page = () => {
                         value={startDateTime}
                         onChange={(newValue) => setStartDateTime(newValue)}
                         sx={{
-                          backgroundColor: "#b8b8b8", // Set background color
-                          color: "black", // Set font color
+                          backgroundColor: "rgb(78,78,78,0.9)", // Set background color
+                          color: "white", // Set font color
                           borderRadius: "4px", // Optional: Add border radius
                           "& .MuiInputBase-root": {
-                            color: "black", // Change font color inside the input
+                            color: "#c6c6c6", // Change font color inside the input
                           },
                           "& .MuiInputBase-input": {
                             color: "darkbblue", // Ensure the input text color is also updated
@@ -330,7 +466,7 @@ const Page = () => {
                   {/* End Calendar*/}
                   <div>
                     <div>
-                      <h3 className="text-[#f7f0ff] text-[0.9rem] font-semibold opacity-70">
+                      <h3 className="text-[#f7f0ff] mb-2 text-[0.9rem] font-semibold opacity-70">
                         End of Event
                       </h3>
                     </div>
@@ -340,11 +476,11 @@ const Page = () => {
                         value={endDateTime}
                         onChange={(newValue) => setEndDateTime(newValue)}
                         sx={{
-                          backgroundColor: "#b8b8b8", // Set background color
-                          color: "black", // Set font color
+                          backgroundColor: "rgb(78,78,78,0.9)", // Set background color
+                          color: "white", // Set font color
                           borderRadius: "4px", // Optional: Add border radius
                           "& .MuiInputBase-root": {
-                            color: "black", // Change font color inside the input
+                            color: "#c6c6c6", // Change font color inside the input
                           },
                           "& .MuiInputBase-input": {
                             color: "darkbblue", // Ensure the input text color is also updated
@@ -387,7 +523,7 @@ const Page = () => {
             <Button
               sx={{
                 width: "100%",
-                // marginTop: "1.25rem",
+                marginTop: "0.4rem",
                 padding: "0.5rem",
                 backgroundColor: "white",
                 opacity: 0.5,

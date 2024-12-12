@@ -182,11 +182,11 @@ function NewEvents() {
           {/* Pagination */}
           <div className="pagination">
             <Button onPress={goToPreviousPage} disabled={currentPage === 1}>
-              Previous
+            ◄ Previous
             </Button>
             <span className="pageIndicator">Page {currentPage} of {totalPages}</span>
             <Button onPress={goToNextPage} disabled={currentPage === totalPages}>
-              Next
+              Next ►
             </Button>
           </div>
         </div>

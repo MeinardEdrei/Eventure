@@ -153,25 +153,24 @@
 /* PAGINATION */
 .pagination {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 2rem;
   gap: 1rem;
 }
 .pagination button {
   border: var(--borderColor);
   border-radius: 10px;
-  height: 2.5rem;
-  width: 10rem;
+  height: 2.2rem;
+  width: 8rem;
   transition: var(--transition);
 }
 .pagination button:hover {
   background-color: var(--color7);
 }
 .pageIndicator {
-  border: var(--borderColor);
   border-radius: 10px;
-  height: 2.5rem;
-  width: 10rem;
+  height: 2.2rem;
+  width: 8rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -369,8 +368,8 @@
 }
 .eventClose {
   position: fixed;
-  top: .7rem;
-  right: 2.1rem;
+  top: 2rem;
+  right: 2rem;
   background: none;
   border: none;
   font-size: 3rem;

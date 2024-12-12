@@ -550,8 +550,8 @@ namespace BackendProject.Controllers
             return Ok(new { message = "New School Year Added!" });
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchEvents([FromQuery] string query)
+        [HttpGet("search-all")]
+        public async Task<IActionResult> SearchAll([FromQuery] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
             {
@@ -567,9 +567,10 @@ namespace BackendProject.Controllers
                         e.Location.Contains(query)) &&
                         e.Status == "Approved"
                     )
-                    .Take(5) // Limit to 5 results
+                    .Take(5)
                     .Select(e => new 
                     {
+                        Type = "Event",
                         e.Id,
                         e.Title,
                         e.Description,
@@ -579,7 +580,71 @@ namespace BackendProject.Controllers
                     })
                     .ToListAsync();
 
-                return Ok(events);
+                var users = await _context.Users
+                    .Where(u => 
+                        (u.Username.Contains(query) || 
+                        u.Email.Contains(query)) &&
+                        u.Role != "Admin"
+                    )
+                    .Take(5)
+                    .Select(u => new 
+                    {
+                        Type = "User",
+                        u.Id,
+                        u.Username,
+                        u.Profile_Image,
+                        u.Attended_Events,
+                        u.Created_Events,
+                        u.Role,
+                        u.Department
+                    })
+                    .ToListAsync();
+
+                // Combine results
+                var combinedResults = events
+                    .Cast<object>()
+                    .Concat(users.Cast<object>())
+                    .ToList();
+
+                return Ok(combinedResults);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Search failed", error = ex.Message });
+            }
+        }
+
+        [HttpGet("search-for-organizer")]
+        public async Task<IActionResult> SearchPrivate([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("Search query is required");
+            }
+
+            try 
+            {
+                var users = await _context.Users
+                    .Where(e => 
+                        (e.Username.Contains(query) || 
+                        e.Email.Contains(query)) &&
+                        e.Role != "Admin"
+                    )
+                    .Take(5) // Limit to 5 results
+                    .Select(e => new 
+                    {
+                        Type = "User",
+                        e.Id,
+                        e.Username,
+                        e.Profile_Image,
+                        e.Attended_Events,
+                        e.Created_Events,
+                        e.Role,
+                        e.Department
+                    })
+                    .ToListAsync();
+
+                return Ok(users);
             }
             catch (Exception ex)
             {

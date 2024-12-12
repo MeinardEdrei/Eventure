@@ -210,8 +210,9 @@ const Header = () => {
                 </>
               ) : session?.user?.role === "Organizer" ? (
                 <>
-                <div className="w-[5%] flex justify-evenly items-center h-full mx-3">
+                <div className="w-[10%] flex justify-evenly items-center h-full mx-3">
                   {/* <Link className="text-sm w-[6vw]" href="/Create-Event">Create Event</Link> */}
+                  <SearchModal />
                   <NotificationDropdown />
                 </div>
                 </>

@@ -36,6 +36,7 @@
   font-size: 22px;
   font-weight: 600;
   color: #E0E0E0;
+  letter-spacing: 1px;
   margin-left: 5px;
 }
 .dashboard-type {
@@ -46,6 +47,22 @@
   background-color: #1b1423;
   display: flex;
   border-radius: 8px;
+}
+.dashboard-type-organizer {
+  height: 45px;
+  width: 250px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1b1423;
+  display: flex;
+  border-radius: 8px;
+}
+.export, .add-school-year {
+  cursor: pointer;
+}
+.export button{
+  font-size: 9px;
+  font-weight: 600;
 }
 .export-sy {
   display: flex;
@@ -61,6 +78,16 @@
   display: flex;
   height: inherit;
   width: 50%;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: #1b1423;
+  display: flex;
+  border-radius: 8px;
+}
+.dashboard-type-dropdown-organizer {
+  display: flex;
+  height: inherit;
+  width: 100%;
   align-items: center;
   justify-content: space-evenly;
   background-color: #1b1423;

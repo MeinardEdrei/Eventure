@@ -186,7 +186,7 @@ const Header = () => {
                 </>
               ) : ( // REGULAR NAV
                 <>
-                  <Link href="/New-Events" className={`nav-link items-center gap-2 mr-8 xl:flex lg:flex ${pathname === '/New-Events' ? 'active' : ''}`}>
+                  <Link href="/Events" className={`nav-link items-center gap-2 mr-8 xl:flex lg:flex ${pathname === '/Events' ? 'active' : ''}`}>
                       <FontAwesomeIcon icon={faTicket} className="text-base mt-0"></FontAwesomeIcon>Discover
                     </Link>
                     <Link href="/Calendar" className={`nav-link items-center gap-2 xl:flex lg:flex ${pathname === '/Calendar' ? 'active' : ''}`}>

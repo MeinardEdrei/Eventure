@@ -65,7 +65,7 @@ function AdminDashboard() {
   // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/admindashboard/export', 
+      const response = await axios.post('http://localhost:5000/api/admindashboard/export', {},
         { responseType: 'blob' }
       );
       const blob = new Blob([response.data], { type: 'application/pdf' });

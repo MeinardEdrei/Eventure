@@ -563,7 +563,7 @@ function Events() {
                     </>
                 )
               ) : (
-                <Link href={`/UserEvaluation`}><button className="bg-purple-950">Answer Survey</button></Link>
+                <Link href={`/UserEvaluation/${selectedEvent.id}`}><button className="bg-purple-950">Answer Survey</button></Link>
               )}
             </div>
           </div>

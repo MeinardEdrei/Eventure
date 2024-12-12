@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 export default function SearchModal() {
+  const {data:session} = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,38 @@ export default function SearchModal() {
     setError(null);
   };
 
+  const [searchResultsWithEventsCount, setSearchResultsWithEventsCount] = useState([]);
+
+  useEffect(() => {
+    const fetchEventsCount = async (results) => {
+      console.log(results)
+      const resultsWithEventsCount = await Promise.all(results.map(async (result) => {
+        if (result?.role === "Student") {
+          const response = await fetchAttendedEvents(result.id);
+          return { ...result, attendedEventsCount: response };
+        } else {
+          const response = await fetchCreatedEvents(result.id);
+          return { ...result, createdEventsCount: response };
+        }
+      }));
+      setSearchResultsWithEventsCount(resultsWithEventsCount);
+    };
+
+    if (searchResults.length > 0) {
+      fetchEventsCount(searchResults);
+    }
+  }, [searchResults]);
+
+  // HANDLE API EVENTS
+  const fetchAttendedEvents = async (id) => {
+      const response = await axios.get(`http://localhost:5000/api/user/userAttendedEvents/${id}`);
+      return response.data.length;
+  };
+  const fetchCreatedEvents = async (id) => {
+      const response = await axios.get(`http://localhost:5000/api/user/userCreatedEvents/${id}`);
+      return response.data.length;
+  };
+
   const handleSearchChange = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -29,9 +63,17 @@ export default function SearchModal() {
         setLoading(true);
         setError(null);
         
-        const response = await axios.get(`http://localhost:5000/api/event/search`, {
-          params: { query }
-        });
+        let response;
+        
+        if (session?.user?.role === "Student") {
+          response = await axios.get(`http://localhost:5000/api/event/search-all`, {
+            params: { query }
+          });
+        } else if (session?.user?.role === "Organizer") {
+          response = await axios.get(`http://localhost:5000/api/event/search-for-organizer`, {
+            params: { query }
+          });
+        }
 
         setSearchResults(response.data);
       } catch (error) {
@@ -85,6 +127,7 @@ export default function SearchModal() {
               />
               <input 
                 type="text"
+                autoFocus={true}
                 placeholder="Search and find what resonates..."
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -98,20 +141,58 @@ export default function SearchModal() {
                 <p className="text-white">Searching...</p>
               ) : error ? (
                 <p className="text-red-500">{error}</p>
-              ) : searchResults.length > 0 ? (
+              ) : searchResultsWithEventsCount !== null && searchResultsWithEventsCount.length > 0 ? (
                 <div>
                   <h3 className="text-white text-lg mb-4">Search Results</h3>
                   <div className="space-y-4">
-                    {searchResults.map((event) => (
+                    {searchResultsWithEventsCount.map((result) => (
                       <div 
-                        key={event.id} 
+                        key={result.id} 
                         className="bg-[#1b1b1b] text-white p-4 rounded-lg hover:bg-[#242324] transition-colors duration-300"
                       >
-                        <h4 className="font-bold">{event.title}</h4>
-                        <p className="text-gray-400">{event.location}</p>
-                        <p className="text-sm">
-                          {new Date(event.dateStart).toLocaleDateString()}
-                        </p>
+                        {result.type === 'Event' ? (
+                          <>
+                          <h4 className="font-bold">{result.title}</h4>
+                          <p className="text-gray-400">{result.location}</p>
+                          <p className="text-sm">
+                            {new Date(result.dateStart).toLocaleDateString()}
+                          </p>
+                          </>
+                        ) : result.type === 'User' ? (
+                          <>
+                            <div className="flex items-center space-x-4">
+                              {result.profile_Image ? (
+                                <img 
+                                  src={`http://localhost:5000/api/event/uploads/${result.profile_Image}`} 
+                                  alt={result.username} 
+                                  className="w-12 h-12 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white">
+                                    {result.username?.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="font-bold">{result.username}</h4>
+                                  <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">{result.role}</span>
+                                </div>
+                                <p className="text-gray-400">
+                                  {result.department || 'No department'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex justify-end text-sm text-gray-500">
+                              {result?.role === "Student" ? (
+                                <span>Attended Events: {result.attendedEventsCount}</span>
+                              ) : (
+                                <span>Created Events: {result.createdEventsCount}</span>
+                              )}
+                            </div>
+                          </>
+                        ) : (<></>)}
                       </div>
                     ))}
                   </div>

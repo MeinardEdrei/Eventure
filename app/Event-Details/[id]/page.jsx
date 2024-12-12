@@ -1,3 +1,5 @@
+// Dropdown
+
 // Event Details Page
 "use client";
 import "../../css/organizerEvents.css";
@@ -14,6 +16,7 @@ import SharePage from "./SharePage";
 import MorePage from "./MorePage";
 import EditEventModal from "./EditEventModal";
 import { useRouter } from "next/navigation";
+import Chart from "chart.js/auto";
 
 function OrganizerEvents() {
   const { data: session } = useSession();
@@ -356,6 +359,79 @@ function OrganizerEvents() {
     }
   };
 
+  // Chart Part
+  // ref for the chart canvas
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  // Create a useEffect to render the chart
+  useEffect(() => {
+    if (chartRef.current) {
+      // Destroy existing chart if it exists
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+
+      // Prepare data based on participants
+      const participantData = [
+        participants.find((p) => p.status === "Waiting")?.count || 0,
+        ["Going", "Attended"]
+          .map(
+            (status) =>
+              participants.find((p) => p.status === status)?.count || 0
+          )
+          .reduce((total, count) => total + count, 0),
+        participants.find((p) => p.status === "Cancelled")?.count || 0,
+      ];
+
+      const ctx = chartRef.current.getContext("2d");
+      chartInstanceRef.current = new Chart(ctx, {
+        type: "doughnut", // type of chart
+        data: {
+          labels: ["Waiting", "Attending", "Cancelled"],
+          datasets: [
+            {
+              label: "Participant Status",
+              data: participantData,
+              backgroundColor: [
+                "#8979FF", // Waiting
+                "#69FF4F", // Attending
+                "#FF0004", // Red for Cancelled
+              ],
+              hoverOffset: 10,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true, // This allows custom sizing
+          layout: {
+            padding: 20,
+          },
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: "white",
+                font: {
+                  size: 12,
+                },
+              },
+            },
+            title: {
+              display: true,
+              // text: "Participant Status",
+              color: "white",
+              font: {
+                size: 16,
+              },
+            },
+          },
+        },
+      });
+    }
+  }, [participants]); // Re-render chart when participants change
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -369,7 +445,7 @@ function OrganizerEvents() {
             {/* <div className="eventTitle m-0 p-0">{event.title}</div> */}
             <div className="relative w-[11rem]">
               <button
-                className="flex items-center justify-between w-[100%] px-4 py-2 bg-[#54366c] font-bold rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-in"
+                className="flex items-center justify-between w-[100%] px-4 py-2 border border-[#5b5561a8] bg-[#5b55614d] font-bold rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-in"
                 onClick={() => setIsOpen(!isOpen)}
               >
                 {selected}
@@ -380,14 +456,14 @@ function OrganizerEvents() {
                 />
               </button>
               {isOpen && (
-                <div className="absolute right-0 mt-2 w-full bg-[#54366c] rounded-lg shadow-lg shadow-white/10 z-10">
+                <div className="absolute right-0 mt-2 w-full bg-[#404040] rounded-lg shadow-lg shadow-white/10 z-10">
                   {options.map((option) => (
                     <button
                       key={option}
                       className={`block w-full py-2 px-2 text-left capitalize bg-transparent border-0 cursor-pointer text-white opacity-50 transition-all duration-300 ease-in-out ${
                         selected === option
-                          ? "bg-[#9148cd] text font-bold text-white opacity-90"
-                          : "hover:bg-purple-700 hover:text-white hover:font-bold hover:opacity-100"
+                          ? "bg-[#303030] rounded-t-[8px] text font-bold text-white opacity-90"
+                          : "hover:bg-[#303030] hover:text-white hover:font-bold hover:opacity-100"
                       }`}
                       onClick={() => handleSelect(option)}
                     >
@@ -404,7 +480,7 @@ function OrganizerEvents() {
           {/* OVERVIEW PAGE */}
           {activeButton === "Overview" && (
             // Main Container: Overview Page
-            <div className="bg-transparent p-10 border rounded-[1rem] border-white/30 flex flex-col gap-5">
+            <div className="bg-transparent p-10 border-2 rounded-[1rem] border-[#4343437d] flex flex-col gap-5">
               <div className="overviewContainer">
                 <img
                   src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
@@ -470,48 +546,67 @@ function OrganizerEvents() {
                   <h6 className="text-[1.3rem] font-semibold">Event Details</h6>
                 </div>
 
-                <div className="statContainer">
-                  <div className="bg-gradient-to-b from-[#e29fff] to-[#452c5c] rounded-[15px]">
-                    <div className="eventStatistic">
-                      <p className="text-[0.8rem] font-medium text-[#460055]">
-                        Waiting
-                      </p>
-                      <h3 className="text-[2rem] font-bold text-[#460055]">
-                        {" "}
-                        {participants.find((p) => p.status === "Waiting")
-                          ?.count || 0}
-                      </h3>
+                {/* Chart and Data */}
+                <div className="flex flex-row justify-center gap-10">
+                  {/* Participant Status Chart */}
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    {/* <div className="organizerHeader">
+                      <h6 className="text-[1.3rem] font-semibold">
+                        Participant Status
+                      </h6>
+                    </div> */}
+                    <div className="flex flex-col items-center justify-center w-[450px] h-[450px] mx-auto">
+                      <canvas ref={chartRef}></canvas>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-b from-[#e29fff] to-[#452c5c] rounded-[15px]">
-                    <div className="eventStatistic">
-                      <p className="text-[0.8rem] font-medium text-[#460055]">
-                        Attending
-                      </p>
-                      <h3 className="text-[2rem] font-bold text-[#460055]">
-                        {/* PARTICIPANTS WITH STATUS COUNT: ATTENDING = GOING + ATTENDED */}{" "}
-                        {["Going", "Attended"]
-                          .map(
-                            (status) =>
-                              participants.find((p) => p.status === status)
-                                ?.count || 0
-                          )
-                          .reduce((total, count) => total + count, 0)}
-                      </h3>
+                  {/* Data */}
+                  <div className="mt-2 flex flex-col gap-1 justify-between">
+                    {/* Waiting */}
+                    <div className="bg-[#1B1423] rounded-[15px]">
+                      <div className="eventStatistic">
+                        <p className="text-[0.8rem] font-medium text-[#ffffff]">
+                          Waiting
+                        </p>
+                        <h3 className="text-[2rem] font-bold text-[#ffffff]">
+                          {" "}
+                          {participants.find((p) => p.status === "Waiting")
+                            ?.count || 0}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="bg-gradient-to-b from-[#FF585B] to-[#993537] rounded-[15px]">
-                    <div className="eventStatistic">
-                      <p className="text-[0.8rem] font-medium text-[#670002]">
-                        Cancelled
-                      </p>
-                      <h3 className="text-[2rem] font-bold text-[#670002]">
-                        {" "}
-                        {participants.find((p) => p.status === "Cancelled")
-                          ?.count || 0}
-                      </h3>
+                    {/* Going */}
+                    <div className="bg-[#1B1423] rounded-[15px]">
+                      <div className="eventStatistic">
+                        <p className="text-[0.8rem] font-medium text-[#ffffff]">
+                          Attending
+                        </p>
+                        <h3 className="text-[2rem] font-bold text-[#ffffff]">
+                          {/* PARTICIPANTS WITH STATUS COUNT: ATTENDING = GOING + ATTENDED */}
+                          {["Going", "Attended"]
+                            .map(
+                              (status) =>
+                                participants.find((p) => p.status === status)
+                                  ?.count || 0
+                            )
+                            .reduce((total, count) => total + count, 0)}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Cancelled */}
+                    <div className="bg-[#1B1423] rounded-[15px]">
+                      <div className="eventStatistic">
+                        <p className="text-[0.8rem] font-medium text-[#ffffff]">
+                          Cancelled
+                        </p>
+                        <h3 className="text-[2rem] font-bold text-[#ffffff]">
+                          {" "}
+                          {participants.find((p) => p.status === "Cancelled")
+                            ?.count || 0}
+                        </h3>
+                      </div>
                     </div>
                   </div>
                 </div>

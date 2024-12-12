@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
+import Pagination from "@mui/material/Pagination";
+
 
 function MyEvents() {
   const [selected, setSelected] = useState("Created");
@@ -70,6 +72,19 @@ function MyEvents() {
     setSearchQuery(e.target.value);
   };
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [eventsPerPage] = useState(3); // Number of events per page
+
+  // Pagination handler
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  // Pagination logic
+  const indexOfLastEvent = currentPage * eventsPerPage;
+  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
+
   const fetchData = async () => {
     try {
       setLoading(true); // Set loading to true before fetching
@@ -97,7 +112,6 @@ function MyEvents() {
       setLoading(false); // Set loading to false after fetching
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -194,24 +208,21 @@ function MyEvents() {
     }
   };
 
+  // Modified filtering to include pagination
   useEffect(() => {
-    // Modified filtering to include search and section toggle
     const filtered = events
       .filter((event) => event.status === selected)
       .filter(
         (event) =>
           event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           event.location.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .filter((event) => {
-        if (selectedSection === "all") return true;
-        if (selectedSection === "approved") return event.status === "Approved";
-        if (selectedSection === "rejected") return event.status === "Rejected";
-        return true;
-      });
+      );
 
-    setFilteredEvents(filtered);
-  }, [selected, events, searchQuery, selectedSection]);
+    // Slice the filtered events for pagination
+    const currentEvents = filtered.slice(indexOfFirstEvent, indexOfLastEvent);
+
+    setFilteredEvents(currentEvents);
+  }, [selected, events, searchQuery, currentPage, eventsPerPage]);
 
   if (loading)
     return (
@@ -804,7 +815,7 @@ function MyEvents() {
       </div>
 
       {/* Contents */}
-      <div className="flex flex-col items-center w-[100%]">
+      <div className="flex flex-col items-center justify-between w-[100%]">
         <div className="content-wrapper flex flex-col items-start gap-4 w-[80%]">
           {/* Status */}
           <div className="card-status">
@@ -829,7 +840,41 @@ function MyEvents() {
                 </div>
               </div>
             ) : (
-              filteredEvents.map(renderEventCard)
+              <>
+                {filteredEvents.map(renderEventCard)}
+
+                {/* Pagination Component */}
+                <div className="flex justify-center w-full mt-10">
+                  <Pagination
+                    count={Math.ceil(
+                      events.filter((event) => event.status === selected)
+                        .length / eventsPerPage
+                    )}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    variant="outlined"
+                    shape="rounded"
+                    // hidePrevButton
+                    // hideNextButton
+                    className="custom-pagination"
+                    sx={{
+                      "& .MuiPaginationItem-root": {
+                        color: "white",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        backgroundColor: "transparent",
+                        "&:hover": {
+                          backgroundColor: "rgba(255,255,255,0.2)",
+                        },
+                      },
+                      "& .Mui-selected": {
+                        backgroundColor: "#ffffff !important",
+                        color: "#000000",
+                      },
+                    }}
+                  />
+                </div>
+              </>
             )}
 
             <PDFUploadModal

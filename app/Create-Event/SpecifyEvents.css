@@ -72,7 +72,7 @@ body {
   max-height: 200px; /* Limit the height of the dropdown */
   overflow-y: auto; /* Add vertical scrollbar when content exceeds max-height */
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #4E4E4E #272727; /* For Firefox */
+  scrollbar-color: #4e4e4e #272727; /* For Firefox */
 }
 .dropdown-menu::-webkit-scrollbar {
   width: 10px;

@@ -31,6 +31,7 @@
 
 .org-list-mnc {
   width: 70%;
+  /* height: 100vh; */
   margin: 2rem auto;
   display: flex;
   flex-direction: column;
@@ -147,7 +148,7 @@
   height: auto;
   border: var(--borderColor);
   /* border-radius: var(--cardRadius); */
-  border-radius: 1rem 0 0 1rem;
+  border-radius: 1rem;
   overflow: hidden;
   display: flex;
   flex-direction: row;

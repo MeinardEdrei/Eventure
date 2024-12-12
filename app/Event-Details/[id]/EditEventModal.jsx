@@ -103,7 +103,7 @@ const RichTextEditor = ({ value, onChange }) => {
       type="button"
       onClick={() => toggleInlineStyle(style)}
       className={`
-      mr-2 p-2 rounded-md transition-all duration-200 ease-in-out
+      mr-2 p-2 rounded-[4px] transition-all duration-200 ease-in-out
       flex items-center justify-center
       ${
         editorState.getCurrentInlineStyle().has(style)
@@ -122,7 +122,7 @@ const RichTextEditor = ({ value, onChange }) => {
       type="button"
       onClick={() => toggleBlockType(blockType)}
       className={`
-      mr-2 p-2 rounded-md transition-all duration-200 ease-in-out
+      mr-2 p-2 rounded-[4px] transition-all duration-200 ease-in-out
       flex items-center justify-center
       ${
         RichUtils.getCurrentBlockType(editorState) === blockType
@@ -397,7 +397,7 @@ const EditEventModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black backdrop-blur-[2px] bg-opacity-50">
       <div className="bg-[#252525] rounded-lg p-8 w-[87vw] max-h-[80vh] overflow-y-auto relative">
         <button
           onClick={onClose}

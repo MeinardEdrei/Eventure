@@ -31,26 +31,28 @@ function OrganizerDashboard() {
 
   // DASHBOARD DATA
   useEffect(() => {
-    const fetchStatusCounts = async () => {
-      try {
-        const [organizerDataResponse, dropdownValuesResponse] = await Promise.all([
-          axios.post(`http://localhost:5000/api/organizerdashboard/organizer-data/${session?.user?.id}`, {
-            schoolYear,
-            semester,
-          }),
-          axios.get('http://localhost:5000/api/organizerdashboard/dropdown-values')
-        ]);
-      
-        setOrganizerData(organizerDataResponse.data);
-        setSchoolYears(dropdownValuesResponse.data );
-        // alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
-      } catch (error) {
-        console.error('Error fetching status counts:', error);
-      }
-    };
-
-    fetchStatusCounts();
-  }, [session?.user?.id, schoolYear, semester]);
+    if (session?.user?.id) {
+      const fetchStatusCounts = async () => {
+        try {
+          const [organizerDataResponse, dropdownValuesResponse] = await Promise.all([
+            axios.post(`http://localhost:5000/api/organizerdashboard/organizer-data/${session?.user?.id}`, {
+              schoolYear,
+              semester,
+            }),
+            axios.get('http://localhost:5000/api/organizerdashboard/dropdown-values')
+          ]);
+        
+          setOrganizerData(organizerDataResponse.data);
+          setSchoolYears(dropdownValuesResponse.data );
+          // alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
+        } catch (error) {
+          console.error('Error fetching status counts:', error);
+        }
+      };
+  
+      fetchStatusCounts();
+    }
+  }, [session, schoolYear, semester]);
 
   // REPORT GENERATION
   const exportPdf = async () => {

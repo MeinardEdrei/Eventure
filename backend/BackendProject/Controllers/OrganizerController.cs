@@ -293,7 +293,8 @@ namespace BackendProject.Controllers
                 EventId = notificationsDto.EventId,
                 Type = notificationsDto.Type,
                 Message = notificationsDto.Message,
-                NotificationImage = fileName
+                NotificationImage = fileName,
+                Status = notificationsDto.Status,
             };
 
             _context.Notifications.Add(newNotification);

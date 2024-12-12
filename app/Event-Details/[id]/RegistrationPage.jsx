@@ -291,7 +291,7 @@ function RegistrationPage({ participants, fetchData, eventId }) {
             </p>
           </div>
 
-          {/* Toggle and Search Container */}
+          {/* Toggle and Search Function */}
           <div className="flex flex-col md:flex-row gap-4 items-center">
             {/* Toggle Buttons */}
             <div className="flex bg-transparent border border-[#ffffff]/50 w-[100%] p-1 justify-center rounded-lg overflow-hidden">

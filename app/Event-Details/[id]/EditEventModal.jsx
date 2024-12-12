@@ -1,9 +1,171 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "../../css/Edit-Event-Modal.css";
 import axios from "axios";
 import Button from "@mui/material/Button";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { X, Upload, Send, ChevronDown } from "lucide-react";
+import {
+  X,
+  Upload,
+  Send,
+  ChevronDown,
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+} from "lucide-react";
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  convertToRaw,
+  convertFromRaw,
+} from "draft-js";
+import "draft-js/dist/Draft.css";
+
+const RichTextEditor = ({ value, onChange }) => {
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
+  const editorRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Handle text input and changes
+  const handleChange = (newEditorState) => {
+    setEditorState(newEditorState);
+
+    // Adjust container height
+    if (containerRef.current) {
+      containerRef.current.style.height = "auto";
+      containerRef.current.style.height = `${Math.min(
+        containerRef.current.scrollHeight,
+        window.innerHeight * 0.29
+      )}px`;
+    }
+
+    // Convert to raw content and pass to parent component
+    const contentState = newEditorState.getCurrentContent();
+    onChange(JSON.stringify(convertToRaw(contentState)));
+  };
+
+  // Improved key command handling
+  const handleKeyCommand = (command, editorState) => {
+    // Handle delete and backspace commands more explicitly
+    if (command === "delete" || command === "backspace") {
+      const contentState = editorState.getCurrentContent();
+      const selectionState = editorState.getSelection();
+
+      // If entire content is selected, create a new empty editor state
+      if (
+        selectionState.getAnchorOffset() === 0 &&
+        selectionState.getFocusOffset() ===
+          contentState.getLastBlock().getLength()
+      ) {
+        const newState = EditorState.createEmpty();
+        handleChange(newState);
+        return "handled";
+      }
+    }
+
+    // Default Draft.js key handling
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      handleChange(newState);
+      return "handled";
+    }
+    return "not-handled";
+  };
+
+  // Formatting button handlers
+  const toggleInlineStyle = (style) => {
+    handleChange(RichUtils.toggleInlineStyle(editorState, style));
+  };
+
+  const toggleBlockType = (blockType) => {
+    handleChange(RichUtils.toggleBlockType(editorState, blockType));
+  };
+
+  // Focus editor when clicked
+  const focusEditor = () => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+  };
+
+  // Customizing the Buttons for the editor
+  const InlineStyleButton = ({ style, icon: Icon }) => (
+    <button
+      type="button"
+      onClick={() => toggleInlineStyle(style)}
+      className={`
+      mr-2 p-2 rounded-[4px] transition-all duration-200 ease-in-out
+      flex items-center justify-center
+      ${
+        editorState.getCurrentInlineStyle().has(style)
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+      }
+    `}
+      aria-label={style.toLowerCase()}
+    >
+      <Icon size={16} strokeWidth={2} />
+    </button>
+  );
+
+  const BlockStyleButton = ({ blockType, icon: Icon }) => (
+    <button
+      type="button"
+      onClick={() => toggleBlockType(blockType)}
+      className={`
+      mr-2 p-2 rounded-[4px] transition-all duration-200 ease-in-out
+      flex items-center justify-center
+      ${
+        RichUtils.getCurrentBlockType(editorState) === blockType
+          ? "bg-green-600 text-white"
+          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+      }
+    `}
+      aria-label={blockType.replace("-", " ")}
+    >
+      <Icon size={16} strokeWidth={2} />
+    </button>
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className="border rounded-[8px] border-white/30 p-3 max-h-[auto]"
+    >
+      <div className="mb-2 flex items-center space-x-2">
+        <div className="flex flex-row items-center gap-1">
+          <InlineStyleButton style="BOLD" icon={Bold} />
+          <InlineStyleButton style="ITALIC" icon={Italic} />
+          <InlineStyleButton style="UNDERLINE" icon={Underline} />
+          <BlockStyleButton blockType="unordered-list-item" icon={List} />
+          <BlockStyleButton blockType="ordered-list-item" icon={ListOrdered} />
+        </div>
+      </div>
+
+      <div
+        onClick={() => editorRef.current?.focus()}
+        className="min-h-[20vh] max-h-[20vh] overflow-y-auto bg-[#4e4e4e4d] p-2 rounded"
+      >
+        <Editor
+          ref={editorRef}
+          editorState={editorState}
+          handleKeyCommand={handleKeyCommand}
+          onChange={handleChange}
+          // placeholder="Enter event description..."
+        />
+      </div>
+    </div>
+  );
+};
 
 const EditEventModal = ({
   isOpen,
@@ -15,22 +177,24 @@ const EditEventModal = ({
   setRequireApproval,
 }) => {
   const [editedEvent, setEditedEvent] = useState({
-    title: "" || event.title,
-    description: "" || event.description,
-    dateStart: "" || event.dateStart,
-    dateEnd: "" || event.dateEnd,
-    timeStart: "" || event.timeStart,
-    timeEnd: "" || event.timeEnd,
-    location: "" || event.location,
-    maxCapacity: "" || event.maxCapacity,
-    campusType: "" || event.campusType,
-    eventType: "" || event.eventType,
-    visibility: "" || event.visibility,
-    requireApproval: event.requireApproval,
-    partnerships: [] || event.partnerships,
-    hostedBy: [] || event.hostedBy,
-    eventImage: null || event.eventImage,
+    title: "",
+    description: "",
+    dateStart: "",
+    dateEnd: "",
+    timeStart: "",
+    timeEnd: "",
+    location: "",
+    maxCapacity: "",
+    campusType: "",
+    eventType: "",
+    visibility: "",
+    requireApproval: false,
+    partnerships: [],
+    hostedBy: [],
+    eventImage: null,
+    colleges: [],
   });
+  const [description, setDescription] = useState("");
 
   const [campusType, setCampusType] = useState("On Campus");
   const EventOptions = ["On Campus", "Off Campus"];
@@ -44,7 +208,8 @@ const EditEventModal = ({
   const [previewImage, setPreviewImage] = useState(null);
 
   // Dropdown states
-  const [isVisibilityDropdownOpen, setIsVisibilityDropdownOpen] = useState(false);
+  const [isVisibilityDropdownOpen, setIsVisibilityDropdownOpen] =
+    useState(false);
   const [isCollegesOpen, setIsCollegesOpen] = useState(false);
   const [collegesFilter, setCollegesFilter] = useState("");
   const [customCollegeInput, setCustomCollegeInput] = useState("");
@@ -230,10 +395,13 @@ const EditEventModal = ({
     }
   };
 
+  const [startDateTime, setStartDateTime] = React.useState(dayjs(""));
+  const [endDateTime, setEndDateTime] = React.useState(dayjs(""));
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black backdrop-blur-[2px] bg-opacity-50">
       <div className="bg-[#252525] rounded-lg p-8 w-[87vw] max-h-[80vh] overflow-y-auto relative">
         <button
           onClick={onClose}
@@ -252,7 +420,7 @@ const EditEventModal = ({
               {/* Image Upload Section */}
               <div
                 onClick={() => document.getElementById("eventImage").click()}
-                className="bg-transparent hover:bg-[rgba(255,255,255,0.05)] border-2 rounded-[8px] border-dashed p-6 flex justify-center cursor-pointer"
+                className="bg-transparent hover:bg-[rgba(255,255,255,0.05)] border-2 border-[#ffffff]/40 rounded-[8px] border-dashed p-6 flex justify-center cursor-pointer"
               >
                 <div className="relative">
                   {previewImage && (
@@ -291,15 +459,10 @@ const EditEventModal = ({
                 />
               </div>
 
-              <div className="event-description">
-                <label className="block mb-2">Description</label>
-                <textarea
-                  name="description"
-                  value={editedEvent.description}
-                  onChange={handleChange}
-                  className="overflow-y-auto min-h-[22vh] w-full bg-[#2C2C2C] text-white p-2 rounded h-32"
-                  required
-                />
+              {/* Input Event Description */}
+              <div className="description">
+                <label>Description</label>
+                <RichTextEditor value={description} onChange={setDescription} />
               </div>
             </div>
 
@@ -329,12 +492,12 @@ const EditEventModal = ({
                     </div>
 
                     {isEventDropdownOpen && (
-                      <div className="absolute top-full left-0 w-full bg-[#6d3998] z-10 rounded-b-lg shadow-lg">
+                      <div className="absolute top-full left-0 w-full bg-[#414141] z-10 rounded-b-lg shadow-lg">
                         {EventOptions.map((option) => (
                           <div
                             key={option}
-                            className={`p-2 hover:bg-purple-700 ${
-                              campusType === option ? "bg-purple-800" : ""
+                            className={`p-2 hover:bg-[#656565] ${
+                              campusType === option ? "bg-[#7b7b7b]" : ""
                             }`}
                             onClick={() => {
                               setCampusType(option);
@@ -411,6 +574,57 @@ const EditEventModal = ({
                       />
                     </div>
 
+                    {/* Require Approval */}
+                    <div className="box">
+                      <div className="flex flex-col gap-2">
+                        <div className="toggle-container">
+                          <label className="label-container">
+                            <span className="label-icon">
+                              <i className="fa fa-check" aria-hidden="true"></i>
+                            </span>
+                            <span>Require Approval</span>
+                          </label>
+                          <label className="toggle">
+                            <input
+                              type="checkbox"
+                              checked={requireApproval}
+                              onChange={(e) =>
+                                setRequireApproval(e.target.checked)
+                              }
+                            />
+                            <span className="toggle-slider"></span>
+                          </label>
+                        </div>
+                        <div>
+                          <p className="text-[0.7rem] leading-[14px] text-white/50">
+                            By enabling this, organizers must approve each
+                            attendee before they are allowed to join the event.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* <div className="">
+                      <div className="toggle-div">
+                        <label className="label-container">
+                          <span className="label-icon">
+                            <i className="fa fa-check" aria-hidden="true"></i>
+                          </span>
+                          <span>Require Approval</span>
+                        </label>
+                        <label className="toggle">
+                          <input
+                            type="checkbox"
+                            checked={requireApproval}
+                            onChange={(e) =>
+                              setRequireApproval(e.target.checked)
+                            }
+                          />
+                          <span className="toggle-slider"></span>
+                        </label>
+                      </div>
+                    </div> */}
+
                     {/* College Dropdown */}
                     <div className="w-full">
                       <label className="label-container">
@@ -420,15 +634,16 @@ const EditEventModal = ({
                             aria-hidden="true"
                           ></i>
                         </span>
-                        <span>Colleges</span>
+                        <span>College Departments</span>
                       </label>
+
                       <div className="flex flex-col">
                         {/* College Tag Container */}
                         <div className="flex flex-wrap items-center gap-1 mb-1">
                           {editedEvent.hostedBy.map((college) => (
                             <span
                               key={college}
-                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center gap-2"
+                              className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
                             >
                               {college}
                               <button
@@ -476,9 +691,9 @@ const EditEventModal = ({
                           {isCollegesOpen && (
                             <div className="dropdown-menu">
                               {/* Add College Input */}
-                              <div className="flex items-center p-2 bg-[#6d3998]">
+                              <div className="flex items-center p-2 bg-[#7b7b7b]">
                                 <input
-                                  className="flex w-full bg-transparent border-gray-300 px-2 py-1 mr-2 text-white outline-none"
+                                  className="flex-grow bg-transparent focus:border focus:border-[#e4c7ffb3] placeholder:text-white  border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
                                   type="text"
                                   placeholder="Add college"
                                   value={customCollegeInput}
@@ -493,7 +708,7 @@ const EditEventModal = ({
                                 />
                                 <button
                                   onClick={handleAddCustomCollege}
-                                  className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
+                                  className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
                                 >
                                   <Send size={19} />
                                 </button>
@@ -515,28 +730,6 @@ const EditEventModal = ({
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Require Approval */}
-                    <div className="">
-                      <div className="toggle-div">
-                        <label className="label-container">
-                          <span className="label-icon">
-                            <i className="fa fa-check" aria-hidden="true"></i>
-                          </span>
-                          <span>Require Approval</span>
-                        </label>
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={requireApproval}
-                            onChange={(e) =>
-                              setRequireApproval(e.target.checked)
-                            }
-                          />
-                          <span className="toggle-slider"></span>
-                        </label>
                       </div>
                     </div>
                   </div>
@@ -562,16 +755,18 @@ const EditEventModal = ({
                     </div>
 
                     {/* Visibility Dropdown */}
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <label className="label-container">
                         <span className="label-icon">
                           <i className="fa fa-globe" aria-hidden="true"></i>
                         </span>
                         <span>Visibilty</span>
                       </label>
+
+                      {/* Dropdown */}
                       <div className="relative w-full">
                         <div
-                          className={`w-full bg-[#5b55614d] text-white p-2 border border-[#fff0f04d] rounded flex justify-between items-center cursor-pointer ${
+                          className={`w-full bg-[#4E4E4E]/30 border border-[#ffffff]/30 text-white py-2 px-4 rounded-[5px] flex justify-between items-center cursor-pointer ${
                             isVisibilityDropdownOpen ? "rounded-b-none" : ""
                           }`}
                           onClick={() =>
@@ -590,13 +785,13 @@ const EditEventModal = ({
                         </div>
 
                         {isVisibilityDropdownOpen && (
-                          <div className="absolute top-full left-0 w-full bg-[#6d3998] z-10 rounded-b-lg shadow-lg">
+                          <div className="absolute top-full left-0 w-full bg-[#414141] z-10 rounded-b-lg shadow-lg">
                             {["Public", "Private", "Custom"].map((option) => (
                               <div
                                 key={option}
-                                className={`p-2 hover:bg-purple-700 ${
+                                className={`p-2 hover:bg-[#656565] ${
                                   editedEvent.visibility === option
-                                    ? "bg-purple-800"
+                                    ? "bg-[#7b7b7b]"
                                     : ""
                                 }`}
                                 onClick={() => {
@@ -631,7 +826,7 @@ const EditEventModal = ({
                           {editedEvent.partnerships.map((partnership) => (
                             <span
                               key={partnership}
-                              className="bg-purple-700 px-3 py-1 rounded text-xs flex items-center justify-center gap-2"
+                              className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
                             >
                               {partnership}
                               <button
@@ -677,9 +872,9 @@ const EditEventModal = ({
                           {/* Dropdown Menu */}
                           {isPartnershipOpen && (
                             <div className="dropdown-menu">
-                              <div className="flex items-center p-2 bg-[#6d3998]">
+                              <div className="flex items-center p-2 bg-[#7b7b7b]">
                                 <input
-                                  className="flex w-full bg-transparent border-gray-300 px-2 py-1 mr-2 text-white outline-none"
+                                  className="flex-grow bg-transparent focus:border focus:border-[#e4c7ffb3] placeholder:text-white  border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
                                   type="text"
                                   placeholder="Add partnership"
                                   value={customPartnershipInput}
@@ -694,7 +889,7 @@ const EditEventModal = ({
                                 />
                                 <button
                                   onClick={handleAddCustomPartnership}
-                                  className="text-[#c987ff] flex items-center justify-center  hover:text-[#e0bbff] mr-2 z-10"
+                                  className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
                                 >
                                   <Send size={19} />
                                 </button>
@@ -703,11 +898,11 @@ const EditEventModal = ({
                               {filteredPartnerships.map((partnership) => (
                                 <button
                                   key={partnership}
-                                  className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
+                                  className={`w-full text-left px-4 py-2 hover:bg-[#656565] ${
                                     editedEvent.partnerships.includes(
                                       partnership
                                     )
-                                      ? "bg-[#6d3998]"
+                                      ? "bg-[#656565]"
                                       : ""
                                   }`}
                                   onClick={() =>
@@ -725,8 +920,97 @@ const EditEventModal = ({
                   </div>
                 </div>
 
+                {/* New Calendar Design*/}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <div className="bg-transparent p-6 border border-[#FFF0F0]/30 rounded-[8px] flex flex-row justify-center gap-12">
+                      {/* Start Calendar*/}
+                      <div>
+                        <div>
+                          <h3 className="text-[#f7f0ff] mb-2 text-[0.9rem] font-semibold opacity-70">
+                            Start of Event
+                          </h3>
+                        </div>
+                        <div>
+                          <DateTimePicker
+                            value={startDateTime}
+                            onChange={(newValue) => setStartDateTime(newValue)}
+                            sx={{
+                              backgroundColor: "rgb(78,78,78,0.9)", // Set background color
+                              color: "white", // Set font color
+                              borderRadius: "4px", // Optional: Add border radius
+                              "& .MuiInputBase-root": {
+                                color: "#c6c6c6", // Change font color inside the input
+                              },
+                              "& .MuiInputBase-input": {
+                                color: "darkbblue", // Ensure the input text color is also updated
+                              },
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                border: "none", // Remove the border when not focused
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* End Calendar*/}
+                      <div>
+                        <div>
+                          <h3 className="text-[#f7f0ff] mb-2 text-[0.9rem] font-semibold opacity-70">
+                            End of Event
+                          </h3>
+                        </div>
+                        <div>
+                          <DateTimePicker
+                            // label="End Date and Time"
+                            value={endDateTime}
+                            onChange={(newValue) => setEndDateTime(newValue)}
+                            sx={{
+                              backgroundColor: "rgb(78,78,78,0.9)", // Set background color
+                              color: "white", // Set font color
+                              borderRadius: "4px", // Optional: Add border radius
+                              "& .MuiInputBase-root": {
+                                color: "#c6c6c6", // Change font color inside the input
+                              },
+                              "& .MuiInputBase-input": {
+                                color: "darkbblue", // Ensure the input text color is also updated
+                              },
+                              "& .MuiOutlinedInput-notchedOutline": {
+                                border: "none", // Remove the border when not focused
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </DemoContainer>
+                </LocalizationProvider>
+
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      width: "100%",
+                      borderRadius: "0.5rem",
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      padding: "0.75rem 1rem",
+                      marginTop: "1rem",
+                      backgroundColor: "#9c9c9c",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "white",
+                        color: "black",
+                      },
+                    }}
+                  >
+                    Update Event
+                  </Button>
+                </div>
+
                 {/* Date & Time */}
-                <div>
+                {/* <div>
                   <div className="bg-transparent border rounded-[10px] border-[#FFF0F0]/30 p-6 flex flex-row gap-10 justify-center">
                     <div className="flex flex-col gap-8 items-center justify-center">
                       <label className="">Start</label>
@@ -781,32 +1065,9 @@ const EditEventModal = ({
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              variant="contained"
-              sx={{
-                width: "100%",
-                borderRadius: "0.5rem",
-                fontSize: "1rem",
-                fontWeight: "bold",
-                padding: "0.75rem 1rem",
-                marginTop: "1rem",
-                backgroundColor: "#9c9c9c",
-                color: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                  color: "black",
-                },
-              }}
-            >
-              Update Event
-            </Button>
           </div>
         </form>
       </div>

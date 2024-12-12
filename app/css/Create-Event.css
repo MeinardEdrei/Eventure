@@ -37,6 +37,7 @@ body {
   font-size: 2.3em;
   font-weight: 900;
   padding: 30px 0 0px 0;
+  color: white;
 }
 .text-container p {
   font-size: 1em;
@@ -64,7 +65,7 @@ body {
   font-size: 0.9em;
   color: #f7f0ff;
   opacity: 0.7;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 0.5em;
 }
 .event-name input,
@@ -81,7 +82,7 @@ body {
   outline: none;
 }
 .date input,
-.time input{
+.time input {
   background-color: #3c3c3c;
   color: #fff;
   padding: 0.75rem;
@@ -97,17 +98,16 @@ body {
 .input-cont input:focus,
 .date input:focus,
 .time input:focus,
-.input-containers textarea:focus 
-{
-  background-color: rgba(85, 97, 87, 0.3);
+.input-containers textarea:focus {
   /* background-color: rgb(56, 44, 66); */
+  background-color: rgba(85, 97, 87, 0.3);
   border: 2px solid #e4c7ffb3;
 }
-.input-containers input::placeholder, 
+.input-containers input::placeholder,
 .input-containers textarea::placeholder {
   color: #ffffff;
-  color: #595959;
-  opacity: 0.5;
+  /* color: #595959; */
+  opacity: 0.7;
 }
 
 /* Set Time and Date */
@@ -276,7 +276,7 @@ body {
 }
 
 .modal-container {
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   border: 1px solid #ffffff;
   border-radius: 0.5rem;
   padding: 2rem;

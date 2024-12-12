@@ -7,9 +7,9 @@ import { useSession } from "next-auth/react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { ChevronDown, Check, CheckCheck, X, Info } from "lucide-react";
 import axios from "axios";
+import ConfirmationModal from "./ConfirmationModal";
 import ViewEventModal from "./ViewEventModal";
 import RejectReasonModal from "./RejectReasonModal";
-
 import {
   format,
   parseISO,
@@ -17,7 +17,7 @@ import {
   startOfDay,
   endOfDay,
 } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CalendarOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,6 +26,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+
 
 export default function EventApproval() {
   const { data: session } = useSession();
@@ -40,6 +43,12 @@ export default function EventApproval() {
   // For Event Modal
   const [viewEventModal, setViewEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // For Confirmation Modal
+  const [preApproveConfirmModal, setPreApproveConfirmModal] = useState(false);
+  const [approveConfirmModal, setApproveConfirmModal] = useState(false);
+  const [confirmationEventId, setConfirmationEventId] = useState(null);
+
   // For Reject Reason Modal
   const [rejectReasonModal, setRejectReasonModal] = useState(false);
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
@@ -54,7 +63,11 @@ export default function EventApproval() {
 
   const fetchData = async () => {
     try {
-      setLoading(true);
+      setLoading(true); // Set loading to true before fetching
+
+      // Simulate a 5-second delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const res = await axios.get(
         "http://localhost:5000/api/event/event-approval"
       );
@@ -108,30 +121,32 @@ export default function EventApproval() {
 
   const handleFileDownload = async (eventType, fileName) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/organizer/download/${eventType}/${fileName}`, {
-          responseType: 'blob' 
+      const response = await axios.get(
+        `http://localhost:5000/api/organizer/download/${eventType}/${fileName}`,
+        {
+          responseType: "blob",
         }
       );
 
       // Create download mechanism
       const url = window.URL.createObjectURL(
-        new Blob([response.data], { type: 'application/pdf' })
+        new Blob([response.data], { type: "application/pdf" })
       );
-  
+
       // Create temporary link
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', fileName);
-      
+      link.setAttribute("download", fileName);
+
       // Trigger download
       document.body.appendChild(link);
       link.click();
-  
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('PDF Download Failed', error);
+      console.error("PDF Download Failed", error);
     }
   };
 
@@ -180,6 +195,16 @@ export default function EventApproval() {
     }
   };
 
+  const openPreApproveConfirmModal = (eventId) => {
+    setConfirmationEventId(eventId);
+    setPreApproveConfirmModal(true);
+  };
+
+  const openApproveConfirmModal = (eventId) => {
+    setConfirmationEventId(eventId);
+    setApproveConfirmModal(true);
+  };
+
   const openRejectReasonModal = (event) => {
     setSelectedRejectEvent(event);
     setRejectReasonModal(true);
@@ -200,9 +225,77 @@ export default function EventApproval() {
     setViewEventModal(false);
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+if (loading) {
+  return (
+    <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
+      <div className="w-[82%] mb-10">
+        <div className="flex flex-row justify-between items-end mb-4">
+          <div>
+            <Skeleton
+              variant="text"
+              width={300}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+            <Skeleton
+              variant="text"
+              width={500}
+              height={20}
+              sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+            />
+          </div>
+          <Skeleton
+            variant="rectangular"
+            width={180}
+            height={50}
+            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+          />
+        </div>
+      </div>
+
+      <div className="box-maincontainer flex flex-col w-[50%] justify-center">
+        <div className="flex flex-row justify-between mb-4 items-center">
+          <Skeleton
+            variant="text"
+            width={200}
+            height={30}
+            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+          />
+          <div className="flex flex-row gap-4">
+            <Skeleton
+              variant="rectangular"
+              width={200}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+            <Skeleton
+              variant="rectangular"
+              width={200}
+              height={40}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+            />
+          </div>
+        </div>
+
+        <div className="cards-container flex flex-col w-full gap-2">
+          {[1, 2, 3].map((item) => (
+            <Skeleton
+              key={item}
+              variant="rectangular"
+              width="100%"
+              height={200}
+              sx={{
+                backgroundColor: "rgba(255,255,255,0.1)",
+                marginBottom: "16px",
+                borderRadius: "12px",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
@@ -303,8 +396,15 @@ export default function EventApproval() {
         {/* Latest Design */}
         <div className="cards-container flex flex-col w-full gap-2">
           {filteredEvents.length === 0 ? (
-            <div className="text-center w-full text-gray-500">
-              No events found in {selected} status
+            <div className="flex flex-col opacity-20 mt-14 items-center justify-center text-center w-full ] text-white">
+              <div>
+                <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
+              </div>
+              <div>
+                <p className="text-[1.2rem] font-bold">
+                  You don't have any {selected} events yet.
+                </p>
+              </div>
             </div>
           ) : (
             filteredEvents.map((event) => (
@@ -359,7 +459,7 @@ export default function EventApproval() {
                         <Check size={16} />
                         <button
                           className="text-[0.8rem]"
-                          onClick={() => handlePreApprove(event.id)}
+                          onClick={() => openPreApproveConfirmModal(event.id)}
                           disabled={event.status === "approved"}
                         >
                           Pre-approve
@@ -372,7 +472,7 @@ export default function EventApproval() {
                         </span>
                         <button
                           className="approve"
-                          onClick={() => handleApprove(event.id)}
+                          onClick={() => openApproveConfirmModal(event.id)}
                           disabled={event.status === "approved"}
                         >
                           Approve
@@ -410,7 +510,26 @@ export default function EventApproval() {
           )}
         </div>
 
-        {/* Modal with event data passed */}
+        {/* Confirmation Modals */}
+        <ConfirmationModal
+          isOpen={preApproveConfirmModal}
+          onClose={() => setPreApproveConfirmModal(false)}
+          onConfirm={() => handlePreApprove(confirmationEventId)}
+          title="Confirm Pre-Approval"
+          message="Are you sure you want to pre-approve this event?"
+          confirmButtonText="Pre-Approve"
+        />
+
+        <ConfirmationModal
+          isOpen={approveConfirmModal}
+          onClose={() => setApproveConfirmModal(false)}
+          onConfirm={() => handleApprove(confirmationEventId)}
+          title="Confirm Approval"
+          message="Are you sure you want to approve this event?"
+          confirmButtonText="Approve"
+        />
+
+        {/* View Event Modal */}
         <ViewEventModal
           isOpen={viewEventModal}
           onClose={closeEventModal}
@@ -420,6 +539,8 @@ export default function EventApproval() {
           handleReject={handleReject}
           handleFileDownload={handleFileDownload}
         />
+
+        {/* Reject Reason Modal */}
         <RejectReasonModal
           isOpen={rejectReasonModal}
           onClose={closeRejectReasonModal}

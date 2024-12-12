@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import "../css/dashboard.css";
 import axios from 'axios';
 import { Line, Bar } from "react-chartjs-2";
+import { useSession } from "next-auth/react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -19,40 +20,45 @@ import {
 ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElement, Title, Tooltip, Legend);
 
 function OrganizerDashboard() {
-  const [schoolYear, setSchoolYear] = useState([]);
-  const [semester, setSemester] = useState("");
+  const { data: session } = useSession();
+  const [schoolYear, setSchoolYear] = useState("2024-2025");
+  const [schoolYears, setSchoolYears] = useState([]);
+  const [semester, setSemester] = useState("FirstAndSecond");
 
   const [organizerData, setOrganizerData] = useState({
     eventStatus: [],
-    eventsCount: [],
-    onCampusCounts: [],
-    offCampusCounts: [],
   });
 
   // DASHBOARD DATA
   useEffect(() => {
     const fetchStatusCounts = async () => {
       try {
-        const organizerDataResponse = await axios.get('http://localhost:5000/api/organizerdashboard/organizer-data');
+        const [organizerDataResponse, dropdownValuesResponse] = await Promise.all([
+          axios.post(`http://localhost:5000/api/organizerdashboard/organizer-data/${session?.user?.id}`, {
+            schoolYear,
+            semester,
+          }),
+          axios.get('http://localhost:5000/api/organizerdashboard/dropdown-values')
+        ]);
       
         setOrganizerData(organizerDataResponse.data);
-        alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
-
-        // Default
-        setSchoolYear("2023 - 2024"); 
-        setSemester("1st - 2nd sem");
+        setSchoolYears(dropdownValuesResponse.data );
+        // alert(JSON.stringify(organizerDataResponse.data)); // See the full object structure
       } catch (error) {
         console.error('Error fetching status counts:', error);
       }
     };
 
     fetchStatusCounts();
-  }, []);
+  }, [session?.user?.id, schoolYear, semester]);
 
   // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/organizerdashboard/export`, 
+      const response = await axios.post(`http://localhost:5000/api/organizerdashboard/export/${session?.user?.id}`, {
+        schoolYear,
+        semester,
+      }, 
         { responseType: 'blob' }
       );
       const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -72,79 +78,23 @@ function OrganizerDashboard() {
     }
   }
 
-  // Function to send the selected values to the backend
-  const sendType = async (dropdownValues) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/organizerdashboard/type', dropdownValues);
-      setSchoolYear(response.data.SchoolYear);
-      setSemester(response.data.Semester);
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.errors) {
-        console.error('Validation Errors:', error.response.data.errors);
-        console.error('Full error response:', error.response.data);
-      } else {
-        console.error('Error submitting data:', error);
-      }
-    }
+  // Handlers for each dropdown
+  const handleSchoolYearChange = (e) => {
+    setSchoolYear(e.target.value);
   };
-
-   // Handlers for each dropdown
-   const handleSchoolYearChange = (e) => {
-    const value = e.target.value;
-    setSchoolYear(value);
-    sendType({ schoolYear: value, semester });
-  };
-
+  
   const handleSemesterChange = (e) => {
-    const value = e.target.value;
-    setSemester(value);
-    sendType({ schoolYear, semester: value });
+    setSemester(e.target.value);
   };
 
-  // Reorder from August to July
-  const filterDataBySemester = (semester, labels, ...dataArrays) => {
-    let filteredLabels = [];
-    let filteredData = dataArrays.map(() => []);
-  
-    if (semester === "1st sem") {
-      // For 1st semester: August to January
-      filteredLabels = labels.slice(7, 12).concat(labels.slice(0, 1)); // August to January
-      filteredData = dataArrays.map(dataArray => dataArray.slice(7, 12).concat(dataArray.slice(0, 1)));
-    } else if (semester === "2nd sem") {
-      // For 2nd semester: January to July
-      filteredLabels = labels.slice(0, 7); // January to July
-      filteredData = dataArrays.map(dataArray => dataArray.slice(0, 7));
-    } else if (semester === "1st - 2nd sem") {
-      // For 1st - 2nd semester: August to July
-      filteredLabels = labels.slice(7).concat(labels.slice(0, 7)); // August to July
-      filteredData = dataArrays.map(dataArray => dataArray.slice(7).concat(dataArray.slice(0, 7)));
-    }
-  
-    return { filteredLabels, filteredData };
-  };
-  
   // Start of Line Chart
   const lineData = (() => {
-    const originalLabels = [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ];
-  
-    // Use the filterDataBySemester function to get the filtered labels and data based on the selected semester
-    const { filteredLabels, filteredData } = filterDataBySemester(
-      semester, 
-      originalLabels, 
-      organizerData.eventsCount, 
-      organizerData.onCampusCounts, 
-      organizerData.offCampusCounts
-    );
-
     return {
-      labels: filteredLabels,
+      labels: organizerData.labels,
       datasets: [
         {
           label: "Events",
-          data: filteredData[0],
+          data: organizerData.eventsCount,
           backgroundColor: "rgba(219,183,254,255)", 
           borderColor: "rgba(219,183,254,255)", 
           borderWidth: 1, 
@@ -153,7 +103,7 @@ function OrganizerDashboard() {
         },
         {
           label: "In Campus",
-          data: filteredData[1], 
+          data: organizerData.onCampusCounts, 
           backgroundColor: "rgba(54, 162, 235, 0.2)", 
           borderColor: "rgba(54, 162, 235, 1)", 
           borderWidth: 1,
@@ -162,7 +112,7 @@ function OrganizerDashboard() {
         },
         {
           label: "Off Campus",
-          data: filteredData[2], 
+          data: organizerData.offCampusCounts, 
           backgroundColor: "rgba(255, 159, 64, 0.2)", 
           borderColor: "rgba(255, 159, 64, 1)", 
           borderWidth: 1,
@@ -208,7 +158,7 @@ function OrganizerDashboard() {
     labels: [""], // Example subset
     datasets: [
       {
-        data: [2750], 
+        data: [organizerData.monthlyEngagement], 
         backgroundColor: (context) => {
           const chart = context.chart;
           const { ctx, chartArea } = chart;
@@ -278,28 +228,28 @@ function OrganizerDashboard() {
         
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>School Year {schoolYear} {semester} </h1>
-          <div className='dashboard-type'>
-            <div className='export-sy'>
-              <div className='type'></div>
-              <div className='type'></div>
-              <div className='type add-school-year'>
-                
-              </div>
-            </div>
-            <div className='dashboard-type-dropdown'>
-              <div className='type organizer-export'>
-                <button>Export</button>
+          <h1>Welcome, {session?.user?.department}!</h1>
+          <div className='dashboard-type-organizer'>
+            <div className='dashboard-type-dropdown-organizer'>
+              <div className='type export' onClick={exportPdf}>
+                <button className='type organizer-export' onClick={exportPdf}>
+                  Export
+                </button> 
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="bi bi-arrow-down-short" viewBox="0 0 16 16">
+                  <path fillRule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
+                </svg>
               </div>
               <select id="school-year" name="school-year" className='type school-year' onChange={handleSchoolYearChange}>
-                <option value="2024 - 2025">2024-2025</option>
-                <option value="2023 - 2024">2023-2024</option>
-                <option value="2022 - 2023">2022-2023</option>
+                {schoolYears.map((year, index) => (
+                  <option key={index} value={year}>
+                    {year}
+                  </option>
+                ))}
               </select>
               <select id="semester" name="semester" className='type semester' onChange={handleSemesterChange}>
-                <option value="1st - 2nd sem">1st - 2nd</option>
-                <option value="1st sem">1st sem</option>
-                <option value="2nd sem">2nd sem</option>
+                <option value="FirstAndSecond">1st - 2nd</option>
+                <option value="First">1st sem</option>
+                <option value="Second">2nd sem</option>
               </select>
             </div>
           </div>
@@ -330,7 +280,7 @@ function OrganizerDashboard() {
         <div className='registered-students'>
           <div className='registered-students-text'>
             <h3>Monthly Engagement</h3>
-            <h2>270</h2>
+            <h2>{organizerData.monthlyEngagement}</h2>
           </div>
           <div className='barStats'>
             <Bar data={barData} options={barOptions} />
@@ -348,7 +298,7 @@ function OrganizerDashboard() {
           <div className='components'>
             <h3>Created Events</h3>
           </div>
-          <h2>{organizerData.orgActive}</h2>
+          <h2>{organizerData.createdEvents}</h2>
         </div>
 
         {/* Quick Links */}

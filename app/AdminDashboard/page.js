@@ -21,6 +21,10 @@ ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElem
 
 function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dropdownValues, setDropdownValues] = useState({
+    schoolYears: [],
+    departments: [],
+  });
   const [schoolYear, setSchoolYear] = useState("2024-2025");
   const [semester, setSemester] = useState("FirstAndSecond");
   const [department, setDepartment] = useState("All");
@@ -32,34 +36,36 @@ function AdminDashboard() {
   
   const [adminData, setAdminData] = useState({
     eventStatus: [],
-    eventsCount: [],
-    onCampusCounts: [],
-    offCampusCounts: [],
   });
 
   // DASHBOARD DATA
   useEffect(() => {
     const fetchFilteredData = async () => {
       try {
-        const response = await axios.post('http://localhost:5000/api/admindashboard/admin-data', {
-          schoolYear,
-          semester,
-          department,
-        });
-        setAdminData(response.data);
-        // alert(JSON.stringify(response.data)); // See the full object structure
+        const [adminDataResponse, dropdownValuesResponse] = await Promise.all([
+          axios.post('http://localhost:5000/api/admindashboard/admin-data', {
+            schoolYear,
+            semester,
+            department,
+          }),
+          axios.get('http://localhost:5000/api/admindashboard/dropdown-values')
+        ]);
+  
+        setAdminData(adminDataResponse.data);
+        setDropdownValues(dropdownValuesResponse.data);
+        // alert(JSON.stringify(dropdownValuesResponse.data)); // See the full object structure
       } catch (error) {
         console.error('Error fetching filtered data:', error);
       }
     };
   
     fetchFilteredData();
-  }, [schoolYear, semester, department]);
+  }, [schoolYear, semester, department]);  
 
   // REPORT GENERATION
   const exportPdf = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/adminreport/export', 
+      const response = await axios.post('http://localhost:5000/api/admindashboard/export', 
         { responseType: 'blob' }
       );
       const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -79,7 +85,7 @@ function AdminDashboard() {
     }
   }
 
-   // Handlers for each dropdown
+  // Handlers for each dropdown
   const handleSchoolYearChange = (e) => {
     setSchoolYear(e.target.value);
   };
@@ -91,51 +97,15 @@ function AdminDashboard() {
   const handleDepartmentChange = (e) => {
     setDepartment(e.target.value);
   };
-
-  // Reorder from August to July
-  const filterDataBySemester = (semester, labels, ...dataArrays) => {
-    let filteredLabels = [];
-    let filteredData = dataArrays.map(() => []);
-  
-    if (semester === "First") {
-      // For 1st semester: August to January
-      filteredLabels = labels.slice(7, 12).concat(labels.slice(0, 1)); // August to January
-      filteredData = dataArrays.map(dataArray => dataArray.slice(7, 12).concat(dataArray.slice(0, 1)));
-    } else if (semester === "Second") {
-      // For 2nd semester: January to July
-      filteredLabels = labels.slice(0, 7); // January to July
-      filteredData = dataArrays.map(dataArray => dataArray.slice(0, 7));
-    } else if (semester === "FirstAndSecond") {
-      // For 1st - 2nd semester: August to July
-      filteredLabels = labels.slice(7).concat(labels.slice(0, 7)); // August to July
-      filteredData = dataArrays.map(dataArray => dataArray.slice(7).concat(dataArray.slice(0, 7)));
-    }
-  
-    return { filteredLabels, filteredData };
-  };
   
   // Start of Line Chart
   const lineData = (() => {
-    const originalLabels = [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ];
-  
-    // Use the filterDataBySemester function to get the filtered labels and data based on the selected semester
-    const { filteredLabels, filteredData } = filterDataBySemester(
-      semester, 
-      originalLabels, 
-      adminData.eventsCount, 
-      adminData.onCampusCounts, 
-      adminData.offCampusCounts
-    );
-
     return {
-      labels: filteredLabels,
+      labels: adminData.labels,
       datasets: [
         {
           label: "Events",
-          data: filteredData[0],
+          data: adminData.eventsCount,
           backgroundColor: "rgba(219,183,254,255)", 
           borderColor: "rgba(219,183,254,255)", 
           borderWidth: 1, 
@@ -144,7 +114,7 @@ function AdminDashboard() {
         },
         {
           label: "In Campus",
-          data: filteredData[1], 
+          data: adminData.onCampusCounts, 
           backgroundColor: "rgba(54, 162, 235, 0.2)", 
           borderColor: "rgba(54, 162, 235, 1)", 
           borderWidth: 1,
@@ -153,7 +123,7 @@ function AdminDashboard() {
         },
         {
           label: "Off Campus",
-          data: filteredData[2], 
+          data: adminData.offCampusCounts, 
           backgroundColor: "rgba(255, 159, 64, 0.2)", 
           borderColor: "rgba(255, 159, 64, 1)", 
           borderWidth: 1,
@@ -269,14 +239,21 @@ function AdminDashboard() {
         
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>School Year {schoolYear}</h1>
-          <div className='dashboard-type'>
+          <h1>Welcome, Admin!</h1>
+          <div className='dashboard-type admin'>
             <div className='export-sy'>
               <div className='type'></div>
-              <div className='type'></div>
+              <div className='type export' onClick={exportPdf}>
+                <button>
+                  Export
+                </button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
+                </svg>
+              </div>
               <div className='type add-school-year' onClick={() => setIsModalOpen(true)}>
                 <button>
-                  School Year 
+                  School Year  
                 </button>
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" className="bi bi-plus" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -285,9 +262,15 @@ function AdminDashboard() {
             </div>
             <div className='dashboard-type-dropdown'>
               <select id="school-year" name="school-year" className='type school-year' onChange={handleSchoolYearChange}>
-                <option value="2024-2025">2024-2025</option>
-                <option value="2023-2024">2023-2024</option>
-                <option value="2022-2023">2022-2023</option>
+                {Array.isArray(dropdownValues.schoolYears) && dropdownValues.schoolYears.length > 0 ? (
+                  dropdownValues.schoolYears.map((year, index) => (
+                    <option key={index} value={year}>
+                      {year}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Loading...</option> // Handle loading state
+                )}
               </select>
               <select id="semester" name="semester" className='type semester' onChange={handleSemesterChange}>
                 <option value="FirstAndSecond">1st - 2nd</option>
@@ -296,9 +279,15 @@ function AdminDashboard() {
               </select>
               <select id="department" name="department" className='type department' onChange={handleDepartmentChange}>
                 <option value="All">All</option>
-                <option value="CCIS">CCIS</option>
-                <option value="CLAS">CLAS</option>
-                <option value="CTHM">CTHM</option>
+                {Array.isArray(dropdownValues.departments) && dropdownValues.departments.length > 0 ? (
+                  dropdownValues.departments.map((department, index) => (
+                    <option key={index} value={department}>
+                      {department}
+                    </option>
+                  ))
+                ) : (
+                  <option value="">Loading...</option> // Handle loading state
+                )}
               </select>
             </div>
           </div>

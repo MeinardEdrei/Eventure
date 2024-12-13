@@ -172,10 +172,14 @@ function OrganizerEvents() {
 
   // FETCH DATA FROM API
   const fetchData = async () => {
-    const res3 = await axios.get(
-      `http://localhost:5000/api/evaluation/${id}/evaluation-form`
-    );
-    setEvaluationForm(res3.data);
+    try {
+      const res3 = await axios.get(
+        `http://localhost:5000/api/evaluation/${id}/evaluation-form`
+      );
+      setEvaluationForm(res3.data);
+    } catch (evalError) {
+      console.log("No evaluation form found:", evalError);
+    }
 
     try {
       const res1 = await axios.get(
@@ -195,7 +199,7 @@ function OrganizerEvents() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [session]);
 
   // HANDLE DELETE EVALUATION FORM
   const handleDeleteEvaluation = async () => {

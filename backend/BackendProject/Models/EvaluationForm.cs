@@ -24,11 +24,10 @@ namespace BackendProject.Models
     [Column("CreatedAt")]
     public DateTime CreatedAt { get; set; }
 
-
     // NAVIGATION PROPERTIES
     [ForeignKey("EventId")]
     public Event? Event { get; set; }
-    public ICollection<EvaluationQuestion>? EvaluationQuestions { get; set; }
+    public ICollection<EvaluationCategory>? EvaluationCategories { get; set; }
     public ICollection<EvaluationAnswer>? EvaluationAnswers { get; set; }
   }
 }

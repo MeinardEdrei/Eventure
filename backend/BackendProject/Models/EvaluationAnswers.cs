@@ -24,7 +24,6 @@ namespace BackendProject.Models
     [Column("CreatedAt")]
     public DateTime CreatedAt { get; set; }
 
-
     // NAVIGATION PROPERTIES
     [ForeignKey("EvaluationFormId")]
     public EvaluationForm? EvaluationForm { get; set; }

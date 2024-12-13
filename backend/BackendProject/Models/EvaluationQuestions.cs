@@ -9,17 +9,14 @@ namespace BackendProject.Models
     [Key]
     public int Id { get; set; }
 
-    [Column("EvaluationFormId")]
-    public int EvaluationFormId { get; set; }
+    [Column("EvaluationCategoryId")]
+    public int EvaluationCategoryId { get; set; }
 
-    [Column("Category")]
-    public string? Category { get; set; } 
+    [Column("QuestionText")]
+    public string? QuestionText { get; set; }
 
-    [Column("Question")]
-    public string? Question { get; set; } 
-
-     // NAVIGATION PROPERTIES
-    [ForeignKey("EvaluationFormId")]
-    public EvaluationForm? EvaluationForm { get; set; } 
+    // NAVIGATION PROPERTIES
+    [ForeignKey("EvaluationCategoryId")]
+    public EvaluationCategory? EvaluationCategory { get; set; }
   }
 }

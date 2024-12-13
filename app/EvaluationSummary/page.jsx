@@ -42,7 +42,7 @@ function EvaluationSummary () {
                     </div>
                 </div>
                 <div className="belowButtons">
-                    <Link href='/OrganizerEvents'><button>Back</button></Link>
+                    <Link href='/Event-Details'><button>Back</button></Link>
                     <button>Export</button>
                 </div>
             </div>

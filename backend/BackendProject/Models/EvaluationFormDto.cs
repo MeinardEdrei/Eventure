@@ -1,4 +1,4 @@
-namespace BackendProject.Models
+namespace BackendProject.Models 
 {
   public class EvaluationFormDto
   {
@@ -7,8 +7,7 @@ namespace BackendProject.Models
     public int OrganizerId { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
-    public string? Categories { get; set; } 
-    public string? Questions { get; set; } 
+    public List<EvaluationCategoryDto>? Categories { get; set; }
     public DateTime CreatedAt { get; set; }
   }
 }

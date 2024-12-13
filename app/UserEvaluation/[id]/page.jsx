@@ -2,7 +2,6 @@
 import '../../css/createEvaluation.css';
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
-import { MoreVertical } from 'lucide-react';
 import axios from 'axios';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -17,42 +16,33 @@ function AttendeePostEvaluation() {
     useEffect(() => {
         const fetchEvaluationForm = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/evaluation/${id}/post-evaluation`);
+                const response = await axios.get(`http://localhost:5000/api/evaluation/${id}/evaluation-form`);
                 
-                if (response.data && response.data.length > 0) {
-                    const evaluationData = response.data[0];
-                    
-                    // PROCESS STRINGIFIED JSON DATA INTO JS OBJECT
-                    if (evaluationData.evaluationQuestions) {
-                        const processedCategories = evaluationData.evaluationQuestions.flatMap(question => {
-                            const categoriesArray = JSON.parse(question.category);
-                            const questionsArray = JSON.parse(question.question);
+                console.log("Raw Response:", response.data);
 
-                            console.log("Raw Categories:", categoriesArray);
-                            console.log("Raw Questions:", questionsArray);
-                        
-                            return categoriesArray.map((categoryName, index) => ({
-                                categoryName: categoryName,
-                                questions: questionsArray[index].map((q, qIndex) => {
-                                    return {
-                                        id: qIndex + 1,
-                                        question: q.question || q,
-                                        questionAnswer: q.questionAnswer || ''
-                                    };
-                                })
-                            }));
-                        });
-                        
-                        setEvaluationForm({
-                            ...evaluationData,
-                            processedCategories: processedCategories
-                        });
+                if (response.data) {
+                    const processedForm = {
+                        id: response.data.id,
+                        title: response.data.title,
+                        description: response.data.description,
+                        processedCategories: response.data.categories ? response.data.categories.map(category => ({
+                            categoryName: category.name,
+                            questions: category.questions.map(question => ({
+                                id: question.id,
+                                question: question.questionText
+                            }))
+                        })) : []
+                    };
 
-                        console.log("Processed Categories:", processedCategories);
-                    }
+                    console.log("Processed Form:", processedForm);
+                    setEvaluationForm(processedForm);
+                } else {
+                    console.error("No evaluation form data found");
+                    alert("No evaluation form available for this event.");
                 }
             } catch (error) {
-                console.log("Error fetching evaluation form:", error);
+                console.error("Error fetching evaluation form:", error.response ? error.response.data : error.message);
+                alert("Failed to load evaluation form. Please try again later.");
             }
         };
 
@@ -60,7 +50,6 @@ function AttendeePostEvaluation() {
     }, [id]);
 
     const handleAnswerChange = (questionId, value) => {
-        // const questionId = `${categoryIndex}-${questionIndex}`;
         setAnswers((prevAnswers) => ({
             ...prevAnswers,
             [questionId]: value,
@@ -69,64 +58,38 @@ function AttendeePostEvaluation() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Create a mapping of questions to their actual database IDs
-        const createQuestionIdMapping = () => {
-            const mapping = {};
-            evaluationForm.evaluationQuestions.forEach(question => {
-                const categoriesArray = JSON.parse(question.category);
-                const questionsArray = JSON.parse(question.question);
-                
-                categoriesArray.forEach((categoryName, categoryIndex) => {
-                    questionsArray[categoryIndex].forEach((q, qIndex) => {
-                        // Use a unique key to match the question
-                        const key = `${categoryName}-${q.question || q}`;
-                        mapping[key] = question.id; // Assuming this is the evaluation question record ID
-                    });
-                });
-            });
-            return mapping;
-        };
-
-        const questionIdMapping = createQuestionIdMapping();
-
-        const evaluationAnswers = evaluationForm.processedCategories.flatMap(category => 
-            category.questions.map(question => {
-                // Find the actual question ID using the mapping
-                const questionKey = `${category.categoryName}-${question.question}`;
-                const actualQuestionId = questionIdMapping[questionKey];
-
-                if (!actualQuestionId) {
-                    console.error("Could not find question ID for:", questionKey);
-                    return null;
-                }
-                
-                return {
-                    AttendeeId: session.user.id,
-                    EvaluationFormId: evaluationForm.id,
-                    QuestionId: actualQuestionId, 
-                    Answer: answers[question.id],
-                };
-            }).filter(answer => answer !== null)  // Remove any null entries
+        
+        // Validate all questions are answered
+        const allQuestionsAnswered = evaluationForm.processedCategories.every(category => 
+            category.questions.every(question => answers[question.id])
         );
 
-        console.log("Prepared Submission:", evaluationAnswers);
+        if (!allQuestionsAnswered) {
+            alert("Please answer all questions before submitting.");
+            return;
+        }
+
+        const evaluationAnswers = Object.keys(answers).map((questionId) => ({
+            AttendeeId: session.user.id,
+            EvaluationFormId: evaluationForm.id,
+            QuestionId: questionId,
+            Answer: answers[questionId],
+        }));
 
         try {
-            const response = await axios.post(
-                `http://localhost:5000/api/evaluation/submit-evaluation`, 
-                evaluationAnswers
-            );
+            const response = await axios.post(`http://localhost:5000/api/evaluation/submit-evaluation`, evaluationAnswers);
             if (response.status === 200) {
                 alert(response.data.message);
                 router.push("/Events");
             }
         } catch (error) {
-            console.log("Error submitting evaluation:", error);
+            console.error("Error submitting evaluation:", error);
+            alert("Failed to submit evaluation. Please try again.");
         }
     };
 
     if (!evaluationForm) {
-        return <div>Loading...</div>;
+        return <div>Loading evaluation form...</div>;
     }
 
     return (
@@ -146,7 +109,6 @@ function AttendeePostEvaluation() {
                             <div className="evaluationCategory bg-transparent">
                                 {category.categoryName}
                             </div>
-
                             {category.questions.map((question, questionIndex) => (
                                 <div key={questionIndex}>
                                     <div className="addQuestion flex mt-2">
@@ -156,7 +118,7 @@ function AttendeePostEvaluation() {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name={`answer-${categoryIndex}-${questionIndex}`}
+                                                name={`answer-${question.id}`}
                                                 value="Excellent"
                                                 onChange={() => handleAnswerChange(question.id, "Excellent")}
                                                 required
@@ -166,7 +128,7 @@ function AttendeePostEvaluation() {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name={`answer-${categoryIndex}-${questionIndex}`}
+                                                name={`answer-${question.id}`}
                                                 value="Very-Good"
                                                 onChange={() => handleAnswerChange(question.id, "Very-Good")}
                                             />{" "}
@@ -175,7 +137,7 @@ function AttendeePostEvaluation() {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name={`answer-${categoryIndex}-${questionIndex}`}
+                                                name={`answer-${question.id}`}
                                                 value="Good"
                                                 onChange={() => handleAnswerChange(question.id, "Good")}
                                             />{" "}
@@ -184,7 +146,7 @@ function AttendeePostEvaluation() {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name={`answer-${categoryIndex}-${questionIndex}`}
+                                                name={`answer-${question.id}`}
                                                 value="Fair"
                                                 onChange={() => handleAnswerChange(question.id, "Fair")}
                                             />{" "}
@@ -193,7 +155,7 @@ function AttendeePostEvaluation() {
                                         <label>
                                             <input
                                                 type="radio"
-                                                name={`answer-${categoryIndex}-${questionIndex}`}
+                                                name={`answer-${question.id}`}
                                                 value="Poor"
                                                 onChange={() => handleAnswerChange(question.id, "Poor")}
                                             />{" "}

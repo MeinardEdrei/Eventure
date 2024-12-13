@@ -506,16 +506,18 @@ if (loading) {
                   </div>
 
                   {/* Lower Part */}
-                  <div className="pb-4 flex flex-col mt-2 gap-4">
-                    <div className="bg-[#FF4242]/50 rounded p-3 flex flex-col gap-2">
-                      <h3 className="text-[1rem] font-bold">
-                        From Organizer: Appeal Request
-                      </h3>
-                      <p className="text-[0.8rem]">
-                        {appealRequest[event.id] || "Loading..."}
-                      </p>
+                  {selected === "Appealed" && (
+                    <div className="pb-4 flex flex-col mt-2 gap-4">
+                      <div className="bg-[#FF4242]/50 rounded p-3 flex flex-col gap-2">
+                        <h3 className="text-[1rem] font-bold">
+                          From Organizer: Appeal Request
+                        </h3>
+                        <p className="text-[0.8rem]">
+                          {appealRequest[event.id] || "Loading..."}
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex flex-row gap-4 justify-end">
                     <div className="event-btn flex flex-row gap-4">

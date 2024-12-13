@@ -17,10 +17,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useSession } from 'next-auth/react';
 
 ChartJS.register(CategoryScale,  LinearScale, LineElement, BarElement, PointElement, Title, Tooltip, Legend);
 
 function AdminDashboard() {
+  const {data: session} = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dropdownValues, setDropdownValues] = useState({
     schoolYears: [],
@@ -244,7 +246,7 @@ function AdminDashboard() {
         
         {/* Dashboard Text & Dropdowns */}
         <div className='dashboard-text'>
-          <h1>Welcome, Admin!</h1>
+          <h1>Welcome, {session?.user?.role}!</h1>
           <div className='dashboard-type admin'>
             <div className='export-sy'>
               <div className='type placeholder'></div>

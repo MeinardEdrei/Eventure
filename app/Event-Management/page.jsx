@@ -32,10 +32,9 @@ import Stack from "@mui/material/Stack";
 
 export default function EventApproval() {
   const { data: session } = useSession();
-  const [selected, setSelected] = useState("Pending");
   const [isOpen, setIsOpen] = useState(false);
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [noEvents, setNoEvents] = useState(true);
   const [searchEventQuery, setsearchEventQuery] = useState("");
   const [dateRange, setDateRange] = useState({ from: null, to: null });
@@ -53,13 +52,30 @@ export default function EventApproval() {
   const [rejectReasonModal, setRejectReasonModal] = useState(false);
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
 
-  const options = [
+  const [selected, setSelected] = useState("");
+  const [options, setOptions] = useState([
     "Pending",
     "Pre-Approved",
     "Approved",
-    "Modified",
     "Rejected",
-  ];
+  ]);
+
+  useEffect(() => {
+    if (session?.user?.role === "Admin") {
+      setOptions([
+        "Pre-Approved",
+        "Approved",
+        "Rejected",
+      ]);
+      setSelected("Pre-Approved");
+    } else if (session?.user?.role === "Staff"){
+      setOptions([
+        "Pending",
+        "Rejected",
+      ]);
+      setSelected("Pending");
+    }
+  }, [session]);
 
   const fetchData = async () => {
     try {
@@ -180,10 +196,16 @@ export default function EventApproval() {
     }
   };
 
-  const handleReject = async (eventId) => {
+  const handleReject = async (eventId, reason) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/event/${eventId}/reject`
+        `http://localhost:5000/api/event/${eventId}/reject`, 
+        reason,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
       );
 
       if (res.status === 200) {
@@ -455,6 +477,7 @@ if (loading) {
                   <div className="flex flex-row gap-4 justify-end">
                     <div className="event-btn flex flex-row gap-4">
                       {/* Button: Pre Approve */}
+                      {selected === "Pending" && (
                       <div className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded">
                         <Check size={16} />
                         <button
@@ -465,21 +488,24 @@ if (loading) {
                           Pre-approve
                         </button>
                       </div>
+                      )}
                       {/* Button: Approve */}
-                      <div className="approve-btn">
-                        <span className="flex items-center">
-                          <CheckCheck size={16} />
-                        </span>
-                        <button
-                          className="approve"
-                          onClick={() => openApproveConfirmModal(event.id)}
-                          disabled={event.status === "approved"}
-                        >
-                          Approve
-                        </button>
-                      </div>
-
+                      {selected === "Pre-Approved" && (
+                        <div className="approve-btn">
+                          <span className="flex items-center">
+                            <CheckCheck size={16} />
+                          </span>
+                          <button
+                            className="approve"
+                            onClick={() => openApproveConfirmModal(event.id)}
+                            disabled={event.status === "approved"}
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      )}
                       {/* Button: Reject */}
+                      {(selected === "Pre-Approved" || selected === "Pending") && (
                       <div
                         onClick={() => openRejectReasonModal(event)}
                         className="reject-btn"
@@ -493,15 +519,8 @@ if (loading) {
                         >
                           Reject
                         </button>
-                        {/* for the reason reject modal button */}
-                        {/* <button
-                          className="reject"
-                          onClick={() => handleReject(event.id)}
-                          disabled={event.status === "rejected"}
-                        >
-                          Reject
-                        </button> */}
                       </div>
+                      )}
                     </div>
                   </div>
                 </div>

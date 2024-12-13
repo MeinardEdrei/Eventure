@@ -6,6 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Button from "@mui/material/Button";
+import { useSession } from "next-auth/react";
 
 const ViewEventModal = ({
   isOpen,
@@ -21,6 +22,8 @@ const ViewEventModal = ({
   const [selected, setSelected] = useState("Pre-approve");
   const [isDropDownOpen, setDropDownOpen] = useState(false);
   const [showRequirements, setShowRequirements] = useState(false);
+
+  const {data: session} = useSession();
 
   // Effect Hook
   useEffect(() => {
@@ -118,6 +121,70 @@ const ViewEventModal = ({
 
   const requirementsList = requirements();
 
+  const shouldRenderButtons = () => {
+    const userRole = session?.user?.role;
+    const eventStatus = eventData.status;
+
+    if (userRole === "Staff") {
+      return eventStatus === "Pending";
+    } else if (userRole === "Admin") {
+      return eventStatus === "Pre-Approved";
+    }
+
+    return false;
+  };
+
+  const convertDraftToText = (rawContent) => {
+    // Ensure rawContent is parsed if it's a string
+    const content = typeof rawContent === 'string' 
+      ? JSON.parse(rawContent) 
+      : rawContent;
+  
+    if (!content || !content.blocks) return null;
+  
+    return content.blocks.map((block, index) => {
+      // Apply inline styles to the text
+      const styledText = block.inlineStyleRanges.reduce((acc, style) => {
+        const start = style.offset;
+        const end = start + style.length;
+        const styledPart = acc.slice(start, end);
+        
+        switch (style.style) {
+          case 'BOLD':
+            return (
+              acc.slice(0, start) + 
+              `<strong>${styledPart}</strong>` + 
+              acc.slice(end)
+            );
+          case 'ITALIC':
+            return (
+              acc.slice(0, start) + 
+              `<em>${styledPart}</em>` + 
+              acc.slice(end)
+            );
+          default:
+            return acc;
+        }
+      }, block.text);
+  
+      // Handle different block types
+      switch (block.type) {
+        case 'unstyled':
+          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
+        case 'unordered-list-item':
+          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'ordered-list-item':
+          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'header-one':
+          return <h1 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'header-two':
+          return <h2 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        default:
+          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
+      }
+    }).filter(Boolean); // Remove any null elements
+  };
+
   return (
     <div
       className={`backdrop-blur-[2px] fixed inset-0 bg-black bg-opacity-50 flex justify-end items-center z-50 transition-opacity duration-300 ${
@@ -180,6 +247,7 @@ const ViewEventModal = ({
               </div>
 
               {/* Buttons */}
+              {shouldRenderButtons() && (
               <div className="flex flex-col items-center gap-3">
                 {/* Modal: Dropdown button */}
                 <div className="relative w-[11rem]">
@@ -235,6 +303,7 @@ const ViewEventModal = ({
                   </button>
                 </div>
               </div>
+              )}
             </div>
 
             {/* Conditionally render based on showRequirements */}
@@ -267,7 +336,7 @@ const ViewEventModal = ({
                     Event Description
                   </AccordionSummary>
                   <AccordionDetails>
-                    <p>{eventData.description}</p>
+                    <p>{convertDraftToText(eventData.description)}</p>
                   </AccordionDetails>
                 </Accordion>
 
@@ -281,14 +350,20 @@ const ViewEventModal = ({
                     <strong>Hosted by:</strong>
                   </div>
                   <div className="flex flex-row gap-4">
-                    <div className="gap-2 flex flex-row items-center">
-                      <CircleUser size={16} />
-                      <p>Umak Jammer</p>
-                    </div>
-                    <div className="gap-2 flex flex-row items-center">
-                      <CircleUser size={16} />
-                      <p>Umak Jammer</p>
-                    </div>
+                    {/* Add a check to ensure hostedBy is an array before mapping */}
+                    {Array.isArray(eventData.hostedBy) ? (
+                      eventData.hostedBy.map((item, index) => (
+                        <div key={index} className="gap-2 flex flex-row items-center">
+                          <CircleUser size={16} />
+                          <p>{item}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="gap-2 flex flex-row items-center">
+                        <CircleUser size={16} />
+                        <p>{JSON.parse(eventData.hostedBy)}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </>

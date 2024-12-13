@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => {
     if (status !== "loading") {
       setIsLoaded(true);
-      if (session?.user?.role == "Admin") {
+      if (session?.user?.role == "Admin" || session?.user?.role == "Staff") {
         router.push("/AdminDashboard");
       } else if (session?.user?.role == "Organizer") {
         router.push("/OrganizerDashboard");

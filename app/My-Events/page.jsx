@@ -46,6 +46,7 @@ function MyEvents() {
   const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState({});
 
   // New state for Toggle and Search
   const [selectedSection, setSelectedSection] = useState("all");
@@ -114,6 +115,34 @@ function MyEvents() {
       setLoading(false); // Set loading to false after fetching
     }
   };
+
+  const fetchRejectReason = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/event/${id}/rejection-reason`);
+      if (response.status === 200) {
+        return response.data.reason;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchRejectionReasons = async () => {
+      const reasons = {};
+      for (const event of events) {
+        if (event.status === "Rejected") {
+          const reason = await fetchRejectReason(event.id);
+          reasons[event.id] = reason;
+        }
+      }
+      setRejectionReason(reasons);
+    };
+  
+    if (events.length > 0) {
+      fetchRejectionReasons();
+    }
+  }, [events]);
 
   useEffect(() => {
     fetchData();
@@ -622,44 +651,6 @@ function MyEvents() {
             </div>
           </div>
         </div>
-
-        <div className="flex flex-row gap-4 justify-end">
-          {/* Button: See Details */}
-          <Link href={`/Event-Details/${event.id}`}>
-            <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
-              <i
-                className="fa fa-info-circle text-[0.8rem]"
-                aria-hidden="true"
-              ></i>
-              <button className="text-[0.8rem]">See Details</button>
-            </div>
-          </Link>
-
-          {/* Button: Upload Requirements */}
-          {event.status === selected &&
-            (selected === "Pending" || selected === "Modified") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsUploadModalOpen(true);
-                  setSelectedEvent(event);
-                }}
-                className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-0 rounded"
-              >
-                <i
-                  className={`fa ${
-                    event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
-                  } text-[0.8rem]`}
-                  aria-hidden="true"
-                ></i>
-                <p className="text-[0.8rem]">
-                  {event.requirementFilesCount === 0
-                    ? "Upload Requirements"
-                    : "Manage Requirements"}
-                </p>
-              </button>
-            )}
-        </div>
       </div>
     </div>
   );
@@ -716,10 +707,7 @@ function MyEvents() {
             From Admin: Reason of Rejection
           </h3>
           <p className="text-[0.8rem]">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus
-            ipsam aut voluptatem nulla nesciunt laborum totam commodi quisquam
-            laudantium, illum illo numquam iste corporis adipisci animi in
-            facere! Repudiandae, beatae!
+            {rejectionReason[event.id] || "Loading..."}
           </p>
         </div>
         <div className="flex flex-row gap-4 justify-end">
@@ -871,7 +859,11 @@ function MyEvents() {
               </div>
             ) : (
               <>
-                {filteredEvents.map(renderEventCard)}
+                {filteredEvents.map((event, index) => (
+                  <div key={index}> 
+                    {renderEventCard(event)}
+                  </div>
+                ))}
 
                 {/* Pagination Component */}
                 <div className="flex justify-center w-full mt-10">

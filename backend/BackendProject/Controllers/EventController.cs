@@ -355,8 +355,18 @@ namespace BackendProject.Controllers
             return Ok(new { message = "Event approved." });
         }
 
+        [HttpGet("{eventId}/rejection-reason")]
+        public async Task<IActionResult> GetRejectionReason(int eventId)
+        {
+            var getReason = await _context.RejectionReasons
+                .Where(e => e.Event_Id == eventId)
+                .FirstOrDefaultAsync();
+            if (getReason == null) return NotFound(new { message = "Reason not found." });
+            return Ok(getReason);
+        }
+
         [HttpPost("{eventId}/reject")]
-        public async Task<IActionResult> RejectEvent(int eventId)
+        public async Task<IActionResult> RejectEvent(int eventId, [FromBody] string reason)
         {
             var eventToReject = await _context.Events.FindAsync(eventId);
 
@@ -390,7 +400,17 @@ namespace BackendProject.Controllers
                 CreatedAt = DateTime.Now,
             };
 
+            var rejectReason = new RejectionReason
+            {
+                Event_Id = eventToReject.Id,
+                Reason = reason,
+                CreatedAt = DateTime.Now,
+            };
+
             _context.Notifications.Add(notifications);
+            await _context.SaveChangesAsync();
+
+            _context.RejectionReasons.Add(rejectReason);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event Rejected." });

@@ -11,9 +11,8 @@ const RejectReasonModal = ({ isOpen, onClose, eventData, handleReject }) => {
       return;
     }
 
-    // Process rejection with reason and files
     console.log("Rejection Reason:", reason);
-    handleReject(eventData.id);
+    handleReject(eventData.id, reason);
     console.log("Event:", eventData);
 
     onClose();

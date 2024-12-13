@@ -22,6 +22,8 @@ import {
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 
 
 function MyEvents() {
@@ -29,8 +31,8 @@ function MyEvents() {
   const progressOptions = [
     "Created",
     "Pending",
+    "Pre-Approved",
     "Approved",
-    "Modified",
     "Rejected",
   ];
 
@@ -41,7 +43,7 @@ function MyEvents() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { data: session } = useSession();
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -53,8 +55,8 @@ function MyEvents() {
   const statusIcons = {
     Created: <CirclePlus className="mr-2 h-4 w-4" />,
     Pending: <Clock className="mr-2 h-4 w-4" />,
-    Approved: <CheckCircle className="mr-2 h-4 w-4" />,
-    Modified: <Edit className="mr-2 h-4 w-4" />,
+    PreApproved: <CheckCircle className="mr-2 h-4 w-4" />,
+    Approved: <Edit className="mr-2 h-4 w-4" />,
     Rejected: <XCircle className="mr-2 h-4 w-4" />,
   };
 
@@ -62,8 +64,8 @@ function MyEvents() {
   const [eventCounts, setEventCounts] = useState({
     Created: 0,
     Pending: 0,
+    PreApproved: 0,
     Approved: 0,
-    Modified: 0,
     Rejected: 0,
   });
 
@@ -303,10 +305,10 @@ function MyEvents() {
         return renderCreatedEventCard(event);
       case "Pending":
         return renderPendingEventCard(event);
+      case "Pre-Approved":
+        return renderPreApprovedEventCard(event);
       case "Approved":
         return renderApprovedEventCard(event);
-      case "Modified":
-        return renderModifiedEventCard(event);
       case "Rejected":
         return renderRejectedEventCard(event);
       default:
@@ -363,6 +365,7 @@ function MyEvents() {
             event={selectedEvent}
             eventId={selectedEvent?.id}
             onUpdateSuccess={fetchData}
+            setSelectedEvent={setSelectedEvent}
           />
 
           {/* Button: Upload Requirements */}
@@ -385,6 +388,19 @@ function MyEvents() {
                 ? "Upload Files"
                 : "Manage Requirements"}
             </p>
+          </button>
+
+          {/* Button: Submit Event */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsUploadModalOpen(true);
+              setSelectedEvent(event);
+            }}
+            className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+          >
+            <FontAwesomeIcon icon={faPaperPlane}/>
+            <p>Submit</p>
           </button>
         </div>
       </div>
@@ -446,6 +462,7 @@ function MyEvents() {
             event={selectedEvent}
             eventId={selectedEvent?.id}
             onUpdateSuccess={fetchData}
+            setSelectedEvent={setSelectedEvent}
           />
 
           {/* Button: See Details */}
@@ -534,7 +551,7 @@ function MyEvents() {
 
           {/* Button: Upload Requirements */}
           {event.status === selected &&
-            (selected === "Pending" || selected === "Modified") && (
+            (selected === "Created") && (
               <button
                 type="button"
                 onClick={() => {
@@ -561,10 +578,10 @@ function MyEvents() {
     </div>
   );
 
-  // Event Card for Modified Status
-  const renderModifiedEventCard = (event) => (
+  // Event Card for Pre-Approvedd Status
+  const renderPreApprovedEventCard = (event) => (
     <div key={event.id} className="organizerEventCard modified-event-card">
-      {/* Modified Event Card Content */}
+      {/* PreApproved Event Card Content */}
       <div className="organizerImage">
         <img
           src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
@@ -769,7 +786,7 @@ function MyEvents() {
               <button
                 key={option}
                 className={`
-                  flex items-center px-[1.2rem] py-2 rounded-md text-sm transition-all duration-300
+                  flex items-center px-[1.1rem] py-2 rounded-md text-sm transition-all duration-300
                   ${
                     selected === option
                       ? "bg-[#bababa] text-black"

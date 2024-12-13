@@ -44,7 +44,18 @@ function Events() {
     try {
       setLoading(true);
       const res = await axios.get("http://localhost:5000/api/event/events");
-      setEvent(res.data);
+      
+      if (session) {
+        const filtered = res.data.filter(event => {
+          const hostedByDepts = JSON.parse(event.hostedBy);
+          return hostedByDepts.some(dept => 
+            dept.includes(session.user.department)
+          );
+        });
+        setEvent(filtered);
+      } else {
+        setEvent(res.data);
+      }
     } catch (error) {
       if (error.status === 404) {
         setNoEvents(true);
@@ -88,7 +99,7 @@ function Events() {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [session]);
 
   useEffect(() => {
     if (session) {

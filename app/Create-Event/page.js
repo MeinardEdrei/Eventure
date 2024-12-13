@@ -262,16 +262,26 @@ const Page = () => {
       //   Status: "Pending",
       // });
 
+      // Format start and end date/time
+      const formattedDateStart = startDateTime.format('YYYY-MM-DD');
+      const formattedTimeStart = startDateTime.format('HH:mm:ss');
+      const formattedDateEnd = endDateTime.format('YYYY-MM-DD');
+      const formattedTimeEnd = endDateTime.format('HH:mm:ss');
+
       const formData = new FormData(); // Using FormData to handle file uploads
 
       formData.append("CampusType", campusType);
       formData.append("EventType", eventType);
       formData.append("Title", title);
-      formData.append("Description", description);
-      formData.append("DateStart", dateStart);
-      formData.append("DateEnd", dateEnd);
-      formData.append("TimeStart", timeStart);
-      formData.append("TimeEnd", timeEnd);
+
+      const descriptionContent = description ? JSON.parse(description) : null;
+      formData.append("Description", JSON.stringify(descriptionContent));
+
+      formData.append("DateStart", formattedDateStart);
+      formData.append("TimeStart", formattedTimeStart);
+      formData.append("DateEnd", formattedDateEnd);
+      formData.append("TimeEnd", formattedTimeEnd);
+      
       formData.append("Location", venue);
       formData.append("MaxCapacity", parseInt(capacity));
       formData.append("EventImage", selectedFile);

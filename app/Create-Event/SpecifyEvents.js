@@ -123,18 +123,22 @@ const EventSettingsPanel = ({
   };
 
   useEffect(() => {
-    if (visibilityType === "Private") {
-      const shortcutName = session?.user?.department;
-      if (shortcutName && userDept.includes(shortcutName)) {
-        // Use the full department name from the departmentMap
-        const fullDepartmentName = `${shortcutName} - ${departmentMap[shortcutName]}`;
-        setSelectedDepartments([fullDepartmentName]);
+    if (typeof window !== 'undefined') {
+      if (visibilityType === "Private") {
+        const shortcutName = session?.user?.department;
+        if (shortcutName && userDept.includes(shortcutName)) {
+          const fullDepartmentName = `${shortcutName} - ${departmentMap[shortcutName]}`;
+          setSelectedDepartments([fullDepartmentName]);
+        }
+        setDepartmentsDropDown(false);
+      } else if (visibilityType === "Public") {
+        setSelectedDepartments(departments);
+        setDepartmentsDropDown(false);
+      } else {
+        setDepartmentsDropDown(true);
       }
-      setDepartmentsDropDown(false);
-    } else {
-      setDepartmentsDropDown(true);
     }
-  }, [visibilityType]);
+  }, [visibilityType, session?.user?.department]);
 
   const filteredDepartments = departments.filter(
     (dept) =>
@@ -279,6 +283,13 @@ const EventSettingsPanel = ({
                 </span>
                 <span>College Departments</span>
               </label>
+
+              {visibilityType === "Private" && (
+                <div className="text-white/70 text-sm mb-2">
+                  {`${session?.user?.department} department is the only host`}
+                </div>
+              )}
+
               <div className="tags-container">
                 {visibilityType === "Public" && (
                   <>
@@ -312,77 +323,80 @@ const EventSettingsPanel = ({
                 )}
               </div>
 
-              {/* New Dropdown UI for Departments with Filterable Input */}
-              <div className="relative w-[100%]">
-                <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#4E4E4E]/30 border border-[#ffffff]/30 rounded-[5px] shadow-sm capitalize cursor-pointer transition-all duration-200 ease-linear">
-                  <input
-                    type="text"
-                    placeholder="Select Departments..."
-                    className="w-full bg-transparent border-0 outline-none"
-                    // className="bg-slate-600"
-                    value={departmentFilter}
-                    onChange={(e) => {
-                      setDepartmentFilter(e.target.value);
-                      setIsDepartmentOpen(true);
-                    }}
-                    onClick={() => setIsDepartmentOpen(true)}
-                  />
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (departmentsDropDown) {
-                        setIsDepartmentOpen(!isDepartmentOpen);
-                      }
-                    }}
-                    disabled={!departmentsDropDown}
-                  >
-                    <i
-                      className={`fas fa-chevron-down dropdown-icon ${
-                        isDepartmentOpen ? "rotate" : ""
-                      }`}
-                    ></i>
-                  </button>
-                </div>
-                {/* Dropdown Menu */}
-                {isDepartmentOpen && departmentsDropDown && (
-                  <div className="dropdown-menu">
-                    <div className="flex items-center p-2 bg-[#7b7b7b]">
-                      <input
-                        className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
-                        type="text"
-                        placeholder="Add department"
-                        value={customDepartmentInput}
-                        onChange={(e) =>
-                          setCustomDepartmentInput(e.target.value)
+              {/* Only show dropdown for Custom visibility */}
+              {visibilityType === "Custom" && (
+                <div className="relative w-[100%]">
+                  <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#4E4E4E]/30 border border-[#ffffff]/30 rounded-[5px] shadow-sm capitalize cursor-pointer transition-all duration-200 ease-linear">
+                    <input
+                      type="text"
+                      placeholder="Select Departments..."
+                      className="w-full bg-transparent border-0 outline-none"
+                      value={departmentFilter}
+                      onChange={(e) => {
+                        setDepartmentFilter(e.target.value);
+                        setIsDepartmentOpen(true);
+                      }}
+                      onClick={() => setIsDepartmentOpen(true)}
+                      disabled={!departmentsDropDown}
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (departmentsDropDown) {
+                          setIsDepartmentOpen(!isDepartmentOpen);
                         }
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") {
-                            handleAddCustomDepartment();
-                          }
-                        }}
-                      />
-                      <button
-                        onClick={handleAddCustomDepartment}
-                        className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
-                      >
-                        <Send size={19} />
-                      </button>
-                    </div>
-
-                    {filteredDepartments.map((dept) => (
-                      <button
-                        key={dept}
-                        className={`dropdown-item ${
-                          selectedDepartments.includes(dept) ? "selected" : ""
+                      }}
+                      disabled={!departmentsDropDown}
+                    >
+                      <i
+                        className={`fas fa-chevron-down dropdown-icon ${
+                          isDepartmentOpen ? "rotate" : ""
                         }`}
-                        onClick={() => handleDepartmentToggle(dept)}
-                      >
-                        {dept}
-                      </button>
-                    ))}
+                      ></i>
+                    </button>
                   </div>
-                )}{" "}
-              </div>
+                  {/* Dropdown Menu */}
+                  {isDepartmentOpen && departmentsDropDown && (
+                    <div className="dropdown-menu">
+                      <div className="flex items-center p-2 bg-[#7b7b7b]">
+                        <input
+                          className="add-dept flex-grow bg-transparent border-gray-300 rounded px-2 py-1 mr-2 text-white outline-none"
+                          type="text"
+                          placeholder="Add department"
+                          value={customDepartmentInput}
+                          onChange={(e) =>
+                            setCustomDepartmentInput(e.target.value)
+                          }
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              handleAddCustomDepartment();
+                            }
+                          }}
+                        />
+                        <button
+                          onClick={handleAddCustomDepartment}
+                          className="text-[#414141] flex items-center justify-center  hover:text-[#ffffff] mr-2 z-10"
+                        >
+                          <Send size={19} />
+                        </button>
+                      </div>
+
+                      {filteredDepartments.map((dept) => (
+                        <button
+                          key={dept}
+                          className={`dropdown-item ${
+                            selectedDepartments.includes(dept) ? "selected" : ""
+                          }`}
+                          onClick={() => handleDepartmentToggle(dept)}
+                          disabled={!departmentsDropDown}
+                        >
+                          {dept}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Line Divider */}

@@ -15,6 +15,7 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
   const [error, setError] = useState("");
 
   const showStudentFields = selectedRole === "Student";
+  const hideFields = selectedRole === "Admin" || selectedRole === "Staff";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -140,6 +141,7 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
                 >
                   <option value="Organizer">Organizer</option>
                   <option value="Admin">Admin</option>
+                  <option value="Staff">Staff</option>
                   <option value="Student">Student</option>
                 </select>
               </div>
@@ -174,19 +176,21 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
                 </>
               )}
               {/* Department */}
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Department
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="e.g. CCIS"
-                  required
-                />
-              </div>
+              {!hideFields && (
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Department
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    placeholder="e.g. CCIS"
+                    required
+                  />
+                </div>
+              )}
             </div>
             {/* Submit Button */}
             <div className="mt-8 flex justify-end gap-4">

@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { Html5Qrcode } from "html5-qrcode";
 import { ChevronDown, X, Pencil } from "lucide-react";
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import Chart from "chart.js/auto";
 
 function OrganizerEvents() {
+  const pathname = usePathname();
   const { data: session } = useSession();
   const { id } = useParams();
   const router = useRouter();
@@ -46,6 +47,10 @@ function OrganizerEvents() {
     setSelected(option);
     setActiveButton(option);
     setIsOpen(false);
+
+    if (option === "Overview") {
+      fetchData();
+    }
   };
 
   // SCANNER TOGGLE
@@ -430,11 +435,11 @@ function OrganizerEvents() {
         },
       });
     }
-  }, [participants]); // Re-render chart when participants change
+  }, [participants, session, pathname]); // Re-render chart when participants change
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <>
@@ -503,19 +508,21 @@ function OrganizerEvents() {
                           day: "numeric",
                         })}{" "}
                         -{" "}
-                        {new Date(
-                          `${event.dateStart.split("T")[0]}T${event.timeStart}`
-                        ).toLocaleTimeString("en-us", {
-                          hour: "numeric",
-                          minute: "numeric",
-                          hour12: true,
-                        })}
+                        {event.dateStart && event.timeStart && (
+                          new Date(
+                            `${event.dateStart.split("T")[0]}T${event.timeStart}`
+                          ).toLocaleTimeString("en-us", {
+                            hour: "numeric",
+                            minute: "numeric",
+                            hour12: true,
+                          })
+                        )}
                       </p>
                     </div>
                   </div>
 
                   {/* Edit Event */}
-                  <div className="flex flex-row justify-end">
+                  {/* <div className="flex flex-row justify-end">
                     <button
                       className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
                       onClick={() => setIsEditModalOpen(true)}
@@ -523,16 +530,16 @@ function OrganizerEvents() {
                       <Pencil size={20} strokeWidth={1.5} />
                       Edit
                     </button>
-                  </div>
+                  </div> */}
 
                   {/* Edit Modal */}
-                  <EditEventModal
+                  {/* <EditEventModal
                     isOpen={isEditModalOpen}
                     onClose={() => setIsEditModalOpen(false)}
                     event={event}
                     eventId={id}
                     onUpdateSuccess={fetchData}
-                  />
+                  /> */}
                 </div>
               </div>
 
@@ -628,7 +635,7 @@ function OrganizerEvents() {
                 </div>
 
                 <div className="guestContainer">
-                  {JSON.parse(event.partnerships).map((partner, index) => (
+                  {event.partnerships && JSON.parse(event.partnerships).map((partner, index) => (
                     <div key={index}>
                       <div className="guestRowContainer">
                         <div className="guestDetails">

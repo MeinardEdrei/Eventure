@@ -4,6 +4,7 @@ using BackendProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241213151810_RejectionReasonTable")]
+    partial class RejectionReasonTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,9 +342,6 @@ namespace BackendProject.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Request")
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Event_Id");
@@ -470,11 +470,11 @@ namespace BackendProject.Migrations
                         {
                             Id = 1,
                             Attended_Events = 0,
-                            Created_At = new DateTime(2024, 12, 14, 1, 39, 39, 286, DateTimeKind.Local).AddTicks(7991),
+                            Created_At = new DateTime(2024, 12, 13, 23, 18, 8, 832, DateTimeKind.Local).AddTicks(7422),
                             Created_Events = 0,
                             Department = "Administration",
                             Email = "admin@umak.edu.ph",
-                            Password = "$2a$11$GNorie6HDU2JCNDLiIc4V.VfO8VBuz5ldLb93xXJPc4p44LfcW.g2",
+                            Password = "$2a$11$4b1HSp52Zgco8ByHmsKx/ewrR79GeicgvlKgQhNppjxjp2caztMzC",
                             Profile_Image = "",
                             Role = "Admin",
                             Section = "Admin Section",

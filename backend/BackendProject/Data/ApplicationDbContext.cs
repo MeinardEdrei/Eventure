@@ -10,6 +10,7 @@ namespace BackendProject.Data
 
         public required DbSet<User> Users { get; set; }
         public required DbSet<Event> Events { get; set; }
+        public required DbSet<RejectionReason> RejectionReasons { get; set; }
         public required DbSet<RForm> RForms { get; set; }
         public required DbSet<UEvent> UEvents { get; set; }
         public required DbSet<Notification> Notifications { get; set; }

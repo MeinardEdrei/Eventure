@@ -36,4 +36,5 @@ public partial class Event
     // Eager Loading Navigatiion Props
     public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     public ICollection<RForm> RForms { get; set; } = new List<RForm>();
+    public ICollection<RejectionReason> RejectionReasons { get; set; } = new List<RejectionReason>();
 }

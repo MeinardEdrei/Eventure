@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import "../../css/Edit-Event-Modal.css";
 import axios from "axios";
 import Button from "@mui/material/Button";
@@ -29,9 +30,22 @@ import {
 import "draft-js/dist/Draft.css";
 
 const RichTextEditor = ({ value, onChange }) => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
+  const [editorState, setEditorState] = useState(() => {
+    // If value is a JSON string, convert it to EditorState
+    if (typeof value === 'string') {
+      try {
+        const contentState = convertFromRaw(JSON.parse(value));
+        return EditorState.createWithContent(contentState);
+      } catch (error) {
+        console.error('Error converting description:', error);
+        return EditorState.createEmpty();
+      }
+    }
+    
+    // If value is already an EditorState or undefined
+    return value || EditorState.createEmpty();
+  });
+
   const editorRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -173,8 +187,7 @@ const EditEventModal = ({
   event,
   eventId,
   onUpdateSuccess,
-  requireApproval,
-  setRequireApproval,
+  setSelectedEvent,
 }) => {
   const [editedEvent, setEditedEvent] = useState({
     title: "",
@@ -195,6 +208,8 @@ const EditEventModal = ({
     colleges: [],
   });
   const [description, setDescription] = useState("");
+  const [requireApproval, setRequireApproval] = useState(false);
+  const { data: session } = useSession();
 
   const [campusType, setCampusType] = useState("On Campus");
   const EventOptions = ["On Campus", "Off Campus"];
@@ -243,6 +258,31 @@ const EditEventModal = ({
 
   useEffect(() => {
     if (event) {
+      // Parse the ISO date string
+      const startDateTime = event.dateStart 
+      ? dayjs(event.dateStart) 
+      : dayjs();
+
+    const endDateTime = event.dateEnd 
+      ? dayjs(event.dateEnd) 
+      : dayjs();
+
+    // If times are 00:00:00, you might want to set a default time
+    const startTime = event.timeStart !== '00:00:00' 
+      ? event.timeStart 
+      : '09:00:00';
+
+    const endTime = event.timeEnd !== '00:00:00' 
+      ? event.timeEnd 
+      : '17:00:00';
+
+    // Combine date and time
+    const fullStartDateTime = dayjs(`${startDateTime.format('YYYY-MM-DD')}T${startTime}`);
+    const fullEndDateTime = dayjs(`${endDateTime.format('YYYY-MM-DD')}T${endTime}`);
+
+    setStartDateTime(fullStartDateTime);
+    setEndDateTime(fullEndDateTime);
+
       setEditedEvent({
         title: event.title || "",
         description: event.description || "",
@@ -261,6 +301,9 @@ const EditEventModal = ({
         eventImage: event.eventImage || "",
         status: event.status,
       });
+      
+      setDescription(event.description);
+      setRequireApproval(event.requireApproval || false);
 
       // Set initial preview image
       setPreviewImage(
@@ -354,6 +397,8 @@ const EditEventModal = ({
     e.preventDefault();
     try {
       const formData = new FormData();
+      formData.append('description', description);
+      formData.append('requireApproval', requireApproval);
 
       // Append all edited event details
       Object.keys(editedEvent).forEach((key) => {
@@ -386,6 +431,7 @@ const EditEventModal = ({
 
       if (res.status === 200) {
         alert("Event updated successfully!");
+        setSelectedEvent(formData);
         onUpdateSuccess(); // Refresh event data
         onClose(); // Close the modal
       }
@@ -462,7 +508,9 @@ const EditEventModal = ({
               {/* Input Event Description */}
               <div className="description">
                 <label>Description</label>
-                <RichTextEditor value={description} onChange={setDescription} />
+                {description && (
+                  <RichTextEditor value={description} onChange={setDescription} />
+                )}
               </div>
             </div>
 
@@ -652,6 +700,7 @@ const EditEventModal = ({
                                   e.preventDefault();
                                   handleCollegeToggle(college);
                                 }}
+                                hidden={(editedEvent.visibility === "Private" || editedEvent.visibility === "Public") ? true : false}
                               >
                                 <X size={11} />
                               </button>
@@ -660,32 +709,42 @@ const EditEventModal = ({
                         </div>
 
                         <div className="relative w-full">
-                          <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
-                            <input
-                              type="text"
-                              placeholder="Select Colleges..."
-                              className="w-full bg-transparent border-0 outline-none"
-                              value={collegesFilter}
-                              onChange={(e) => {
-                                setCollegesFilter(e.target.value);
-                                setIsCollegesOpen(true);
-                              }}
-                              onClick={() => setIsCollegesOpen(true)}
-                            />
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setIsCollegesOpen(!isCollegesOpen);
-                              }}
-                            >
-                              <ChevronDown
-                                size={20}
-                                className={`transform transition-transform ${
-                                  isCollegesOpen ? "rotate-180" : ""
-                                }`}
-                              />
-                            </button>
-                          </div>
+                            {editedEvent.visibility === "Public" ? (
+                              <></>
+                            ) : editedEvent.visibility === "Private" ? (
+                              <div className="text-white/40 text-xs ml-1">
+                                {`Your department is the only host.`}
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
+                                <input
+                                  type="text"
+                                  placeholder="Select Colleges..."
+                                  className="w-full bg-transparent border-0 outline-none"
+                                  value={collegesFilter}
+                                  onChange={(e) => {
+                                    setCollegesFilter(e.target.value);
+                                    setIsCollegesOpen(true);
+                                  }}
+                                  onClick={() => setIsCollegesOpen(true)}
+                                  disabled={editedEvent.visibility === "Private"}
+                                />
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setIsCollegesOpen(!isCollegesOpen);
+                                  }}
+                                  disabled={editedEvent.visibility === "Private" ? true : false}
+                                >
+                                  <ChevronDown
+                                    size={20}
+                                    className={`transform transition-transform ${
+                                      isCollegesOpen ? "rotate-180" : ""
+                                    }`}
+                                  />
+                                </button>
+                              </div>
+                            )}
 
                           {/* Dropdown Menu */}
                           {isCollegesOpen && (
@@ -795,6 +854,17 @@ const EditEventModal = ({
                                     : ""
                                 }`}
                                 onClick={() => {
+                                  {option === "Private" ? (
+                                    setEditedEvent(prevState => ({
+                                      ...prevState,
+                                      hostedBy: session.user.department ? [session.user.department] : []
+                                    }))
+                                  ) : option === "Public" && (
+                                    setEditedEvent(prevState => ({
+                                      ...prevState,
+                                      hostedBy: colleges
+                                    }))
+                                  )}
                                   handleChange({
                                     target: {
                                       name: "visibility",
@@ -1008,64 +1078,6 @@ const EditEventModal = ({
                     Update Event
                   </Button>
                 </div>
-
-                {/* Date & Time */}
-                {/* <div>
-                  <div className="bg-transparent border rounded-[10px] border-[#FFF0F0]/30 p-6 flex flex-row gap-10 justify-center">
-                    <div className="flex flex-col gap-8 items-center justify-center">
-                      <label className="">Start</label>
-                      <label className="">End</label>
-                    </div>
-
-                    <div className="flex flex-col gap-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <input
-                            type="date"
-                            name="dateStart"
-                            value={editedEvent.dateStart}
-                            onChange={handleChange}
-                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <input
-                            type="date"
-                            name="dateEnd"
-                            value={editedEvent.dateEnd}
-                            onChange={handleChange}
-                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <input
-                            type="time"
-                            name="timeStart"
-                            value={editedEvent.timeStart}
-                            onChange={handleChange}
-                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <input
-                            type="time"
-                            name="timeEnd"
-                            value={editedEvent.timeEnd}
-                            onChange={handleChange}
-                            className="w-full bg-[#4f4f4f] text-white p-2 rounded"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>

@@ -22,6 +22,9 @@ import {
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import AppealRequestModal from "./AppealRequestModal";
 
 
 function MyEvents() {
@@ -29,8 +32,8 @@ function MyEvents() {
   const progressOptions = [
     "Created",
     "Pending",
+    "Pre-Approved",
     "Approved",
-    "Modified",
     "Rejected",
   ];
 
@@ -41,9 +44,13 @@ function MyEvents() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { data: session } = useSession();
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState({});
+
+  const [appealRequestModal, setAppealRequestModal] = useState(false);
+  const [selectedAppealRequestEvent, setSelectedAppealRequestEvent] = useState(null);
 
   // New state for Toggle and Search
   const [selectedSection, setSelectedSection] = useState("all");
@@ -53,8 +60,8 @@ function MyEvents() {
   const statusIcons = {
     Created: <CirclePlus className="mr-2 h-4 w-4" />,
     Pending: <Clock className="mr-2 h-4 w-4" />,
-    Approved: <CheckCircle className="mr-2 h-4 w-4" />,
-    Modified: <Edit className="mr-2 h-4 w-4" />,
+    PreApproved: <CheckCircle className="mr-2 h-4 w-4" />,
+    Approved: <Edit className="mr-2 h-4 w-4" />,
     Rejected: <XCircle className="mr-2 h-4 w-4" />,
   };
 
@@ -62,8 +69,8 @@ function MyEvents() {
   const [eventCounts, setEventCounts] = useState({
     Created: 0,
     Pending: 0,
+    PreApproved: 0,
     Approved: 0,
-    Modified: 0,
     Rejected: 0,
   });
 
@@ -112,6 +119,34 @@ function MyEvents() {
       setLoading(false); // Set loading to false after fetching
     }
   };
+
+  const fetchRejectReason = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/event/${id}/rejection-reason`);
+      if (response.status === 200) {
+        return response.data.reason;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchRejectionReasons = async () => {
+      const reasons = {};
+      for (const event of events) {
+        if (event.status === "Rejected") {
+          const reason = await fetchRejectReason(event.id);
+          reasons[event.id] = reason;
+        }
+      }
+      setRejectionReason(reasons);
+    };
+  
+    if (events.length > 0) {
+      fetchRejectionReasons();
+    }
+  }, [events]);
 
   useEffect(() => {
     fetchData();
@@ -208,6 +243,18 @@ function MyEvents() {
     }
   };
 
+  const handleEventSubmit = async (id) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/event/${id}/pending`);
+    } catch (error) {
+      if (response.status === 200) {
+        alert(response.data.message);
+      } else {
+        console.log("Event submission failed", error);
+      }
+    }
+  }
+
   // Modified filtering to include pagination
   useEffect(() => {
     const filtered = events
@@ -223,6 +270,37 @@ function MyEvents() {
 
     setFilteredEvents(currentEvents);
   }, [selected, events, searchQuery, currentPage, eventsPerPage]);
+
+  const openAppealRequestModal = (event) => {
+    setSelectedAppealRequestEvent(event);
+    setAppealRequestModal(true);
+  };
+
+  const closeAppealRequestModal = () => {
+    setSelectedAppealRequestEvent(null);
+    setAppealRequestModal(false);
+  };
+
+  const handleAppealRequest = async (eventId, request) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/event/${eventId}/appeal`, 
+        request,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      if (res.status === 200) {
+        alert("Appeal Request sent successfully");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error appealing the event:", error);
+    }
+  }
 
   if (loading)
     return (
@@ -303,12 +381,14 @@ function MyEvents() {
         return renderCreatedEventCard(event);
       case "Pending":
         return renderPendingEventCard(event);
+      case "Pre-Approved":
+        return renderPreApprovedEventCard(event);
       case "Approved":
         return renderApprovedEventCard(event);
-      case "Modified":
-        return renderModifiedEventCard(event);
       case "Rejected":
         return renderRejectedEventCard(event);
+      case "Appealed":
+        return renderAppealedEventCard(event);
       default:
         return renderDefaultEventCard(event);
     }
@@ -363,6 +443,7 @@ function MyEvents() {
             event={selectedEvent}
             eventId={selectedEvent?.id}
             onUpdateSuccess={fetchData}
+            setSelectedEvent={setSelectedEvent}
           />
 
           {/* Button: Upload Requirements */}
@@ -386,6 +467,20 @@ function MyEvents() {
                 : "Manage Requirements"}
             </p>
           </button>
+
+          {/* Button: Submit Event */}
+          {event.requirementFilesCount > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                handleEventSubmit(selectedEvent.id);
+              }}
+              className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+            >
+              <FontAwesomeIcon icon={faPaperPlane}/>
+              <p>Submit</p>
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -446,6 +541,7 @@ function MyEvents() {
             event={selectedEvent}
             eventId={selectedEvent?.id}
             onUpdateSuccess={fetchData}
+            setSelectedEvent={setSelectedEvent}
           />
 
           {/* Button: See Details */}
@@ -534,7 +630,7 @@ function MyEvents() {
 
           {/* Button: Upload Requirements */}
           {event.status === selected &&
-            (selected === "Pending" || selected === "Modified") && (
+            (selected === "Created") && (
               <button
                 type="button"
                 onClick={() => {
@@ -561,10 +657,10 @@ function MyEvents() {
     </div>
   );
 
-  // Event Card for Modified Status
-  const renderModifiedEventCard = (event) => (
+  // Event Card for Pre-Approvedd Status
+  const renderPreApprovedEventCard = (event) => (
     <div key={event.id} className="organizerEventCard modified-event-card">
-      {/* Modified Event Card Content */}
+      {/* PreApproved Event Card Content */}
       <div className="organizerImage">
         <img
           src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
@@ -591,44 +687,6 @@ function MyEvents() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="flex flex-row gap-4 justify-end">
-          {/* Button: See Details */}
-          <Link href={`/Event-Details/${event.id}`}>
-            <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
-              <i
-                className="fa fa-info-circle text-[0.8rem]"
-                aria-hidden="true"
-              ></i>
-              <button className="text-[0.8rem]">See Details</button>
-            </div>
-          </Link>
-
-          {/* Button: Upload Requirements */}
-          {event.status === selected &&
-            (selected === "Pending" || selected === "Modified") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsUploadModalOpen(true);
-                  setSelectedEvent(event);
-                }}
-                className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-0 rounded"
-              >
-                <i
-                  className={`fa ${
-                    event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
-                  } text-[0.8rem]`}
-                  aria-hidden="true"
-                ></i>
-                <p className="text-[0.8rem]">
-                  {event.requirementFilesCount === 0
-                    ? "Upload Requirements"
-                    : "Manage Requirements"}
-                </p>
-              </button>
-            )}
         </div>
       </div>
     </div>
@@ -686,24 +744,26 @@ function MyEvents() {
             From Admin: Reason of Rejection
           </h3>
           <p className="text-[0.8rem]">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus
-            ipsam aut voluptatem nulla nesciunt laborum totam commodi quisquam
-            laudantium, illum illo numquam iste corporis adipisci animi in
-            facere! Repudiandae, beatae!
+            {rejectionReason[event.id] || "Loading..."}
           </p>
         </div>
         <div className="flex flex-row gap-4 justify-end">
           {/* Button: See Details */}
-          <Link href={`/Event-Details/${event.id}`}>
-            <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
-              <i
-                className="fa fa-info-circle text-[0.8rem]"
-                aria-hidden="true"
-              ></i>
-              <button className="text-[0.8rem]">See Details</button>
-            </div>
-          </Link>
+          <div onClick={() => openAppealRequestModal(event)} className="cursor-pointer bg-transparent hover:bg-[#ffffff]/20 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
+            <i
+              className="fa fa-info-circle text-[0.8rem]"
+              aria-hidden="true"
+            ></i>
+            <button className="text-[0.8rem]">Appeal Request</button>
+          </div>
         </div>
+
+        <AppealRequestModal
+          isOpen={appealRequestModal}
+          onClose={closeAppealRequestModal}
+          eventData={selectedAppealRequestEvent}
+          handleAppealRequest={handleAppealRequest}
+        />
       </div>
     </div>
   );
@@ -769,7 +829,7 @@ function MyEvents() {
               <button
                 key={option}
                 className={`
-                  flex items-center px-[1.2rem] py-2 rounded-md text-sm transition-all duration-300
+                  flex items-center px-[1.1rem] py-2 rounded-md text-sm transition-all duration-300
                   ${
                     selected === option
                       ? "bg-[#bababa] text-black"
@@ -841,7 +901,11 @@ function MyEvents() {
               </div>
             ) : (
               <>
-                {filteredEvents.map(renderEventCard)}
+                {filteredEvents.map((event, index) => (
+                  <div key={index}> 
+                    {renderEventCard(event)}
+                  </div>
+                ))}
 
                 {/* Pagination Component */}
                 <div className="flex justify-center w-full mt-10">

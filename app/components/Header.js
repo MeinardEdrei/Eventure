@@ -122,7 +122,7 @@ const Header = () => {
                   </Link>
                   {/* <div className="w-40"></div> */}
                 </>
-              ) : session?.user?.role === "Admin" ? ( 
+              ) : (session?.user?.role === "Admin" || session?.user?.role === "Staff") ? ( 
                 <>
                   <div className="justify-between w-[80%] md:w-[65%] md:hidden max-sm:hidden lg:flex 2xl:flex">
                     <Link href="/AdminDashboard">
@@ -266,7 +266,7 @@ const Header = () => {
                       </div>
                       <hr className="border-t border-white/30 my-0" />
                       <div className="p-2">
-                        {session?.user?.role != "Admin" && (
+                        {session?.user?.role != "Admin" && session?.user?.role != "Staff" && (
                           <>
                             <Link
                               onClick={() => setDropDownOpen(false)}

@@ -32,10 +32,9 @@ import Stack from "@mui/material/Stack";
 
 export default function EventApproval() {
   const { data: session } = useSession();
-  const [selected, setSelected] = useState("Pending");
   const [isOpen, setIsOpen] = useState(false);
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [noEvents, setNoEvents] = useState(true);
   const [searchEventQuery, setsearchEventQuery] = useState("");
   const [dateRange, setDateRange] = useState({ from: null, to: null });
@@ -52,14 +51,62 @@ export default function EventApproval() {
   // For Reject Reason Modal
   const [rejectReasonModal, setRejectReasonModal] = useState(false);
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
+  const [appealRequest, setAppealRequest] = useState({});
 
-  const options = [
+  const [selected, setSelected] = useState("");
+  const [options, setOptions] = useState([
     "Pending",
     "Pre-Approved",
     "Approved",
-    "Modified",
     "Rejected",
-  ];
+    "Appealed",
+  ]);
+
+  useEffect(() => {
+    if (session?.user?.role === "Admin") {
+      setOptions([
+        "Pre-Approved",
+        "Approved",
+        "Rejected",
+      ]);
+      setSelected("Pre-Approved");
+    } else if (session?.user?.role === "Staff"){
+      setOptions([
+        "Pending",
+        "Rejected",
+        "Appealed",
+      ]);
+      setSelected("Pending");
+    }
+  }, [session]);
+
+  const fetchAppealRequest = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/api/event/${id}/appeal-request`);
+      if (response.status === 200) {
+        return response.data.request;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchAppealRequests = async () => {
+      const requests = {};
+      for (const event of events) {
+        if (event.status === "Appealed") {
+          const request = await fetchAppealRequest(event.id);
+          requests[event.id] = request;
+        }
+      }
+      setAppealRequest(requests);
+    };
+  
+    if (events.length > 0) {
+      fetchAppealRequests();
+    }
+  }, [events]);
 
   const fetchData = async () => {
     try {
@@ -180,10 +227,16 @@ export default function EventApproval() {
     }
   };
 
-  const handleReject = async (eventId) => {
+  const handleReject = async (eventId, reason) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/event/${eventId}/reject`
+        `http://localhost:5000/api/event/${eventId}/reject`, 
+        reason,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
       );
 
       if (res.status === 200) {
@@ -452,9 +505,22 @@ if (loading) {
                     </div>
                   </div>
 
+                  {/* Lower Part */}
+                  <div className="pb-4 flex flex-col mt-2 gap-4">
+                    <div className="bg-[#FF4242]/50 rounded p-3 flex flex-col gap-2">
+                      <h3 className="text-[1rem] font-bold">
+                        From Organizer: Appeal Request
+                      </h3>
+                      <p className="text-[0.8rem]">
+                        {appealRequest[event.id] || "Loading..."}
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="flex flex-row gap-4 justify-end">
                     <div className="event-btn flex flex-row gap-4">
                       {/* Button: Pre Approve */}
+                      {(selected === "Pending" || selected === "Appealed") && (
                       <div className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded">
                         <Check size={16} />
                         <button
@@ -465,21 +531,24 @@ if (loading) {
                           Pre-approve
                         </button>
                       </div>
+                      )}
                       {/* Button: Approve */}
-                      <div className="approve-btn">
-                        <span className="flex items-center">
-                          <CheckCheck size={16} />
-                        </span>
-                        <button
-                          className="approve"
-                          onClick={() => openApproveConfirmModal(event.id)}
-                          disabled={event.status === "approved"}
-                        >
-                          Approve
-                        </button>
-                      </div>
-
+                      {selected === "Pre-Approved" && (
+                        <div className="approve-btn">
+                          <span className="flex items-center">
+                            <CheckCheck size={16} />
+                          </span>
+                          <button
+                            className="approve"
+                            onClick={() => openApproveConfirmModal(event.id)}
+                            disabled={event.status === "approved"}
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      )}
                       {/* Button: Reject */}
+                      {(selected === "Pre-Approved" || selected === "Pending") && (
                       <div
                         onClick={() => openRejectReasonModal(event)}
                         className="reject-btn"
@@ -493,15 +562,8 @@ if (loading) {
                         >
                           Reject
                         </button>
-                        {/* for the reason reject modal button */}
-                        {/* <button
-                          className="reject"
-                          onClick={() => handleReject(event.id)}
-                          disabled={event.status === "rejected"}
-                        >
-                          Reject
-                        </button> */}
                       </div>
+                      )}
                     </div>
                   </div>
                 </div>

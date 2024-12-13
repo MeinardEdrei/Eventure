@@ -290,7 +290,7 @@ const Page = () => {
       formData.append("RequireApproval", requireApproval.toString());
       formData.append("Partnerships", JSON.stringify(selectedPartnerships));
       formData.append("HostedBy", JSON.stringify(selectedDepartments));
-      formData.append("Status", "Pending");
+      formData.append("Status", "Created");
 
       const res = await axios.post(
         "http://localhost:5000/api/event/create",

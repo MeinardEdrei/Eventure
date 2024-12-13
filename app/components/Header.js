@@ -256,10 +256,10 @@ const Header = () => {
                           />
                         </div>
                         <div className="flex flex-col justify-center">
-                          <div className=" font-normal text-white text-base overflow-hidden whitespace-nowrap overflow-ellipsis">
+                          <div className=" font-normal text-white text-base overflow-hidden whitespace-nowrap overflow-ellipsis max-w-[200px]">
                             {session?.user?.username}
                           </div>
-                          <div className=" text-white/30 text-sm overflow-hidden whitespace-nowrap text-ellipsis">
+                          <div className=" text-white/30 text-sm overflow-hidden whitespace-nowrap text-ellipsis max-w-[200px]">
                             {session?.user?.email}
                           </div>
                         </div>

@@ -65,7 +65,7 @@ export default function SearchModal() {
         
         let response;
         
-        if (session?.user?.role === "Student") {
+        if (session?.user?.role === "Student" || !session) {
           response = await axios.get(`http://localhost:5000/api/event/search-all`, {
             params: { query }
           });
@@ -73,9 +73,9 @@ export default function SearchModal() {
           response = await axios.get(`http://localhost:5000/api/event/search-for-organizer`, {
             params: { query }
           });
-        }
+        } 
 
-        setSearchResults(response.data);
+        setSearchResults(response?.data || []);
       } catch (error) {
         console.log('Search error:', error);
         
@@ -145,9 +145,9 @@ export default function SearchModal() {
                 <div>
                   <h3 className="text-white text-lg mb-4">Search Results</h3>
                   <div className="space-y-4">
-                    {searchResultsWithEventsCount.map((result) => (
+                    {searchResultsWithEventsCount.map((result, index) => (
                       <div 
-                        key={result.id} 
+                        key={index} 
                         className="bg-[#1b1b1b] text-white p-4 rounded-lg hover:bg-[#242324] transition-colors duration-300"
                       >
                         {result.type === 'Event' ? (

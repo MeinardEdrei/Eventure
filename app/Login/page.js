@@ -91,7 +91,7 @@ export default function Login() {
           </button>
 
           <div className="flex flex-col items-center space-y-2 text-sm">
-            <Link href="/Forgot-Password" className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200">
+            <Link href="/Forgot-Password" className="text-[#F7F0FF]/50 hover:text-[#F7F0FF] transition-colors duration-200">
               Forgot password?
             </Link>
             <Link href="/Register" className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200">

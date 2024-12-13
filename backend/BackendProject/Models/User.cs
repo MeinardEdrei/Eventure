@@ -48,6 +48,10 @@ namespace BackendProject.Models
         
         [Required]
         public required int Created_Events { get; set; }
+        
+        public string? PasswordResetCode { get; set; }
+
+        public DateTime? PasswordResetCodeExpiration { get; set; }
 
         public required DateTime Created_At { get; set; }
 

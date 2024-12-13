@@ -15,6 +15,9 @@ builder.Services.AddControllers();
 // Register Email Service
 builder.Services.AddScoped<EmailService>();
 
+// Register Email Password Service
+builder.Services.AddScoped<EmailServicePassword>();
+
 // Register QR Code Service
 builder.Services.AddScoped<QRCodeService>();
 

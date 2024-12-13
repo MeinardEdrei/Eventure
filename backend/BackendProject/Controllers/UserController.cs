@@ -12,11 +12,14 @@ namespace BackendProject.Controllers
     {
         private readonly ApplicationDbContext _context; // database holder
         private readonly IConfiguration _configuration; // for JWT configurations
+        private readonly EmailServicePassword _emailServicePassword;
 
-        public UserController(ApplicationDbContext context, IConfiguration configuration)
+        public UserController(ApplicationDbContext context, IConfiguration configuration,
+        EmailServicePassword emailServicePassword)
         {
             _context = context;
             _configuration = configuration;
+            _emailServicePassword = emailServicePassword;
         }
 
         // ----------------POST api/user/register------------------- 
@@ -214,6 +217,59 @@ namespace BackendProject.Controllers
             if (user == null) return NotFound(new { message = "User not found." });
 
             return Ok(user);
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string Email)
+        {
+            if (string.IsNullOrEmpty(Email))
+            {
+                return BadRequest(new { message = "Email is required." });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            if (user == null)
+            {
+                return NotFound(new { message = "User  not found." });
+            }
+
+            // Generate a password reset code
+            var resetCode = Guid.NewGuid().ToString();
+            user.PasswordResetCode = resetCode;
+            user.PasswordResetCodeExpiration = DateTime.Now.AddHours(1); // Set expiration time (e.g., 1 hour)
+
+            await _context.SaveChangesAsync();
+
+            // Send email with the reset code
+            var emailSubject = "Password Reset Request";
+            var emailBody = "Your password reset code is: " + resetCode;
+            var emailResult = _emailServicePassword.sendEmail(Email, emailSubject, resetCode, user.Username);
+
+            if (emailResult.Contains("Error"))
+            {
+                return StatusCode(500, new { message = "Error sending email." });
+            }
+
+            return Ok(new { message = "Password reset code has been sent to your email." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetCode == resetPasswordDto.Code);
+            if (user == null || user.PasswordResetCodeExpiration < DateTime.Now)
+            {
+                return BadRequest(new { message = "Invalid or expired reset code." });
+            }
+
+            // Update the user's password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+            user.PasswordResetCode = null; // Clear the reset code
+            user.PasswordResetCodeExpiration = null; // Clear the expiration time
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Password has been reset successfully." });
         }
 
         [HttpPost("{id}/update-profile")]

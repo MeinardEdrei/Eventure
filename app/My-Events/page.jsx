@@ -24,6 +24,7 @@ import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import AppealRequestModal from "./AppealRequestModal";
 
 
 function MyEvents() {
@@ -47,6 +48,9 @@ function MyEvents() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState({});
+
+  const [appealRequestModal, setAppealRequestModal] = useState(false);
+  const [selectedAppealRequestEvent, setSelectedAppealRequestEvent] = useState(null);
 
   // New state for Toggle and Search
   const [selectedSection, setSelectedSection] = useState("all");
@@ -267,6 +271,37 @@ function MyEvents() {
     setFilteredEvents(currentEvents);
   }, [selected, events, searchQuery, currentPage, eventsPerPage]);
 
+  const openAppealRequestModal = (event) => {
+    setSelectedAppealRequestEvent(event);
+    setAppealRequestModal(true);
+  };
+
+  const closeAppealRequestModal = () => {
+    setSelectedAppealRequestEvent(null);
+    setAppealRequestModal(false);
+  };
+
+  const handleAppealRequest = async (eventId, request) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/event/${eventId}/appeal`, 
+        request,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      if (res.status === 200) {
+        alert("Appeal Request sent successfully");
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error appealing the event:", error);
+    }
+  }
+
   if (loading)
     return (
       <div className="org-list-mnc">
@@ -352,6 +387,8 @@ function MyEvents() {
         return renderApprovedEventCard(event);
       case "Rejected":
         return renderRejectedEventCard(event);
+      case "Appealed":
+        return renderAppealedEventCard(event);
       default:
         return renderDefaultEventCard(event);
     }
@@ -712,16 +749,21 @@ function MyEvents() {
         </div>
         <div className="flex flex-row gap-4 justify-end">
           {/* Button: See Details */}
-          <Link href={`/Event-Details/${event.id}`}>
-            <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
-              <i
-                className="fa fa-info-circle text-[0.8rem]"
-                aria-hidden="true"
-              ></i>
-              <button className="text-[0.8rem]">See Details</button>
-            </div>
-          </Link>
+          <div onClick={() => openAppealRequestModal(event)} className="cursor-pointer bg-transparent hover:bg-[#ffffff]/20 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
+            <i
+              className="fa fa-info-circle text-[0.8rem]"
+              aria-hidden="true"
+            ></i>
+            <button className="text-[0.8rem]">Appeal Request</button>
+          </div>
         </div>
+
+        <AppealRequestModal
+          isOpen={appealRequestModal}
+          onClose={closeAppealRequestModal}
+          eventData={selectedAppealRequestEvent}
+          handleAppealRequest={handleAppealRequest}
+        />
       </div>
     </div>
   );

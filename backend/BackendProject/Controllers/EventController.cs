@@ -336,6 +336,25 @@ namespace BackendProject.Controllers
             }
             await _context.SaveChangesAsync();
 
+            if (eventToApprove.Status == "Appealed")
+            {
+                eventToApprove.Status = "Created";
+                var notification = new Notification
+                {
+                    UserId = eventToApprove.OrganizerId,
+                    EventId = eventToApprove.Id,
+                    NotificationImage = "fwvsdv.jpg",
+                    Type = "Organizer",
+                    Status = "Pre-Approved",
+                    Message = "Your event appeal request has been pre-approved.",
+                    CreatedAt = DateTime.Now,
+                };
+
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+                return Ok(new { message = "Event approved." });
+            }
+
             eventToApprove.Status = "Pre-Approved";
 
             var notifications = new Notification
@@ -353,6 +372,51 @@ namespace BackendProject.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Event approved." });
+        }
+
+        [HttpPost("{eventId}/appeal")]
+        public async Task<IActionResult> AppealEvent(int eventId, [FromBody] string request)
+        {
+            var eventToAppeal = await _context.Events.FindAsync(eventId);
+            if (eventToAppeal == null) return NotFound(new { message = "Event not found." });
+
+            // REMOVE DUPLICATES
+            var checkDuplicate = await _context.RejectionReasons
+                .Where(e => e.Event_Id == eventId && e.Request != null)
+                .ToListAsync();
+            
+            if (checkDuplicate.Count > 0) {
+                foreach ( var duplicateItem in checkDuplicate) {
+                    _context.RejectionReasons.Remove(duplicateItem);
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            eventToAppeal.Status = "Appealed";
+            _context.Events.Update(eventToAppeal);
+            await _context.SaveChangesAsync();
+            
+            var appealRequest = await _context.RejectionReasons
+                .Where(e => e.Event_Id == eventId)
+                .FirstOrDefaultAsync();
+
+            if (appealRequest == null) return NotFound(new { message = "Appeal request not found." });
+            appealRequest.Request = request;
+
+            _context.RejectionReasons.Update(appealRequest);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Event appealed." });
+        }
+
+        [HttpGet("{eventId}/appeal-request")]
+        public async Task<IActionResult> GetAppealRequest(int eventId)
+        {
+            var getRequest = await _context.RejectionReasons
+                .Where(e => e.Event_Id == eventId)
+                .FirstOrDefaultAsync();
+            if (getRequest == null) return NotFound(new { message = "Reason not found." });
+            return Ok(getRequest);
         }
 
         [HttpGet("{eventId}/rejection-reason")]

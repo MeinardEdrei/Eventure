@@ -10,6 +10,7 @@ namespace BackendProject.Models
     public int Id { get; set; }
     public int Event_Id { get; set; }
     public string? Reason { get; set; }
+    public string? Request { get; set; }
     public DateTime CreatedAt { get; set; }
 
     [ForeignKey("Event_Id")]

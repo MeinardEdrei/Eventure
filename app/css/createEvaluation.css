@@ -2,17 +2,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
-    --gradient: linear-gradient(180deg, #0C0C0C, #25152C);
-    --color1: #0C0C0C;
+    --gradient: linear-gradient(180deg, #0c0c0c, #25152c);
+    --color1: #0c0c0c;
     --color2: #252525;
     --color3: #fefefe;
-    --color4: #DAB7FF;
+    --color4: #dab7ff;
     --color5: #4a3b55;
     --color6: #705c7c;
-    --color7: #01c70b;
-    --borderColor: 0.25px solid hsl(0, 0%, 25%);
+    --color7: #181818;
+    --colorHover: #131313;
+    --color8: #0D0C0C;
+    --borderColor: 0.25px solid hsl(0, 0%, 13%);
     --font: Montserrat, Arial, Helvetica;
-    --transition: all ease-in-out 200ms;
+    --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 * {

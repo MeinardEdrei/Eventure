@@ -140,6 +140,34 @@ namespace BackendProject.Controllers
       return Ok(response);
     }
 
+    [HttpPost("submit-evaluation")]
+    public async Task<IActionResult> SubmitEvaluation([FromBody] List<EvaluationAnswersDto> submissions)
+    {
+        try 
+        {
+            if (submissions == null || !submissions.Any())
+                return BadRequest("No evaluation submissions provided");
+
+            var evaluationSubmissions = submissions.Select(submission => new EvaluationAnswer
+            {
+                AttendeeId = submission.AttendeeId,
+                EvaluationFormId = submission.EvaluationFormId,
+                QuestionId = submission.QuestionId,
+                Answer = submission.Answer,
+                CreatedAt = DateTime.Now,
+            }).ToList();
+
+            _context.EvaluationAnswers.AddRange(evaluationSubmissions);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Evaluation submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
     [HttpDelete("{id}/delete-form")]
     public async Task<IActionResult> DeleteEvaluationForm(int id)
     {

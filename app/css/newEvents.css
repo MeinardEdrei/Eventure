@@ -10,10 +10,11 @@
   --color5: #4a3b55;
   --color6: #705c7c;
   --color7: #181818;
+  --colorHover: #131313;
   --color8: #0D0C0C;
-  --borderColor: 0.25px solid hsl(0, 0%, 25%);
+  --borderColor: 0.25px solid hsl(0, 0%, 13%);
   --font: Montserrat, Arial, Helvetica;
-  --transition: all ease-in-out 200ms;
+  --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 * {
@@ -33,10 +34,14 @@
   margin: 0 auto;
   gap: 1rem;
   border: var(--borderColor);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-color: #0c0c0c;
 }
 .newLeftContainer {
   width: 75%;
-  height: auto;
+  min-height: 137vh;
+  display: flex;
+  flex-direction: column;
 }
 .newLeftContainer hr {
   opacity: 25%;
@@ -51,18 +56,20 @@
   gap: 1rem;
   flex-wrap: wrap;
   max-width: 100%;
-  margin: 1rem 0 1rem 0;
+  margin: 1rem 0 2rem 0;
 }
 .recentlyJoinedDisplay {
   display: flex;
   flex-direction: row;
   border: var(--borderColor);
+  background: var(--color1);
   border-radius: 10px;
   width: 32.1%;
   height: 7.5rem;
   overflow: hidden;
   gap: .50rem;
   align-items: center;
+  cursor: pointer;
 }
 .recentlyJoinedDisplay img {
   width: 7.5rem;
@@ -76,7 +83,14 @@
   width: 55%;
 }
 .recentDetails p {
+  font-size: small;
   opacity: 50%;
+}
+.recentDetails h1 {
+  font-size: medium;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .latestEventsContainer {
   display: flex;
@@ -88,14 +102,16 @@
   display: flex;
   flex-direction: column;
   border: var(--borderColor);
+  background: var(--gradient);
   border-radius: 10px;
   width: 50%;
   height: 17rem;
   overflow: hidden;
+  cursor: pointer;
 }
 .latestEventsDisplay img {
   width: 100%;
-  height: 75%;
+  min-height: 74%;
   object-fit: cover;
   border-bottom: var(--borderColor);
   border-radius: 10px;
@@ -106,25 +122,39 @@
 }
 .latestDetails p {
   opacity: 50%;
+  font-size: small;
+}
+.latestDetails h1 {
+  font-size: medium;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  
 }
 .navButtons {
   display: flex;
   flex-direction: row;
-  gap: 3rem;
+  outline: none;
+  gap: 2rem;
   margin-top: 1rem;
+  color: #3B3A3A;
+  transition: color 0.3s; 
 }
 .navButtons .active {
   font-weight: 700;
   color: var(--color3);
+  outline: none;
   opacity: 100%;
   text-decoration: underline;
 }
+
+/* Dynamic Display */
 .dynamicContent {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 .dynamicDisplay {
   border: var(--borderColor);
@@ -137,8 +167,8 @@
   gap: 1rem;
 }
 .dynamicDisplay img {
-  height: 10rem;
-  width: 10rem;
+  height: 9rem;
+  width: 9rem;
   border-radius: 10px;
   border-right: var(--borderColor);
   object-fit: cover;
@@ -150,11 +180,13 @@
 .dynamicDetails p {
   opacity: 50%;
 }
+
 /* PAGINATION */
 .pagination {
   display: flex;
+  position: relative;
   justify-content: space-between;
-  margin-top: 2rem;
+  margin-top: auto;
   gap: 1rem;
 }
 .pagination button {
@@ -175,13 +207,14 @@
   justify-content: center;
   align-items: center;
 }
+
 /* RIGHT CONTAINER */
 .newRightContainer {
   border: var(--borderColor);
   border-radius: 10px;
-  background-color: var(--color8);
+  background-color: var(--color1);
   width: 25%;
-  height: 38rem;
+  height: 37rem;
   padding: 1rem;
 }
 .newRightContainer h1 {
@@ -196,6 +229,8 @@
   justify-content: space-evenly;
   align-items: center;
   margin-top: 1rem;
+  color: #3B3A3A;
+  padding: 1em;
 }
 .popularContent {
   margin-top: 1rem;
@@ -206,10 +241,11 @@
 }
 .popularNav .active {
   font-weight: 700;
+  color: var(--color3);
 }
-.popularNav button {
+/* .popularNav button {
   transition: var(--transition);
-}
+} */
 .popularNav button:hover {
   font-weight: 700;
 }
@@ -217,6 +253,12 @@
   display: flex;
   gap: 1rem;
   align-items: center;
+  cursor: pointer;
+  padding: 1em 0em 1em 0em;
+}
+.popularDisplay:hover {
+  background: var(--colorHover);
+  border-radius: 10px;
 }
 .popularCount {
   width: 2.5rem;
@@ -228,8 +270,8 @@
   align-items: center;
 }
 .popularDisplay img {
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: 4rem;
   border: var(--borderColor);
   border-radius: 10px;
 }
@@ -237,8 +279,13 @@
   width: 8rem;
 }
 .popularDetails h1 {
-  line-height: 1rem;
+  line-height: 1.25rem;
   font-size: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -368,8 +415,8 @@
 }
 .eventClose {
   position: fixed;
-  top: 2rem;
-  right: 2rem;
+  top: .8rem;
+  right: 2.1rem;
   background: none;
   border: none;
   font-size: 3rem;

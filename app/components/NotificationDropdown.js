@@ -52,6 +52,57 @@ export default function NotificationDropdown() {
     fetchNotifications();
   }, [session]);
 
+  const convertDraftToText = (rawContent) => {
+    // Ensure rawContent is parsed if it's a string
+    const content = typeof rawContent === 'string' 
+      ? JSON.parse(rawContent) 
+      : rawContent;
+  
+    if (!content || !content.blocks) return null;
+  
+    return content.blocks.map((block, index) => {
+      // Apply inline styles to the text
+      const styledText = block.inlineStyleRanges.reduce((acc, style) => {
+        const start = style.offset;
+        const end = start + style.length;
+        const styledPart = acc.slice(start, end);
+        
+        switch (style.style) {
+          case 'BOLD':
+            return (
+              acc.slice(0, start) + 
+              `<strong>${styledPart}</strong>` + 
+              acc.slice(end)
+            );
+          case 'ITALIC':
+            return (
+              acc.slice(0, start) + 
+              `<em>${styledPart}</em>` + 
+              acc.slice(end)
+            );
+          default:
+            return acc;
+        }
+      }, block.text);
+  
+      // Handle different block types
+      switch (block.type) {
+        case 'unstyled':
+          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
+        case 'unordered-list-item':
+          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'ordered-list-item':
+          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'header-one':
+          return <h1 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        case 'header-two':
+          return <h2 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
+        default:
+          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
+      }
+    }).filter(Boolean); // Remove any null elements
+  };
+
   return (
     <>
       <div
@@ -144,7 +195,7 @@ export default function NotificationDropdown() {
                             )}
                           </span>
                           <p className="line-clamp-3 text-gray-300 text-sm">
-                            {notification.eventDesc}
+                            {convertDraftToText(notification.eventDesc)}
                           </p>
                         </div>
                         </>

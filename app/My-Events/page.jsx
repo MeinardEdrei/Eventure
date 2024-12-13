@@ -210,6 +210,18 @@ function MyEvents() {
     }
   };
 
+  const handleEventSubmit = async (id) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/event/${id}/pending`);
+    } catch (error) {
+      if (response.status === 200) {
+        alert(response.data.message);
+      } else {
+        console.log("Event submission failed", error);
+      }
+    }
+  }
+
   // Modified filtering to include pagination
   useEffect(() => {
     const filtered = events
@@ -391,17 +403,18 @@ function MyEvents() {
           </button>
 
           {/* Button: Submit Event */}
-          <button
-            type="button"
-            onClick={() => {
-              setIsUploadModalOpen(true);
-              setSelectedEvent(event);
-            }}
-            className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
-          >
-            <FontAwesomeIcon icon={faPaperPlane}/>
-            <p>Submit</p>
-          </button>
+          {event.requirementFilesCount > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                handleEventSubmit(selectedEvent.id);
+              }}
+              className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+            >
+              <FontAwesomeIcon icon={faPaperPlane}/>
+              <p>Submit</p>
+            </button>
+          )}
         </div>
       </div>
     </div>

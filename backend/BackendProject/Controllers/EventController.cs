@@ -262,6 +262,17 @@ namespace BackendProject.Controllers
             return Ok(events);
         }
 
+        [HttpPost("{eventId}/pending")]
+        public async Task<IActionResult> PendingEvent(int eventId)
+        {
+            var eventToSubmit = await _context.Events.FindAsync(eventId);
+            if (eventToSubmit == null) return NotFound(new { message = "Event not found." } );
+            eventToSubmit.Status = "Pending";
+            _context.Events.Update(eventToSubmit);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Event submitted successfully." });
+        }
+
         [HttpPost("{eventId}/approve")]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {

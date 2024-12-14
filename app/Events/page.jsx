@@ -3,14 +3,15 @@ import { useSession } from "next-auth/react";
 import "../css/newEvents.css";
 import { useState, useEffect } from "react";
 import { Button } from "react-aria-components";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import Link from "next/link";
+import { CalendarOff, X } from "lucide-react";
 
 function Events() {
   const router = useRouter();
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   const [activeCategory, setActiveCategory] = useState("Upcoming");
   const [activePopular, setActivePopular] = useState("Weekly");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,13 +69,15 @@ function Events() {
   // USER EVENTS API
   const fetchUserEvents = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/user/userAttendedEvents/${session.user.id}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/user/userAttendedEvents/${session.user.id}`
+      );
       setAttendedEvents(response.data);
     } catch (error) {
       console.log(error);
     }
-  }
-  
+  };
+
   // REGISTRATION API
   const fetchRegistration = async (event) => {
     try {
@@ -84,7 +87,7 @@ function Events() {
       );
       if (registration.status === 404) {
         setStatusCode(404);
-      } else if (registration.status === 202){
+      } else if (registration.status === 202) {
         setStatusCode(202);
       } else {
         setStatusCode(200);
@@ -229,14 +232,16 @@ function Events() {
   // HANDLE CANCEL REGISTRATION
   const handleCancelRegistration = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:5000/api/registration/${session?.user?.id}/${id}/cancel-registration`);
+      const response = await axios.delete(
+        `http://localhost:5000/api/registration/${session?.user?.id}/${id}/cancel-registration`
+      );
       if (response.status === 200) alert("Registration cancelled successfully");
       setIsModalOpen(false);
       setShouldRefreshEvents(true);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   // Dynamic data for active category
   const eventsToDisplay =
@@ -259,7 +264,7 @@ function Events() {
       setCurrentPage(currentPage - 1);
     }
   };
-  
+
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -270,7 +275,7 @@ function Events() {
   const openModal = async (event) => {
     await fetchRegistration(event);
     setIsModalOpen(true);
-  }
+  };
   const closeModal = () => setIsModalOpen(false);
 
   // Handle page change
@@ -278,34 +283,34 @@ function Events() {
 
   // const convertDraftToText = (rawContent) => {
   //   if (!rawContent || !rawContent.blocks) return null;
-  
+
   //   return rawContent.blocks.map((block, index) => {
   //     const text = block.text;
-  
+
   //     // Apply inline styles
   //     const styledText = block.inlineStyleRanges.reduce((acc, style) => {
   //       const start = style.offset;
   //       const end = start + style.length;
   //       const styledPart = acc.slice(start, end);
-        
+
   //       switch (style.style) {
   //         case 'BOLD':
   //           return (
-  //             acc.slice(0, start) + 
-  //             `<strong>${styledPart}</strong>` + 
+  //             acc.slice(0, start) +
+  //             `<strong>${styledPart}</strong>` +
   //             acc.slice(end)
   //           );
   //         case 'ITALIC':
   //           return (
-  //             acc.slice(0, start) + 
-  //             `<em>${styledPart}</em>` + 
+  //             acc.slice(0, start) +
+  //             `<em>${styledPart}</em>` +
   //             acc.slice(end)
   //           );
   //         default:
   //           return acc;
   //       }
   //     }, text);
-  
+
   //     // Handle different block types
   //     switch (block.type) {
   //       case 'unstyled':
@@ -326,53 +331,76 @@ function Events() {
 
   const convertDraftToText = (rawContent) => {
     // Ensure rawContent is parsed if it's a string
-    const content = typeof rawContent === 'string' 
-      ? JSON.parse(rawContent) 
-      : rawContent;
-  
+    const content =
+      typeof rawContent === "string" ? JSON.parse(rawContent) : rawContent;
+
     if (!content || !content.blocks) return null;
-  
-    return content.blocks.map((block, index) => {
-      // Apply inline styles to the text
-      const styledText = block.inlineStyleRanges.reduce((acc, style) => {
-        const start = style.offset;
-        const end = start + style.length;
-        const styledPart = acc.slice(start, end);
-        
-        switch (style.style) {
-          case 'BOLD':
+
+    return content.blocks
+      .map((block, index) => {
+        // Apply inline styles to the text
+        const styledText = block.inlineStyleRanges.reduce((acc, style) => {
+          const start = style.offset;
+          const end = start + style.length;
+          const styledPart = acc.slice(start, end);
+
+          switch (style.style) {
+            case "BOLD":
+              return (
+                acc.slice(0, start) +
+                `<strong>${styledPart}</strong>` +
+                acc.slice(end)
+              );
+            case "ITALIC":
+              return (
+                acc.slice(0, start) + `<em>${styledPart}</em>` + acc.slice(end)
+              );
+            default:
+              return acc;
+          }
+        }, block.text);
+
+        // Handle different block types
+        switch (block.type) {
+          case "unstyled":
+            return styledText ? (
+              <p key={index} dangerouslySetInnerHTML={{ __html: styledText }} />
+            ) : null;
+          case "unordered-list-item":
             return (
-              acc.slice(0, start) + 
-              `<strong>${styledPart}</strong>` + 
-              acc.slice(end)
+              <li
+                key={index}
+                dangerouslySetInnerHTML={{ __html: styledText }}
+              />
             );
-          case 'ITALIC':
+          case "ordered-list-item":
             return (
-              acc.slice(0, start) + 
-              `<em>${styledPart}</em>` + 
-              acc.slice(end)
+              <li
+                key={index}
+                dangerouslySetInnerHTML={{ __html: styledText }}
+              />
+            );
+          case "header-one":
+            return (
+              <h1
+                key={index}
+                dangerouslySetInnerHTML={{ __html: styledText }}
+              />
+            );
+          case "header-two":
+            return (
+              <h2
+                key={index}
+                dangerouslySetInnerHTML={{ __html: styledText }}
+              />
             );
           default:
-            return acc;
+            return styledText ? (
+              <p key={index} dangerouslySetInnerHTML={{ __html: styledText }} />
+            ) : null;
         }
-      }, block.text);
-  
-      // Handle different block types
-      switch (block.type) {
-        case 'unstyled':
-          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
-        case 'unordered-list-item':
-          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
-        case 'ordered-list-item':
-          return <li key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
-        case 'header-one':
-          return <h1 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
-        case 'header-two':
-          return <h2 key={index} dangerouslySetInnerHTML={{__html: styledText}} />;
-        default:
-          return styledText ? <p key={index} dangerouslySetInnerHTML={{__html: styledText}} /> : null;
-      }
-    }).filter(Boolean); // Remove any null elements
+      })
+      .filter(Boolean); // Remove any null elements
   };
 
   return (
@@ -380,38 +408,51 @@ function Events() {
       <div className="eventContainers">
         {/* Left Container */}
         <div className="newLeftContainer">
-
           {session?.user?.role === "Student" && (
             <>
-            {/* Recently Joined Events */}
-            <h1>Recently Joined Events</h1>
-            {attendedEvents.length > 0 && attendedEvents.some(event => event.status === "Ended") ? (
-              attendedEvents
-                .filter(events => events.status === "Ended")
-                .map((events) => (
-                  <div key={events.id} className="recentlyJoinedContainer">
-                    <div className="recentlyJoinedDisplay" onClick={() => {setSelectedEvent(events); openModal(events);}}>
-                      <img src={`http://localhost:5000/api/event/uploads/${events.eventImage}`} alt={events.title} />
-                      <div className="recentDetails">
-                        <h1>{events.title}</h1>
-                        <p>{format(new Date(events.createdAt), "MMMM d, yyyy")}</p>
-                        {events.status === "Ended" && (
-                          <button className="border border-white/20 mt-4 text-xs p-2 rounded-lg font-semibold">Post-Evaluation</button>
-                        )}
+              {/* Recently Joined Events */}
+              <h1>Recently Joined Events</h1>
+              {attendedEvents.length > 0 &&
+              attendedEvents.some((event) => event.status === "Ended") ? (
+                attendedEvents
+                  .filter((events) => events.status === "Ended")
+                  .map((events) => (
+                    <div key={events.id} className="recentlyJoinedContainer">
+                      <div
+                        className="recentlyJoinedDisplay"
+                        onClick={() => {
+                          setSelectedEvent(events);
+                          openModal(events);
+                        }}
+                      >
+                        <img
+                          src={`http://localhost:5000/api/event/uploads/${events.eventImage}`}
+                          alt={events.title}
+                        />
+                        <div className="recentDetails">
+                          <h1>{events.title}</h1>
+                          <p>
+                            {format(new Date(events.createdAt), "MMMM d, yyyy")}
+                          </p>
+                          {events.status === "Ended" && (
+                            <button className="border border-white/20 mt-4 text-xs p-2 rounded-lg font-semibold">
+                              Post-Evaluation
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-              ))
-            ) : (
-              <div className="recentlyJoinedContainer">
-                <div className="recentlyJoinedDisplay">
-                  <img src={`/fwvsdv.jpg`} alt={``} />
-                  <div className="recentDetails">
-                    <p>No events joined this time.</p>
+                  ))
+              ) : (
+                <div className="recentlyJoinedContainer">
+                  <div className="recentlyJoinedDisplay">
+                    <img src={`/fwvsdv.jpg`} alt={``} />
+                    <div className="recentDetails">
+                      <p>No events joined this time.</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </>
           )}
 
@@ -420,16 +461,36 @@ function Events() {
           <div className="latestEventsContainer">
             {event ? (
               event.slice(0, 2).map((item) => (
-                <div key={item.id} className="latestEventsDisplay" onClick={() => {setSelectedEvent(item); openModal(item);}}>
-                  <img src={`http://localhost:5000/api/event/uploads/${item.eventImage}`} alt={item.title} />
+                <div
+                  key={item.id}
+                  className="latestEventsDisplay"
+                  onClick={() => {
+                    setSelectedEvent(item);
+                    openModal(item);
+                  }}
+                >
+                  <img
+                    src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                    alt={item.title}
+                  />
                   <div className="latestDetails space-y-2">
                     <h1>{item.title}</h1>
-                    <p>Added on {format(new Date(item.createdAt), 'MMMM dd, yyyy')}</p>
+                    <p>
+                      Added on{" "}
+                      {format(new Date(item.createdAt), "MMMM dd, yyyy")}
+                    </p>
                   </div>
                 </div>
               ))
             ) : (
-              <div key={item.id} className="latestEventsDisplay" onClick={() => {setSelectedEvent(item); openModal(item);}}>
+              <div
+                key={item.id}
+                className="latestEventsDisplay"
+                onClick={() => {
+                  setSelectedEvent(item);
+                  openModal(item);
+                }}
+              >
                 <img src={`/fwvsdv.jpg`} alt={item.title} />
                 <div className="latestDetails space-y-2">
                   <h1>No latest events this time.</h1>
@@ -483,13 +544,17 @@ function Events() {
           <div className="dynamicContent">
             {currentEvents.map((event, index) => (
               <div className="dynamicDisplay" key={index}>
-                <img src={`http://localhost:5000/api/event/uploads/${event.eventImage}`} alt={event.title} />
-                <div className="dynamicDetails">
+                <img
+                  src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
+                  alt={event.title}
+                />
+                <div className="dynamicDetails transition-all">
                   <h1>{event.title}</h1>
                   <p>{event.location}</p>
                   <p>{event.date}</p>
                   <button
-                    className="text-white text-base font-semibold px-7 py-2 rounded-lg mt-3 border" style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
+                    className="text-white hover:translate-y-[-0.1rem] text-[0.9rem] transition-all font-semibold px-7 py-2 rounded-lg mt-3 border hover:bg-[#282828] "
+                    style={{ borderColor: "rgba(255, 255, 255, 0.2)" }}
                     onClick={() => {
                       setSelectedEvent(event);
                       openModal(event);
@@ -500,24 +565,41 @@ function Events() {
                 </div>
               </div>
             ))}
-            {currentEvents.length === 0 && <h1>No Current Events</h1>}
+            {currentEvents.length === 0 && (
+              <div className="flex flex-col opacity-20 items-center mt-9 justify-center text-center w-full ] text-white">
+                <div>
+                  <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[1.2rem] font-bold">
+                    {" "}
+                    No {activeCategory} Events yet.
+                  </p>
+                  {/* <h1>No {activeCategory} Events</h1> */}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Pagination */}
           <div className="pagination">
             <Button onPress={goToPreviousPage} disabled={currentPage === 1}>
-            ◄ Previous
+              ◄ Previous
             </Button>
-            <span className="pageIndicator">Page {currentPage} of {totalPages}</span>
-            <Button onPress={goToNextPage} disabled={currentPage === totalPages}>
+            <span className="pageIndicator">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              onPress={goToNextPage}
+              disabled={currentPage === totalPages}
+            >
               Next ►
             </Button>
           </div>
         </div>
-            
-      
-      {/* Right Container */}
-      <div className="newRightContainer">
+
+        {/* Right Container */}
+        <div className="newRightContainer">
           <h1>Popular</h1>
 
           {/* Popular Navigation */}
@@ -548,53 +630,80 @@ function Events() {
           <div className="popularContent">
             {activePopular === "Weekly" && (
               <>
-              {PopularEvents().TopWeekEvent && (
-                PopularEvents().TopWeekEvent.map((item, index) => (
-                  <div key={item.id} className="popularDisplay" onClick={() => {setSelectedEvent(item); openModal(item);}}>
-                    <div className="popularCount">
-                      <h1>{index + 1}</h1>
+                {PopularEvents().TopWeekEvent &&
+                  PopularEvents().TopWeekEvent.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="popularDisplay"
+                      onClick={() => {
+                        setSelectedEvent(item);
+                        openModal(item);
+                      }}
+                    >
+                      <div className="popularCount">
+                        <h1>{index + 1}</h1>
+                      </div>
+                      <img
+                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                        alt={item.title}
+                      />
+                      <div className="popularDetails">
+                        <h1>{item.title}</h1>
+                      </div>
                     </div>
-                    <img src={`http://localhost:5000/api/event/uploads/${item.eventImage}`} alt={item.title} />
-                    <div className="popularDetails">
-                      <h1>{item.title}</h1>
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))}
               </>
             )}
             {activePopular === "Monthly" && (
               <>
-              {PopularEvents().TopMonthEvent && (
-                PopularEvents().TopMonthEvent.map((item, index) => (
-                  <div key={item.id} className="popularDisplay" onClick={() => {setSelectedEvent(item); openModal(item);}}>
-                    <div className="popularCount">
-                      <h1>{index + 1}</h1>
+                {PopularEvents().TopMonthEvent &&
+                  PopularEvents().TopMonthEvent.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="popularDisplay"
+                      onClick={() => {
+                        setSelectedEvent(item);
+                        openModal(item);
+                      }}
+                    >
+                      <div className="popularCount">
+                        <h1>{index + 1}</h1>
+                      </div>
+                      <img
+                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                        alt={item.title}
+                      />
+                      <div className="popularDetails">
+                        <h1>{item.title}</h1>
+                      </div>
                     </div>
-                    <img src={`http://localhost:5000/api/event/uploads/${item.eventImage}`} alt={item.title} />
-                    <div className="popularDetails">
-                      <h1>{item.title}</h1>
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))}
               </>
             )}
             {activePopular === "All" && (
               <>
-              {PopularEvents().TopAllTime && (
-                PopularEvents().TopAllTime.map((item, index) => (
-                  <div key={item.id} className="popularDisplay" onClick={() => {setSelectedEvent(item); openModal(item);}}>
-                    <div className="popularCount">
-                      <h1>{index + 1}</h1>
+                {PopularEvents().TopAllTime &&
+                  PopularEvents().TopAllTime.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="popularDisplay"
+                      onClick={() => {
+                        setSelectedEvent(item);
+                        openModal(item);
+                      }}
+                    >
+                      <div className="popularCount">
+                        <h1>{index + 1}</h1>
+                      </div>
+                      <img
+                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                        alt={item.title}
+                      />
+                      <div className="popularDetails">
+                        <h1>{item.title}</h1>
+                      </div>
                     </div>
-                    <img src={`http://localhost:5000/api/event/uploads/${item.eventImage}`} alt={item.title} />
-                    <div className="popularDetails">
-                      <h1>{item.title}</h1>
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))}
               </>
             )}
           </div>
@@ -606,34 +715,43 @@ function Events() {
         <div className="modal" onClick={closeModal}>
           <div className="modalContent">
             <div className="closeButtonBox">
-              <button onClick={closeModal} className="eventClose">&times;</button>
+              <button onClick={closeModal} className="eventClose">
+                &times;
+              </button>
             </div>
-            <img src={`http://localhost:5000/api/event/uploads/${selectedEvent.eventImage}`} alt={selectedEvent.title} />
+            <img
+              src={`http://localhost:5000/api/event/uploads/${selectedEvent.eventImage}`}
+              alt={selectedEvent.title}
+            />
             <div className="modalTitle">
               <h1>{selectedEvent.title}</h1>
               <p>{selectedEvent.location}</p>
-              <p>Date: &nbsp; {format(new Date(selectedEvent.dateStart), 'MMMM dd, yyyy')} &nbsp; - &nbsp;
-                {format(new Date(selectedEvent.dateEnd), 'MMMM dd, yyyy')}
+              <p>
+                Date: &nbsp;{" "}
+                {format(new Date(selectedEvent.dateStart), "MMMM dd, yyyy")}{" "}
+                &nbsp; - &nbsp;
+                {format(new Date(selectedEvent.dateEnd), "MMMM dd, yyyy")}
               </p>
-              <p>Time: &nbsp;
+              <p>
+                Time: &nbsp;
                 {new Date(
-                    `${new Date(selectedEvent.dateStart).getFullYear()}-01-01T${
-                      selectedEvent.timeStart
-                    }`
-                  ).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}{" "}
-                  &nbsp; - &nbsp;
-                  {new Date(
-                    `${new Date(selectedEvent.dateStart).getFullYear()}-01-01T${
-                      selectedEvent.timeStart
-                    }`
-                  ).toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: true,
+                  `${new Date(selectedEvent.dateStart).getFullYear()}-01-01T${
+                    selectedEvent.timeStart
+                  }`
+                ).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}{" "}
+                &nbsp; - &nbsp;
+                {new Date(
+                  `${new Date(selectedEvent.dateStart).getFullYear()}-01-01T${
+                    selectedEvent.timeStart
+                  }`
+                ).toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
                 })}
               </p>
             </div>
@@ -646,7 +764,9 @@ function Events() {
               <div className="hosts">
                 {/* <img src="user.jpg" alt="" /> */}
                 {JSON.parse(selectedEvent.hostedBy).map((host, index) => (
-                  <p key={index}>{host}</p>
+                  <p className="bg-[#2d2d2d] px-2 py-2 rounded" key={index}>
+                    {host}
+                  </p>
                 ))}
               </div>
             </div>
@@ -654,26 +774,38 @@ function Events() {
             <div className="eventButtons">
               {selectedEvent.status === "Approved" ? (
                 statusCode === 404 ? (
+                  <button
+                    className="requestJoin"
+                    onClick={() => handleJoinEvent(selectedEvent.id)}
+                  >
+                    Request to join
+                  </button>
+                ) : statusCode === 202 ? (
+                  <>
                     <button
-                      className="requestJoin"
-                      onClick={() => handleJoinEvent(selectedEvent.id)}
+                      onClick={() => handleCancelRegistration(selectedEvent.id)}
                     >
-                      Request to join
+                      Cancel Registration
                     </button>
-                  ) : statusCode === 202 ? (
-                    <>
-                    <button onClick={() => handleCancelRegistration(selectedEvent.id)}>Cancel Registration</button>
-                    </>
-                  ) : (
-                    <>
-                      <Link href={`/Ticket/${session?.user?.id}/${selectedEvent.id}`}>
-                        <button className="bg-purple-950">My ticket</button>
-                      </Link>
-                      <button onClick={() => handleCancelRegistration(selectedEvent.id)}>Cancel Registration</button>
-                    </>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={`/Ticket/${session?.user?.id}/${selectedEvent.id}`}
+                    >
+                      <button className="bg-purple-950">My ticket</button>
+                    </Link>
+                    <button
+                      onClick={() => handleCancelRegistration(selectedEvent.id)}
+                    >
+                      Cancel Registration
+                    </button>
+                  </>
                 )
               ) : (
-                <Link href={`/UserEvaluation/${selectedEvent.id}`}><button className="bg-purple-950">Answer Survey</button></Link>
+                <Link href={`/UserEvaluation/${selectedEvent.id}`}>
+                  <button className="bg-purple-950">Answer Survey</button>
+                </Link>
               )}
             </div>
           </div>

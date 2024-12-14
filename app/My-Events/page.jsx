@@ -26,7 +26,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import AppealRequestModal from "./AppealRequestModal";
 
-
 function MyEvents() {
   const [selected, setSelected] = useState("Created");
   const progressOptions = [
@@ -34,6 +33,7 @@ function MyEvents() {
     "Pending",
     "Pre-Approved",
     "Approved",
+    "Appealed",
     "Rejected",
   ];
 
@@ -50,7 +50,8 @@ function MyEvents() {
   const [rejectionReason, setRejectionReason] = useState({});
 
   const [appealRequestModal, setAppealRequestModal] = useState(false);
-  const [selectedAppealRequestEvent, setSelectedAppealRequestEvent] = useState(null);
+  const [selectedAppealRequestEvent, setSelectedAppealRequestEvent] =
+    useState(null);
 
   // New state for Toggle and Search
   const [selectedSection, setSelectedSection] = useState("all");
@@ -122,14 +123,16 @@ function MyEvents() {
 
   const fetchRejectReason = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/event/${id}/rejection-reason`);
+      const response = await axios.get(
+        `http://localhost:5000/api/event/${id}/rejection-reason`
+      );
       if (response.status === 200) {
         return response.data.reason;
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchRejectionReasons = async () => {
@@ -142,7 +145,7 @@ function MyEvents() {
       }
       setRejectionReason(reasons);
     };
-  
+
     if (events.length > 0) {
       fetchRejectionReasons();
     }
@@ -245,7 +248,9 @@ function MyEvents() {
 
   const handleEventSubmit = async (id) => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/event/${id}/pending`);
+      const response = await axios.post(
+        `http://localhost:5000/api/event/${id}/pending`
+      );
     } catch (error) {
       if (response.status === 200) {
         alert(response.data.message);
@@ -253,7 +258,7 @@ function MyEvents() {
         console.log("Event submission failed", error);
       }
     }
-  }
+  };
 
   // Modified filtering to include pagination
   useEffect(() => {
@@ -284,12 +289,12 @@ function MyEvents() {
   const handleAppealRequest = async (eventId, request) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/event/${eventId}/appeal`, 
+        `http://localhost:5000/api/event/${eventId}/appeal`,
         request,
         {
           headers: {
             "Content-Type": "application/json",
-          }
+          },
         }
       );
 
@@ -300,7 +305,7 @@ function MyEvents() {
     } catch (error) {
       console.error("Error appealing the event:", error);
     }
-  }
+  };
 
   if (loading)
     return (
@@ -477,7 +482,7 @@ function MyEvents() {
               }}
               className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
             >
-              <FontAwesomeIcon icon={faPaperPlane}/>
+              <FontAwesomeIcon icon={faPaperPlane} />
               <p>Submit</p>
             </button>
           )}
@@ -629,29 +634,28 @@ function MyEvents() {
           </Link>
 
           {/* Button: Upload Requirements */}
-          {event.status === selected &&
-            (selected === "Created") && (
-              <button
-                type="button"
-                onClick={() => {
-                  setIsUploadModalOpen(true);
-                  setSelectedEvent(event);
-                }}
-                className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-0 rounded"
-              >
-                <i
-                  className={`fa ${
-                    event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
-                  } text-[0.8rem]`}
-                  aria-hidden="true"
-                ></i>
-                <p className="text-[0.8rem]">
-                  {event.requirementFilesCount === 0
-                    ? "Upload Requirements"
-                    : "Manage Requirements"}
-                </p>
-              </button>
-            )}
+          {event.status === selected && selected === "Created" && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsUploadModalOpen(true);
+                setSelectedEvent(event);
+              }}
+              className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-0 rounded"
+            >
+              <i
+                className={`fa ${
+                  event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
+                } text-[0.8rem]`}
+                aria-hidden="true"
+              ></i>
+              <p className="text-[0.8rem]">
+                {event.requirementFilesCount === 0
+                  ? "Upload Requirements"
+                  : "Manage Requirements"}
+              </p>
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -659,6 +663,41 @@ function MyEvents() {
 
   // Event Card for Pre-Approvedd Status
   const renderPreApprovedEventCard = (event) => (
+    <div key={event.id} className="organizerEventCard modified-event-card">
+      {/* PreApproved Event Card Content */}
+      <div className="organizerImage">
+        <img
+          src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
+          alt={event.title}
+        />
+      </div>
+      <div className="cardDetails w-full">
+        <div className="flex flex-row justify-between items-start gap-10">
+          <div className="flex flex-col mb-4">
+            <div>
+              <div className="cardTitle">{event.title}</div>
+              <div className="cardInfo">
+                <p>{event.location}</p>
+                <p>
+                  {new Date(event.dateStart).toLocaleDateString("en-us", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+              <div className="inline-block bg-[#00158C] mt-2 px-2 py-[2px] rounded">
+                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Event Card for the Appeal Status
+  const renderAppealedCard = (event) => (
     <div key={event.id} className="organizerEventCard modified-event-card">
       {/* PreApproved Event Card Content */}
       <div className="organizerImage">
@@ -749,7 +788,10 @@ function MyEvents() {
         </div>
         <div className="flex flex-row gap-4 justify-end">
           {/* Button: See Details */}
-          <div onClick={() => openAppealRequestModal(event)} className="cursor-pointer bg-transparent hover:bg-[#ffffff]/20 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
+          <div
+            onClick={() => openAppealRequestModal(event)}
+            className="cursor-pointer bg-transparent hover:bg-[#ffffff]/20 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded"
+          >
             <i
               className="fa fa-info-circle text-[0.8rem]"
               aria-hidden="true"
@@ -829,7 +871,7 @@ function MyEvents() {
               <button
                 key={option}
                 className={`
-                  flex items-center px-[1.1rem] py-2 rounded-md text-sm transition-all duration-300
+                  flex items-center px-[0.8rem] py-2 rounded-md text-sm transition-all duration-300
                   ${
                     selected === option
                       ? "bg-[#bababa] text-black"
@@ -902,9 +944,7 @@ function MyEvents() {
             ) : (
               <>
                 {filteredEvents.map((event, index) => (
-                  <div key={index}> 
-                    {renderEventCard(event)}
-                  </div>
+                  <div key={index}>{renderEventCard(event)}</div>
                 ))}
 
                 {/* Pagination Component */}

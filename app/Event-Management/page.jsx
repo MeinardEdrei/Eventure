@@ -10,6 +10,7 @@ import axios from "axios";
 import ConfirmationModal from "./ConfirmationModal";
 import ViewEventModal from "./ViewEventModal";
 import RejectReasonModal from "./RejectReasonModal";
+import Alert from "../Create-Event/Alert";
 import {
   format,
   parseISO,
@@ -29,7 +30,6 @@ import {
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 
-
 export default function EventApproval() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +38,21 @@ export default function EventApproval() {
   const [noEvents, setNoEvents] = useState(true);
   const [searchEventQuery, setsearchEventQuery] = useState("");
   const [dateRange, setDateRange] = useState({ from: null, to: null });
+
+  // For alert messages
+  const [alert, setAlert] = useState(null);
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+
+    // Automatically dismiss the alert after 5 seconds
+    setTimeout(() => {
+      setAlert(null);
+    }, 5000);
+  };
+
+  const dismissAlert = () => {
+    setAlert(null);
+  };
 
   // For Event Modal
   const [viewEventModal, setViewEventModal] = useState(false);
@@ -53,7 +68,7 @@ export default function EventApproval() {
   const [selectedRejectEvent, setSelectedRejectEvent] = useState(null);
   const [appealRequest, setAppealRequest] = useState({});
 
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState("Pending");
   const [options, setOptions] = useState([
     "Pending",
     "Pre-Approved",
@@ -64,32 +79,26 @@ export default function EventApproval() {
 
   useEffect(() => {
     if (session?.user?.role === "Admin") {
-      setOptions([
-        "Pre-Approved",
-        "Approved",
-        "Rejected",
-      ]);
+      setOptions(["Pre-Approved", "Approved", "Rejected"]);
       setSelected("Pre-Approved");
-    } else if (session?.user?.role === "Staff"){
-      setOptions([
-        "Pending",
-        "Rejected",
-        "Appealed",
-      ]);
+    } else if (session?.user?.role === "Staff") {
+      setOptions(["Pending", "Rejected", "Appealed"]);
       setSelected("Pending");
     }
   }, [session]);
 
   const fetchAppealRequest = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/event/${id}/appeal-request`);
+      const response = await axios.get(
+        `http://localhost:5000/api/event/${id}/appeal-request`
+      );
       if (response.status === 200) {
         return response.data.request;
       }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchAppealRequests = async () => {
@@ -102,7 +111,7 @@ export default function EventApproval() {
       }
       setAppealRequest(requests);
     };
-  
+
     if (events.length > 0) {
       fetchAppealRequests();
     }
@@ -204,7 +213,7 @@ export default function EventApproval() {
       );
 
       if (res.status === 200) {
-        alert("Event pre-approved successfully");
+        showAlert("success", "Event pre-approved successfully");
         fetchData();
       }
     } catch (error) {
@@ -219,7 +228,7 @@ export default function EventApproval() {
       );
 
       if (res.status === 200) {
-        alert("Event approved successfully");
+        showAlert("success", "Event approved successfully");
         fetchData();
       }
     } catch (error) {
@@ -230,17 +239,17 @@ export default function EventApproval() {
   const handleReject = async (eventId, reason) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/event/${eventId}/reject`, 
+        `http://localhost:5000/api/event/${eventId}/reject`,
         reason,
         {
           headers: {
             "Content-Type": "application/json",
-          }
+          },
         }
       );
 
       if (res.status === 200) {
-        alert("Event rejected successfully");
+        showAlert("success", "Event rejected successfully");
         fetchData();
       }
     } catch (error) {
@@ -278,81 +287,88 @@ export default function EventApproval() {
     setViewEventModal(false);
   };
 
-if (loading) {
-  return (
-    <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
-      <div className="w-[82%] mb-10">
-        <div className="flex flex-row justify-between items-end mb-4">
-          <div>
-            <Skeleton
-              variant="text"
-              width={300}
-              height={40}
-              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-            />
-            <Skeleton
-              variant="text"
-              width={500}
-              height={20}
-              sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
-            />
-          </div>
-          <Skeleton
-            variant="rectangular"
-            width={180}
-            height={50}
-            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-          />
-        </div>
-      </div>
-
-      <div className="box-maincontainer flex flex-col w-[50%] justify-center">
-        <div className="flex flex-row justify-between mb-4 items-center">
-          <Skeleton
-            variant="text"
-            width={200}
-            height={30}
-            sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-          />
-          <div className="flex flex-row gap-4">
+  if (loading) {
+    return (
+      <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
+        <div className="w-[82%] mb-10">
+          <div className="flex flex-row justify-between items-end mb-4">
+            <div>
+              <Skeleton
+                variant="text"
+                width={300}
+                height={40}
+                sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+              />
+              <Skeleton
+                variant="text"
+                width={500}
+                height={20}
+                sx={{ backgroundColor: "rgba(255,255,255,0.1)" }}
+              />
+            </div>
             <Skeleton
               variant="rectangular"
-              width={200}
-              height={40}
-              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-            />
-            <Skeleton
-              variant="rectangular"
-              width={200}
-              height={40}
+              width={180}
+              height={50}
               sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
             />
           </div>
         </div>
 
-        <div className="cards-container flex flex-col w-full gap-2">
-          {[1, 2, 3].map((item) => (
+        <div className="box-maincontainer flex flex-col w-[50%] justify-center">
+          <div className="flex flex-row justify-between mb-4 items-center">
             <Skeleton
-              key={item}
-              variant="rectangular"
-              width="100%"
-              height={200}
-              sx={{
-                backgroundColor: "rgba(255,255,255,0.1)",
-                marginBottom: "16px",
-                borderRadius: "12px",
-              }}
+              variant="text"
+              width={200}
+              height={30}
+              sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
             />
-          ))}
+            <div className="flex flex-row gap-4">
+              <Skeleton
+                variant="rectangular"
+                width={200}
+                height={40}
+                sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+              />
+              <Skeleton
+                variant="rectangular"
+                width={200}
+                height={40}
+                sx={{ backgroundColor: "rgba(255,255,255,0.2)" }}
+              />
+            </div>
+          </div>
+
+          <div className="cards-container flex flex-col w-full gap-2">
+            {[1, 2, 3].map((item) => (
+              <Skeleton
+                key={item}
+                variant="rectangular"
+                width="100%"
+                height={200}
+                sx={{
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  marginBottom: "16px",
+                  borderRadius: "12px",
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="event-maincontainer flex flex-col justify-center items-center mt-5">
       {/* Header */}
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={dismissAlert}
+        />
+      )}
       <div className="upper-maincontainer flex flex-col w-[82%] mb-10">
         <div className="text-btn-container flex flex-row justify-between items-end mb-4">
           <div className="header-text-container flex flex-col">
@@ -365,7 +381,7 @@ if (loading) {
           {/* Dropdown Container */}
           <div className="relative w-[11rem]">
             <button
-              className="flex items-center justify-between w-[100%] px-4 py-2 bg-[#54366c] font-bold rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-in"
+              className="flex items-center justify-between w-[100%] px-4 py-2 bg-[#4e4e4e4d] border border-[#fff0f04d] font-bold rounded-md shadow-sm capitalize cursor-pointer transition-all duration-200 ease-in"
               onClick={() => setIsOpen(!isOpen)}
             >
               {selected}
@@ -377,14 +393,14 @@ if (loading) {
             </button>
 
             {isOpen && (
-              <div className="absolute right-0 mt-2 w-full bg-[#54366c] rounded-lg shadow-lg shadow-white/10 z-10">
+              <div className="absolute right-0 mt-2 w-full bg-[#414141] rounded-lg shadow-lg shadow-white/10 z-10">
                 {options.map((option) => (
                   <button
                     key={option}
                     className={`block w-full py-2 px-2 text-left capitalize bg-transparent border-0 cursor-pointer text-white opacity-50 transition-all duration-300 ease-in-out ${
                       selected === option
-                        ? "bg-[#9148cd] text font-bold text-white opacity-90"
-                        : "hover:bg-purple-700 hover:text-white hover:font-bold hover:opacity-100"
+                        ? "bg-[#7b7b7b] text font-bold text-white opacity-90"
+                        : "hover:bg-[#656565] hover:text-white hover:font-bold hover:opacity-100"
                     }`}
                     onClick={() => handleSelect(option)}
                   >
@@ -523,16 +539,16 @@ if (loading) {
                     <div className="event-btn flex flex-row gap-4">
                       {/* Button: Pre Approve */}
                       {(selected === "Pending" || selected === "Appealed") && (
-                      <div className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded">
-                        <Check size={16} />
-                        <button
-                          className="text-[0.8rem]"
-                          onClick={() => openPreApproveConfirmModal(event.id)}
-                          disabled={event.status === "approved"}
-                        >
-                          Pre-approve
-                        </button>
-                      </div>
+                        <div className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded">
+                          <Check size={16} />
+                          <button
+                            className="text-[0.8rem]"
+                            onClick={() => openPreApproveConfirmModal(event.id)}
+                            disabled={event.status === "approved"}
+                          >
+                            Pre-approve
+                          </button>
+                        </div>
                       )}
                       {/* Button: Approve */}
                       {selected === "Pre-Approved" && (
@@ -550,21 +566,22 @@ if (loading) {
                         </div>
                       )}
                       {/* Button: Reject */}
-                      {(selected === "Pre-Approved" || selected === "Pending") && (
-                      <div
-                        onClick={() => openRejectReasonModal(event)}
-                        className="reject-btn"
-                      >
-                        <span className="flex items-center">
-                          <X size={16} />
-                        </span>
-                        <button
-                          className="reject"
-                          disabled={event.status === "rejected"}
+                      {(selected === "Pre-Approved" ||
+                        selected === "Pending") && (
+                        <div
+                          onClick={() => openRejectReasonModal(event)}
+                          className="reject-btn"
                         >
-                          Reject
-                        </button>
-                      </div>
+                          <span className="flex items-center">
+                            <X size={16} />
+                          </span>
+                          <button
+                            className="reject"
+                            disabled={event.status === "rejected"}
+                          >
+                            Reject
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>

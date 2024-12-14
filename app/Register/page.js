@@ -41,15 +41,25 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedStudentNumber = studentNumber.trim();
+
+    if (!trimmedEmail.endsWith("@umak.edu.ph")) {
+      setError("Email must end with @umak.edu.ph");
+      return;
+    }
     
     try {
       const res = await axios.post(
         "http://localhost:5000/api/user/register",
         { 
-          username, 
-          email, 
-          password, 
-          student_number: studentNumber, 
+          username: trimmedUsername, 
+          email: trimmedEmail, 
+          password: trimmedPassword, 
+          student_number: trimmedStudentNumber, 
           section: section,
           status, 
           role, 

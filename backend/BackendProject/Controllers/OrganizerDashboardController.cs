@@ -106,7 +106,7 @@ namespace BackendProject.Controllers
             eventsData.Count(e => e.Status == "Pre-Approved"),
             eventsData.Count(e => e.Status == "Approved"),
             eventsData.Count(e => e.Status == "Modified"),
-            eventsData.Count(e => e.Status == "Disapproved")
+            eventsData.Count(e => e.Status == "Rejected")
         };
 
         /* UPCOMING EVENTS */
@@ -265,7 +265,7 @@ namespace BackendProject.Controllers
       var preApprovedCount = eventsData.Count(e => e.Status == "Pre-Approved");
       var approvedCount = eventsData.Count(e => e.Status == "Approved");
       var modifiedCount = eventsData.Count(e => e.Status == "Modified");
-      var disapprovedCount = eventsData.Count(e => e.Status == "Disapproved");
+      var disapprovedCount = eventsData.Count(e => e.Status == "Rejected");
 
       var statusCounts = new int[] { pendingCount, preApprovedCount, approvedCount, modifiedCount, disapprovedCount };
 

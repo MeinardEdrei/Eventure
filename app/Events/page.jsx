@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { format } from "date-fns";
 import Link from "next/link";
-import { CalendarOff } from "lucide-react";
+import { CalendarOff, X } from "lucide-react";
 
 function Events() {
   const router = useRouter();
@@ -537,12 +537,12 @@ function Events() {
                   src={`http://localhost:5000/api/event/uploads/${event.eventImage}`}
                   alt={event.title}
                 />
-                <div className="dynamicDetails">
+                <div className="dynamicDetails transition-all">
                   <h1>{event.title}</h1>
                   <p>{event.location}</p>
                   <p>{event.date}</p>
                   <button
-                    className="text-white text-base font-semibold px-7 py-2 rounded-lg mt-3 border"
+                    className="text-white hover:translate-y-[-0.1rem] text-[0.9rem] transition-all font-semibold px-7 py-2 rounded-lg mt-3 border hover:bg-[#282828] "
                     style={{ borderColor: "rgba(255, 255, 255, 0.2)" }}
                     onClick={() => {
                       setSelectedEvent(event);
@@ -753,7 +753,9 @@ function Events() {
               <div className="hosts">
                 {/* <img src="user.jpg" alt="" /> */}
                 {JSON.parse(selectedEvent.hostedBy).map((host, index) => (
-                  <p key={index}>{host}</p>
+                  <p className="bg-[#2d2d2d] px-2 py-2 rounded" key={index}>
+                    {host}
+                  </p>
                 ))}
               </div>
             </div>

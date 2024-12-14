@@ -10,6 +10,7 @@ import {
 import "draft-js/dist/Draft.css";
 import { Calendar, Clock } from "lucide-react";
 import "../css/Create-Event.css";
+import Alert from "./Alert";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import {
@@ -196,6 +197,7 @@ const Page = () => {
   const [isRequirementsModalOpen, setIsRequirementsModalOpen] = useState(false);
 
   const descriptionRef = useRef(null);
+  const [alert, setAlert] = useState(null);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -234,14 +236,18 @@ const Page = () => {
     }
   }, [session]);
 
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert(null), 5000); // Auto-dismiss after 5 seconds
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const validOrganizerId = parseInt(organizerId);
       if (isNaN(validOrganizerId)) {
-        // To counter NaN error
-        alert("Invalid Organizer ID");
+        showAlert("error", "Invalid Organizer ID");
         return;
       }
 
@@ -263,10 +269,10 @@ const Page = () => {
       // });
 
       // Format start and end date/time
-      const formattedDateStart = startDateTime.format('YYYY-MM-DD');
-      const formattedTimeStart = startDateTime.format('HH:mm:ss');
-      const formattedDateEnd = endDateTime.format('YYYY-MM-DD');
-      const formattedTimeEnd = endDateTime.format('HH:mm:ss');
+      const formattedDateStart = startDateTime.format("YYYY-MM-DD");
+      const formattedTimeStart = startDateTime.format("HH:mm:ss");
+      const formattedDateEnd = endDateTime.format("YYYY-MM-DD");
+      const formattedTimeEnd = endDateTime.format("HH:mm:ss");
 
       const formData = new FormData(); // Using FormData to handle file uploads
 
@@ -281,7 +287,7 @@ const Page = () => {
       formData.append("TimeStart", formattedTimeStart);
       formData.append("DateEnd", formattedDateEnd);
       formData.append("TimeEnd", formattedTimeEnd);
-      
+
       formData.append("Location", venue);
       formData.append("MaxCapacity", parseInt(capacity));
       formData.append("EventImage", selectedFile);
@@ -301,22 +307,19 @@ const Page = () => {
           },
         }
       );
-
-      alert(res.data.message);
+      showAlert("success", res.data.message);
+      // alert(res.data.message);
 
       if (res.status == 200) {
         router.push("/My-Events");
       }
     } catch (error) {
       console.error("Error details:", error);
-      if (error.response) {
-        console.error("Response error:", error.response.data);
-        console.error("Status code:", error.response.status);
-      }
-      alert(
+      const errorMessage =
         error.response?.data?.message ||
-          "Event creation failed: " + error.message
-      );
+        "Event creation failed: " + error.message;
+
+      showAlert("error", errorMessage);
     }
   };
 
@@ -325,6 +328,14 @@ const Page = () => {
 
   return (
     <div className="createEvent-mnc">
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
+
       <form onSubmit={handleSubmit} className="event-content">
         <div className="text-container">
           <div>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import Alert from "../Create-Event/Alert";
 
 const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
@@ -13,6 +14,12 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
   const [department, setDepartment] = useState("");
   const [section, setSection] = useState("");
   const [error, setError] = useState("");
+  
+  const [alert, setAlert] = useState(null);
+  const showAlert = (type, message) => {
+    setAlert({ type, message });
+    setTimeout(() => setAlert(null), 5000); // Auto-dismiss after 5 seconds
+  };
 
   const showStudentFields = selectedRole === "Student";
   const hideFields = selectedRole === "Admin" || selectedRole === "Staff";
@@ -43,7 +50,7 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
       );
 
       if (res.status === 200) {
-        alert(res.data.message || "User added successfully!");
+        showAlert("success", res.data.message || "User added successfully!");
         setEmail("");
         setPassword("");
         setName("");
@@ -55,14 +62,24 @@ const AddUserModal = ({ isOpen, onClose, onSuccess }) => {
         onClose();
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message || error.message || "An error occurred"
-      );
+      const errorMessage =
+        error.response?.data?.message ||
+        "User creation failed: " + error.message;
+
+      showAlert("error", errorMessage);
+      setError(errorMessage);
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+      {alert && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert(null)}
+        />
+      )}
       <div className="bg-white rounded-lg p-10 w-[500px] max-h-[85vh] overflow-y-auto relative">
         <button
           onClick={onClose}

@@ -65,10 +65,10 @@ function MorePage({ event, evaluationForm, fetchData }) {
   };
 
   return (
-    <div className="flex flex-col gap-12">
-      <div className="bg-[#232121] border border-[#919191] rounded-[10px] flex flex-col gap-2">
+    <div className="flex flex-col gap-10">
+      <div className="flex flex-row gap-5">
         {/* Report Generation */}
-        <div className="p-6">
+        <div className="p-6 w-[50%] bg-[#232121] border border-[#919191] rounded-[10px]">
           <div className="text-[1.3rem] font-semibold">Report Generation</div>
           <div className="mb-8 opacity-50">
             Generate comprehensive event performance and participation reports
@@ -76,7 +76,7 @@ function MorePage({ event, evaluationForm, fetchData }) {
           </div>
           <div className="export-btn flex items-center justify-end">
             <button
-              className="py-[0.5rem] px-8 border flex flex-row items-center gap-2 border-white/25 rounded-[5px]"
+              className="py-[0.5rem] px-[1.5rem] border flex flex-row items-center gap-2 border-white/25 rounded-[5px]"
               onClick={handleGenerateReport}
             >
               <FileDown size={20} color="#ffffff" strokeWidth={1.5} />
@@ -87,7 +87,7 @@ function MorePage({ event, evaluationForm, fetchData }) {
         <hr />
 
         {/* Post Evaluation */}
-        <div className="p-6">
+        <div className="p-6 w-[50%] bg-[#232121] border border-[#919191] rounded-[10px]">
           <div className="text-[1.3rem] font-semibold">Post Evaluation</div>
           <div className="mb-8 opacity-50">
             Design and distribute surveys or forms to gather feedback and assess
@@ -129,7 +129,6 @@ function MorePage({ event, evaluationForm, fetchData }) {
       </div>
 
       {/* Cancel Event */}
-      {/* Cancel Event */}
       <div className="bg-[#7C0000] p-6 border rounded-[10px] border-white/50">
         <div>
           <div className="text-[1.3rem] font-semibold">Delete Event</div>
@@ -141,7 +140,7 @@ function MorePage({ event, evaluationForm, fetchData }) {
         </div>
         <div className="cancelButton flex justify-end">
           <button
-            className="py-[0.5rem] px-6 flex flex-row items-center gap-2"
+            className="py-[0.5rem] px-[1.5rem] flex flex-row items-center gap-2"
             onClick={() => setIsDeleteModalOpen(true)}
           >
             <Trash2 size={20} strokeWidth={1.5} />

@@ -18,6 +18,9 @@ import {
   XCircle,
   CirclePlus,
   CalendarOff,
+  RefreshCcw,
+  Check,
+  CheckCheck,
 } from "lucide-react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
@@ -61,8 +64,9 @@ function MyEvents() {
   const statusIcons = {
     Created: <CirclePlus className="mr-2 h-4 w-4" />,
     Pending: <Clock className="mr-2 h-4 w-4" />,
-    PreApproved: <CheckCircle className="mr-2 h-4 w-4" />,
-    Approved: <Edit className="mr-2 h-4 w-4" />,
+    PreApproved: <Check className="mr-2 h-4 w-4" />,
+    Approved: <CheckCheck className="mr-2 h-4 w-4" />,
+    Appealed: <RefreshCcw className="mr-2 h-4 w-4" />,
     Rejected: <XCircle className="mr-2 h-4 w-4" />,
   };
 
@@ -458,15 +462,19 @@ function MyEvents() {
               setIsUploadModalOpen(true);
               setSelectedEvent(event);
             }}
-            className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+            className="bg-[#606060] hover:bg-[#6a6a6a] text-[#000000] hover:bg-[#434343] transition-all flex items-center gap-2 px-4 py-2 rounded"
           >
             <i
               className={`fa ${
                 event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
-              } text-[0.8rem]`}
+              } text-[1.25rem]`}
+              style={{
+                color: "white",
+              }}
               aria-hidden="true"
             ></i>
-            <p className="text-[0.8rem]">
+
+            <p className="text-[0.9rem] text-[#ffffff]">
               {event.requirementFilesCount === 0
                 ? "Upload Files"
                 : "Manage Requirements"}
@@ -871,7 +879,7 @@ function MyEvents() {
               <button
                 key={option}
                 className={`
-                  flex items-center px-[0.8rem] py-2 rounded-md text-sm transition-all duration-300
+                  flex items-center px-[0.9rem] py-2 rounded-md text-sm transition-all duration-300
                   ${
                     selected === option
                       ? "bg-[#bababa] text-black"
@@ -890,7 +898,7 @@ function MyEvents() {
           </div>
 
           {/* Search Bar */}
-          <div className="relative flex-grow w-[30%]">
+          <div className="relative flex-grow w-[25%]">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>

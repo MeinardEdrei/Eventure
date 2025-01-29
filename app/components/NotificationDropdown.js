@@ -148,56 +148,57 @@ export default function NotificationDropdown() {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className="bg-[#1b1b1b] p-4 rounded-lg hover:bg-[#242324] transition-colors duration-300 cursor-pointer"
+                  className="p-4 rounded-lg hover:bg-[#1a1a1a] transition-colors duration-300 cursor-pointer"
                 >
                   <div className="flex flex-col justify-center items-start">
                     <div className="flex">
                       {session?.user?.role === "Organizer" ? (
                         <>
-                        <div className="object-cover">
-                          <img
-                            className="w-[7vw] h-[10vh] rounded-xl object-cover"
-                            src="/fwvsdv.jpg"
-                            alt="Admin Image"
-                          />
-                        </div>
-                        <div className="w-[70%] mx-5">
-                          <h3 className="text-white font-semibold">
-                            Admin
-                          </h3>
-                          <span className="text-gray-500 text-xs">
-                            {formatTimestampToRelativeTime(
-                              notification.createdAt
-                            )}
-                          </span>
-                          <p className="line-clamp-3 text-gray-300 text-sm">
-                            {notification.message} Entitled: {notification.eventTitle}
-                          </p>
-                        </div>
+                          <div className="object-cover">
+                            <img
+                              className="w-[7vw] h-[10vh] rounded-xl object-cover"
+                              src="/fwvsdv.jpg"
+                              alt="Admin Image"
+                            />
+                          </div>
+                          <div className="w-[70%] mx-5">
+                            <h3 className="text-white font-semibold">Admin</h3>
+                            <span className="text-gray-500 text-xs">
+                              {formatTimestampToRelativeTime(
+                                notification.createdAt
+                              )}
+                            </span>
+                            <p className="line-clamp-3 text-gray-300 text-sm">
+                              {notification.message} Entitled:{" "}
+                              {notification.eventTitle}
+                            </p>
+                          </div>
                         </>
                       ) : (
                         <>
-                        <div className="object-cover">
-                          <img
-                            className="w-[7vw] h-[10vh] rounded-xl object-cover"
-                            src={`http://localhost:5000/api/event/uploads/${notification.eventImage}`}
-                            alt="Event Image"
-                          />
-                        </div>
-                        <div className="w-[70%] mx-5">
-                          <h3 className="text-white font-semibold">
-                            {notification.userName}
-                            &nbsp;created a new event!
-                          </h3>
-                          <span className="text-gray-500 text-xs">
-                            {formatTimestampToRelativeTime(
-                              notification.createdAt
-                            )}
-                          </span>
-                          <p className="line-clamp-3 text-gray-300 text-sm">
-                            {convertDraftToText(notification.eventDesc)}
-                          </p>
-                        </div>
+                          <div className="flex flex-row items-center ml-4">
+                            <div className="object-cover">
+                              <img
+                                className="w-[4.5vw] h-[9vh] rounded-[100%] object-cover"
+                                src={`http://localhost:5000/api/event/uploads/${notification.eventImage}`}
+                                alt="Event Image"
+                              />
+                            </div>
+                            <div className="w-[80%] mx-5">
+                              <h3 className="text-white font-semibold">
+                                {notification.userName}
+                                &nbsp;created a new event!
+                              </h3>
+                              <span className="text-gray-500 text-xs">
+                                {formatTimestampToRelativeTime(
+                                  notification.createdAt
+                                )}
+                              </span>
+                              <p className="line-clamp-3 text-gray-300 text-sm">
+                                {convertDraftToText(notification.eventDesc)}
+                              </p>
+                            </div>
+                          </div>
                         </>
                       )}
                     </div>

@@ -30,7 +30,8 @@ const EventSettingsPanel = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isDepartmentOpen, setIsDepartmentOpen] = useState(false);
   const [departmentFilter, setDepartmentFilter] = useState("");
-  const [isVisibilityDropdownOpen, setIsVisibilityDropdownOpen] = useState(false);
+  const [isVisibilityDropdownOpen, setIsVisibilityDropdownOpen] =
+    useState(false);
 
   //State for Partnership
   const [partnershipFilter, setPartnershipFilter] = useState("");
@@ -263,7 +264,7 @@ const EventSettingsPanel = ({
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       if (visibilityType === "Private") {
         const shortcutName = session?.user?.department;
         if (shortcutName && userDept.includes(shortcutName)) {
@@ -272,9 +273,15 @@ const EventSettingsPanel = ({
         }
         setDepartmentsDropDown(false);
       } else if (visibilityType === "Public") {
+        // setSelectedDepartments(["Public"]);
         setSelectedDepartments(departments);
         setDepartmentsDropDown(false);
-      } else {
+      } else if (visibilityType === "Custom"){
+        setSelectedDepartments([]);
+        setDepartmentsDropDown(true);
+      } 
+      
+      else {
         setDepartmentsDropDown(true);
       }
     }
@@ -425,13 +432,20 @@ const EventSettingsPanel = ({
               </label>
 
               {visibilityType === "Private" && (
-                <div className="text-white/70 text-sm mb-2">
+                <div className="text-white/50 text-[0.8rem] leading-[14px] mb-2">
                   {`${session?.user?.department} department is the only host`}
+                </div>
+              )}
+              {visibilityType === "Public" && (
+                <div className="text-white/50 text-[0.8rem] leading-[14px] mb-2">
+                  You have selected "Public," meaning all departments will be
+                  included in this event.
                 </div>
               )}
 
               <div className="tags-container">
-                {visibilityType === "Public" && (
+                {/* Tags that show all departments */}
+                {/* {visibilityType === "Public" && (
                   <>
                     {selectedDepartments.map((dept) => (
                       <span key={dept} className="tag">
@@ -445,7 +459,7 @@ const EventSettingsPanel = ({
                       </span>
                     ))}
                   </>
-                )}
+                )} */}
                 {visibilityType === "Custom" && (
                   <>
                     {selectedDepartments.map((dept) => (

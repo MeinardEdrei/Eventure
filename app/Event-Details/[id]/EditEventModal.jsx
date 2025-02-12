@@ -644,7 +644,10 @@ const EditEventModal = ({
               <div className="description">
                 <label>Description</label>
                 {description && (
-                  <RichTextEditor value={description} onChange={setDescription} />
+                  <RichTextEditor
+                    value={description}
+                    onChange={setDescription}
+                  />
                 )}
               </div>
             </div>
@@ -787,27 +790,6 @@ const EditEventModal = ({
                       </div>
                     </div>
 
-                    {/* <div className="">
-                      <div className="toggle-div">
-                        <label className="label-container">
-                          <span className="label-icon">
-                            <i className="fa fa-check" aria-hidden="true"></i>
-                          </span>
-                          <span>Require Approval</span>
-                        </label>
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={requireApproval}
-                            onChange={(e) =>
-                              setRequireApproval(e.target.checked)
-                            }
-                          />
-                          <span className="toggle-slider"></span>
-                        </label>
-                      </div>
-                    </div> */}
-
                     {/* College Dropdown */}
                     <div className="w-full">
                       <label className="label-container">
@@ -821,68 +803,82 @@ const EditEventModal = ({
                       </label>
 
                       <div className="flex flex-col">
-                        {/* College Tag Container */}
-                        <div className="flex flex-wrap items-center gap-1 mb-1">
-                          {editedEvent.hostedBy.map((college) => (
-                            <span
-                              key={college}
-                              className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
-                            >
-                              {college}
-                              <button
-                                className="tag-remove"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleCollegeToggle(college);
-                                }}
-                                hidden={(editedEvent.visibility === "Private" || editedEvent.visibility === "Public") ? true : false}
+                        {/* College Tag Container - Only shown when visibility is "Custom" */}
+                        {editedEvent.visibility === "Custom" && (
+                          <div className="flex flex-wrap items-center gap-1 mb-1">
+                            {editedEvent.hostedBy.map((college) => (
+                              <span
+                                key={college}
+                                className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
                               >
-                                <X size={11} />
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="relative w-full">
-                            {editedEvent.visibility === "Public" ? (
-                              <></>
-                            ) : editedEvent.visibility === "Private" ? (
-                              <div className="text-white/40 text-xs ml-1">
-                                {`Your department is the only host.`}
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
-                                <input
-                                  type="text"
-                                  placeholder="Select Colleges..."
-                                  className="w-full bg-transparent border-0 outline-none"
-                                  value={collegesFilter}
-                                  onChange={(e) => {
-                                    setCollegesFilter(e.target.value);
-                                    setIsCollegesOpen(true);
-                                  }}
-                                  onClick={() => setIsCollegesOpen(true)}
-                                  disabled={editedEvent.visibility === "Private"}
-                                />
+                                {college}
                                 <button
+                                  className="tag-remove"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    setIsCollegesOpen(!isCollegesOpen);
+                                    handleCollegeToggle(college);
                                   }}
-                                  disabled={editedEvent.visibility === "Private" ? true : false}
+                                  hidden={
+                                    editedEvent.visibility === "Private" ||
+                                    editedEvent.visibility === "Public"
+                                      ? true
+                                      : false
+                                  }
                                 >
-                                  <ChevronDown
-                                    size={20}
-                                    className={`transform transition-transform ${
-                                      isCollegesOpen ? "rotate-180" : ""
-                                    }`}
-                                  />
+                                  <X size={11} />
                                 </button>
-                              </div>
-                            )}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="relative w-full">
+                          {editedEvent.visibility === "Public" ? (
+                            <div className="text-white/50 text-[0.7rem] leading-[14px] mb-2">
+                              You have selected "Public," meaning all
+                              departments will be included in this event.
+                            </div>
+                          ) : editedEvent.visibility === "Private" ? (
+                            <div className="text-white/40 text-xs ml-1">
+                              {`Your department is the only host.`}
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
+                              <input
+                                type="text"
+                                placeholder="Select Colleges..."
+                                className="w-full bg-transparent border-0 outline-none"
+                                value={collegesFilter}
+                                onChange={(e) => {
+                                  setCollegesFilter(e.target.value);
+                                  setIsCollegesOpen(true);
+                                }}
+                                onClick={() => setIsCollegesOpen(true)}
+                                disabled={editedEvent.visibility === "Private"}
+                              />
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setIsCollegesOpen(!isCollegesOpen);
+                                }}
+                                disabled={
+                                  editedEvent.visibility === "Private"
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <ChevronDown
+                                  size={20}
+                                  className={`transform transition-transform ${
+                                    isCollegesOpen ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          )}
 
                           {/* Dropdown Menu */}
-                          {isCollegesOpen && (
+                          {isCollegesOpen && editedEvent.visibility === "Custom" && (
                             <div className="dropdown-menu">
                               {/* Add College Input */}
                               <div className="flex items-center p-2 bg-[#7b7b7b]">
@@ -911,9 +907,9 @@ const EditEventModal = ({
                               {filteredColleges.map((college) => (
                                 <button
                                   key={college}
-                                  className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
+                                  className={`w-full text-left px-4 py-2 hover:bg-[#656565] ${
                                     editedEvent.hostedBy.includes(college)
-                                      ? "bg-[#6d3998]"
+                                      ? "hover:bg-[#656565]"
                                       : ""
                                   }`}
                                   onClick={() => handleCollegeToggle(college)}
@@ -989,17 +985,20 @@ const EditEventModal = ({
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  {option === "Private" ? (
-                                    setEditedEvent(prevState => ({
-                                      ...prevState,
-                                      hostedBy: session.user.department ? [session.user.department] : []
-                                    }))
-                                  ) : option === "Public" && (
-                                    setEditedEvent(prevState => ({
-                                      ...prevState,
-                                      hostedBy: colleges
-                                    }))
-                                  )}
+                                  {
+                                    option === "Private"
+                                      ? setEditedEvent((prevState) => ({
+                                          ...prevState,
+                                          hostedBy: session.user.department
+                                            ? [session.user.department]
+                                            : [],
+                                        }))
+                                      : option === "Public" &&
+                                        setEditedEvent((prevState) => ({
+                                          ...prevState,
+                                          hostedBy: colleges,
+                                        }));
+                                  }
                                   handleChange({
                                     target: {
                                       name: "visibility",

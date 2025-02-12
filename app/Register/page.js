@@ -1,6 +1,7 @@
 // SignUp
 
 "use client";
+
 import "../css/Login-Signup.css";
 import axios from "axios";
 import { useEffect, useState } from "react";

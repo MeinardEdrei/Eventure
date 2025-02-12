@@ -539,11 +539,13 @@ export default function EventApproval() {
                     <div className="event-btn flex flex-row gap-4">
                       {/* Button: Pre Approve */}
                       {(selected === "Pending" || selected === "Appealed") && (
-                        <div className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded">
+                        <div
+                          className="pre-approve-btn flex items-center gap-2 px-4 py-2 rounded"
+                          onClick={() => openPreApproveConfirmModal(event.id)}
+                        >
                           <Check size={16} />
                           <button
                             className="text-[0.8rem]"
-                            onClick={() => openPreApproveConfirmModal(event.id)}
                             disabled={event.status === "approved"}
                           >
                             Pre-approve
@@ -552,13 +554,15 @@ export default function EventApproval() {
                       )}
                       {/* Button: Approve */}
                       {selected === "Pre-Approved" && (
-                        <div className="approve-btn">
+                        <div
+                          className="approve-btn"
+                          onClick={() => openApproveConfirmModal(event.id)}
+                        >
                           <span className="flex items-center">
                             <CheckCheck size={16} />
                           </span>
                           <button
                             className="approve"
-                            onClick={() => openApproveConfirmModal(event.id)}
                             disabled={event.status === "approved"}
                           >
                             Approve

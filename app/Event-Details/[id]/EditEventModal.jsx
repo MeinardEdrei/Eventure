@@ -235,20 +235,155 @@ const EditEventModal = ({
 
   // Predefined lists
   const colleges = [
-    "CCIS - College of Computing and Information Sciences",
-    "CTHM - College of Tourism and Hospitality Management",
-    "ION - Institute of Nursing",
-    "CITE - College of Information Technology Education",
-    "CHK - College of Human Kinetics",
-    "HSU - Higher School ng UMak",
+    "ABM - Aspiring Business Masters Society",
+    "AHSIPERS - UMak Allied Health Sciences IPE Research Society",
+    "CAL-SC / IAD-SC - College of Arts and Letters Student Council",
+    "CBFS-SC - College of Business and Financial Science Student Council",
+    "CCIS-SC - UMAK College of Computing and Information Sciences Student Council",
+    "CCSE-SC - UMak College of Construction Sciences and Engineering Student Council",
+    "CGPP-SC - College of Governance and Public Policy Student Council",
+    "CHK-SC - UMAK College of Human Kinetics Student Council",
+    "CITE-SC - University of Makati, College of Education Student Council",
+    "COMSOC - UMak Computer Society",
+    "CONCERCLE - Contact Center Circle",
+    "CTHM-SC - College of Tourism and Hospitality Management Student Council",
+    "CTM-SC - College of Technology Management Student Council",
+    "FILMSOC - UMak Film Society",
+    "FORTEM - UMak Fortem Ardeas Esports",
+    "GEMS - Guild of Entrepreneurial Management Students",
+    "HRS SOC - HSU - Hotel and Restaurant Servicing Society Higher School ng UMak",
+    "HSU-SSG - Higher School ng UMak Supreme Student Government",
+    "HRMS - Hotel and Restaurant Management Society",
+    "ICTSOC - Information and Communication Technology Society",
+    "IIHS-SC - UMak Institute of Imaging Health Sciences Student Council",
+    "INGLES - INGLES Club",
+    "IOA-SC - Institute of Accountancy Student Council",
+    "ION-SC - Institute of Nursing Student Council",
+    "IOP-SC - UMak Institute of Pharmacy Student Council",
+    "IOPSY - UMak Institute of Psychology Student Council",
+    "JBAC - University of Makati Junior Building Administrators' Club",
+    "JFINEX - Junior Financial Executives University of Makati",
+    "JMA - UMak Junior Marketing Association",
+    "JPIA - Junior Philippine Institute of Accountants UMak Chapter",
+    "JPMS - Junior Property Managers' Society",
+    "KALASAG - UMak KALASAG DRRM",
+    "LIFE CM - Leadership in Faith and Excellence Campus Ministry",
+    "LOH - League of Humanities",
+    "NETTS - Network of Electronics and Telecommunications Technology Society UMAK",
+    "NERVECENTOUR - Nervecentour",
+    "NROTC COS - NROTC Corps of Sponsor",
+    "PFA - Peer Facilitators Association",
+    "PICE - Philippine Institute of Civil Engineers UMak Student Chapter",
+    "PSS - Political Science Society",
+    "PSYCHSOC - UMak Psychology Society",
+    "RED CROSS - Higher School ng UMak Red Cross Youth",
+    "ROTARACT - Rotaract Club of Makati West University of Makati",
+    "SADAC - Student Anti-Drug Abuse Council",
+    "HSU-SCOM - HSU Supreme Student Commission on Election",
+    "SFOP - Society of Future Office Professionals",
+    "SHRDMS - Society of Human Resource Development Management",
+    "SIKLAB HSU - Sining, Kultura at Bigkis ng Pagtatanghal Higher School ng UMak",
+    "SMS - Supply Management Society",
+    "SPERSS - Student of Physical Education and Recreational Sports Society",
+    "SPL - Samahang PugadLawin",
+    "SPORTS SOCIETY - Sports Society",
+    "STEMSOC - STEM Society",
+    "STM - UMak Society of Tourism Management",
+    "TLC - The Language Consortium",
+    "UDS - UMak Debate Society",
+    "UMMSA - University of Makati Muslim Students Association",
+    "UNI-Y - University of Makati YMCA",
+    "UMAK - University Student Council",
+    "USMO - UMak Student Multimedia Organization",
+    "VOSCA - Volunteer Students for Civic Action",
+    "YES - Young Educators' Society",
+    "CAST - Collective Arts of Students and Thespians",
+    "UDX - UMak Dance Extreme",
+    "CHORALE - University of Makati Chorale",
+    "UJAM - UMak Jammers",
+    "UTPC - UMak Technical Production and Creatives",
+    "UMAK - Student Judicial Council",
+    "UMAK - Commission on Student Elections",
+    "UMAK - Campus Coordinating Council",
+    "UMAK - Student Congress",
+    "Interact Club of Higher School ng UMak",
+    "UMak - Siglahi Dance Company",
   ];
 
   const partnerships = [
-    "Google Developer Student Clubs",
-    "Microsoft Learn Student Ambassador",
-    "IBM Academic Initiative",
-    "AWS Educate",
-    "Cisco Networking Academy",
+    "ABM - Aspiring Business Masters Society",
+    "AHSIPERS - UMak Allied Health Sciences IPE Research Society",
+    "CAL-SC / IAD-SC - College of Arts and Letters Student Council",
+    "CBFS-SC - College of Business and Financial Science Student Council",
+    "CCIS-SC - UMAK College of Computing and Information Sciences Student Council",
+    "CCSE-SC - UMak College of Construction Sciences and Engineering Student Council",
+    "CGPP-SC - College of Governance and Public Policy Student Council",
+    "CHK-SC - UMAK College of Human Kinetics Student Council",
+    "CITE-SC - University of Makati, College of Education Student Council",
+    "COMSOC - UMak Computer Society",
+    "CONCERCLE - Contact Center Circle",
+    "CTHM-SC - College of Tourism and Hospitality Management Student Council",
+    "CTM-SC - College of Technology Management Student Council",
+    "FILMSOC - UMak Film Society",
+    "FORTEM - UMak Fortem Ardeas Esports",
+    "GEMS - Guild of Entrepreneurial Management Students",
+    "HRS SOC - HSU - Hotel and Restaurant Servicing Society Higher School ng UMak",
+    "HSU-SSG - Higher School ng UMak Supreme Student Government",
+    "HRMS - Hotel and Restaurant Management Society",
+    "ICTSOC - Information and Communication Technology Society",
+    "IIHS-SC - UMak Institute of Imaging Health Sciences Student Council",
+    "INGLES - INGLES Club",
+    "IOA-SC - Institute of Accountancy Student Council",
+    "ION-SC - Institute of Nursing Student Council",
+    "IOP-SC - UMak Institute of Pharmacy Student Council",
+    "IOPSY - UMak Institute of Psychology Student Council",
+    "JBAC - University of Makati Junior Building Administrators' Club",
+    "JFINEX - Junior Financial Executives University of Makati",
+    "JMA - UMak Junior Marketing Association",
+    "JPIA - Junior Philippine Institute of Accountants UMak Chapter",
+    "JPMS - Junior Property Managers' Society",
+    "KALASAG - UMak KALASAG DRRM",
+    "LIFE CM - Leadership in Faith and Excellence Campus Ministry",
+    "LOH - League of Humanities",
+    "NETTS - Network of Electronics and Telecommunications Technology Society UMAK",
+    "NERVECENTOUR - Nervecentour",
+    "NROTC COS - NROTC Corps of Sponsor",
+    "PFA - Peer Facilitators Association",
+    "PICE - Philippine Institute of Civil Engineers UMak Student Chapter",
+    "PSS - Political Science Society",
+    "PSYCHSOC - UMak Psychology Society",
+    "RED CROSS - Higher School ng UMak Red Cross Youth",
+    "ROTARACT - Rotaract Club of Makati West University of Makati",
+    "SADAC - Student Anti-Drug Abuse Council",
+    "HSU-SCOM - HSU Supreme Student Commission on Election",
+    "SFOP - Society of Future Office Professionals",
+    "SHRDMS - Society of Human Resource Development Management",
+    "SIKLAB HSU - Sining, Kultura at Bigkis ng Pagtatanghal Higher School ng UMak",
+    "SMS - Supply Management Society",
+    "SPERSS - Student of Physical Education and Recreational Sports Society",
+    "SPL - Samahang PugadLawin",
+    "SPORTS SOCIETY - Sports Society",
+    "STEMSOC - STEM Society",
+    "STM - UMak Society of Tourism Management",
+    "TLC - The Language Consortium",
+    "UDS - UMak Debate Society",
+    "UMMSA - University of Makati Muslim Students Association",
+    "UNI-Y - University of Makati YMCA",
+    "UMAK - University Student Council",
+    "USMO - UMak Student Multimedia Organization",
+    "VOSCA - Volunteer Students for Civic Action",
+    "YES - Young Educators' Society",
+    "CAST - Collective Arts of Students and Thespians",
+    "UDX - UMak Dance Extreme",
+    "CHORALE - University of Makati Chorale",
+    "UJAM - UMak Jammers",
+    "UTPC - UMak Technical Production and Creatives",
+    "UMAK - Student Judicial Council",
+    "UMAK - Commission on Student Elections",
+    "UMAK - Campus Coordinating Council",
+    "UMAK - Student Congress",
+    "Interact Club of Higher School ng UMak",
+    "UMak - Siglahi Dance Company",
   ];
   const options = [
     { id: "Curriculum", label: "Curriculum" },
@@ -509,7 +644,10 @@ const EditEventModal = ({
               <div className="description">
                 <label>Description</label>
                 {description && (
-                  <RichTextEditor value={description} onChange={setDescription} />
+                  <RichTextEditor
+                    value={description}
+                    onChange={setDescription}
+                  />
                 )}
               </div>
             </div>
@@ -652,27 +790,6 @@ const EditEventModal = ({
                       </div>
                     </div>
 
-                    {/* <div className="">
-                      <div className="toggle-div">
-                        <label className="label-container">
-                          <span className="label-icon">
-                            <i className="fa fa-check" aria-hidden="true"></i>
-                          </span>
-                          <span>Require Approval</span>
-                        </label>
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={requireApproval}
-                            onChange={(e) =>
-                              setRequireApproval(e.target.checked)
-                            }
-                          />
-                          <span className="toggle-slider"></span>
-                        </label>
-                      </div>
-                    </div> */}
-
                     {/* College Dropdown */}
                     <div className="w-full">
                       <label className="label-container">
@@ -686,68 +803,82 @@ const EditEventModal = ({
                       </label>
 
                       <div className="flex flex-col">
-                        {/* College Tag Container */}
-                        <div className="flex flex-wrap items-center gap-1 mb-1">
-                          {editedEvent.hostedBy.map((college) => (
-                            <span
-                              key={college}
-                              className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
-                            >
-                              {college}
-                              <button
-                                className="tag-remove"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  handleCollegeToggle(college);
-                                }}
-                                hidden={(editedEvent.visibility === "Private" || editedEvent.visibility === "Public") ? true : false}
+                        {/* College Tag Container - Only shown when visibility is "Custom" */}
+                        {editedEvent.visibility === "Custom" && (
+                          <div className="flex flex-wrap items-center gap-1 mb-1">
+                            {editedEvent.hostedBy.map((college) => (
+                              <span
+                                key={college}
+                                className="bg-[#7b7b7b] px-3 py-1 rounded-[5px] text-[0.8rem] text-xs flex items-center justify-center gap-2"
                               >
-                                <X size={11} />
-                              </button>
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="relative w-full">
-                            {editedEvent.visibility === "Public" ? (
-                              <></>
-                            ) : editedEvent.visibility === "Private" ? (
-                              <div className="text-white/40 text-xs ml-1">
-                                {`Your department is the only host.`}
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
-                                <input
-                                  type="text"
-                                  placeholder="Select Colleges..."
-                                  className="w-full bg-transparent border-0 outline-none"
-                                  value={collegesFilter}
-                                  onChange={(e) => {
-                                    setCollegesFilter(e.target.value);
-                                    setIsCollegesOpen(true);
-                                  }}
-                                  onClick={() => setIsCollegesOpen(true)}
-                                  disabled={editedEvent.visibility === "Private"}
-                                />
+                                {college}
                                 <button
+                                  className="tag-remove"
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    setIsCollegesOpen(!isCollegesOpen);
+                                    handleCollegeToggle(college);
                                   }}
-                                  disabled={editedEvent.visibility === "Private" ? true : false}
+                                  hidden={
+                                    editedEvent.visibility === "Private" ||
+                                    editedEvent.visibility === "Public"
+                                      ? true
+                                      : false
+                                  }
                                 >
-                                  <ChevronDown
-                                    size={20}
-                                    className={`transform transition-transform ${
-                                      isCollegesOpen ? "rotate-180" : ""
-                                    }`}
-                                  />
+                                  <X size={11} />
                                 </button>
-                              </div>
-                            )}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="relative w-full">
+                          {editedEvent.visibility === "Public" ? (
+                            <div className="text-white/50 text-[0.7rem] leading-[14px] mb-2">
+                              You have selected "Public," meaning all
+                              departments will be included in this event.
+                            </div>
+                          ) : editedEvent.visibility === "Private" ? (
+                            <div className="text-white/40 text-xs ml-1">
+                              {`Your department is the only host.`}
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between w-full h-[auto] py-[0.5rem] px-4 bg-[#2C2C2C] text-white rounded">
+                              <input
+                                type="text"
+                                placeholder="Select Colleges..."
+                                className="w-full bg-transparent border-0 outline-none"
+                                value={collegesFilter}
+                                onChange={(e) => {
+                                  setCollegesFilter(e.target.value);
+                                  setIsCollegesOpen(true);
+                                }}
+                                onClick={() => setIsCollegesOpen(true)}
+                                disabled={editedEvent.visibility === "Private"}
+                              />
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  setIsCollegesOpen(!isCollegesOpen);
+                                }}
+                                disabled={
+                                  editedEvent.visibility === "Private"
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <ChevronDown
+                                  size={20}
+                                  className={`transform transition-transform ${
+                                    isCollegesOpen ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          )}
 
                           {/* Dropdown Menu */}
-                          {isCollegesOpen && (
+                          {isCollegesOpen && editedEvent.visibility === "Custom" && (
                             <div className="dropdown-menu">
                               {/* Add College Input */}
                               <div className="flex items-center p-2 bg-[#7b7b7b]">
@@ -776,9 +907,9 @@ const EditEventModal = ({
                               {filteredColleges.map((college) => (
                                 <button
                                   key={college}
-                                  className={`w-full text-left px-4 py-2 hover:bg-[#9148cd] ${
+                                  className={`w-full text-left px-4 py-2 hover:bg-[#656565] ${
                                     editedEvent.hostedBy.includes(college)
-                                      ? "bg-[#6d3998]"
+                                      ? "hover:bg-[#656565]"
                                       : ""
                                   }`}
                                   onClick={() => handleCollegeToggle(college)}
@@ -854,17 +985,20 @@ const EditEventModal = ({
                                     : ""
                                 }`}
                                 onClick={() => {
-                                  {option === "Private" ? (
-                                    setEditedEvent(prevState => ({
-                                      ...prevState,
-                                      hostedBy: session.user.department ? [session.user.department] : []
-                                    }))
-                                  ) : option === "Public" && (
-                                    setEditedEvent(prevState => ({
-                                      ...prevState,
-                                      hostedBy: colleges
-                                    }))
-                                  )}
+                                  {
+                                    option === "Private"
+                                      ? setEditedEvent((prevState) => ({
+                                          ...prevState,
+                                          hostedBy: session.user.department
+                                            ? [session.user.department]
+                                            : [],
+                                        }))
+                                      : option === "Public" &&
+                                        setEditedEvent((prevState) => ({
+                                          ...prevState,
+                                          hostedBy: colleges,
+                                        }));
+                                  }
                                   handleChange({
                                     target: {
                                       name: "visibility",

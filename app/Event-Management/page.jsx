@@ -82,7 +82,7 @@ export default function EventApproval() {
       setOptions(["Pre-Approved", "Approved", "Rejected"]);
       setSelected("Pre-Approved");
     } else if (session?.user?.role === "Staff") {
-      setOptions(["Pending", "Rejected", "Appealed"]);
+      setOptions(["Pending", "Pre-Approved", "Rejected", "Appealed"]);
       setSelected("Pending");
     }
   }, [session]);

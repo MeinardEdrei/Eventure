@@ -26,7 +26,9 @@ export default function Home() {
         router.push("/AdminDashboard");
       } else if (session?.user?.role == "Organizer") {
         router.push("/OrganizerDashboard");
-      }
+      } else if (session?.user?.role == "Student") {
+        router.push("/Timeline");
+      } 
     }
   }, [status, session, router]);
 

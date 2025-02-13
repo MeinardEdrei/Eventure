@@ -8,6 +8,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import Link from "next/link";
 import { CalendarOff, X } from "lucide-react";
+import { EmblaCarousel } from './carousel'
 
 function Events() {
   const router = useRouter();
@@ -39,6 +40,8 @@ function Events() {
     eventId: "",
     eventTitle: "",
   });
+
+  
 
   // EVENTS API
   const fetchEvents = async () => {
@@ -407,7 +410,14 @@ function Events() {
     <>
       <div className="eventContainers">
         {/* Left Container */}
+        
         <div className="newLeftContainer">
+          <div className="carousel">
+            <h1>Newly Added Events</h1>
+            <EmblaCarousel />
+            <hr />
+          </div>
+
           {session?.user?.role === "Student" && (
             <>
               {/* Recently Joined Events */}
@@ -456,7 +466,7 @@ function Events() {
             </>
           )}
 
-          {/* Latest Events */}
+          {/* Latest Events
           <h1>Latest Events</h1>
           <div className="latestEventsContainer">
             {event ? (
@@ -473,7 +483,7 @@ function Events() {
                     src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
                     alt={item.title}
                   />
-                  <div className="latestDetails space-y-2">
+                  <div className="latestDetails space-y-1">
                     <h1>{item.title}</h1>
                     <p>
                       Added on{" "}
@@ -497,7 +507,7 @@ function Events() {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           <hr />
           {/* Navigation Buttons */}
@@ -566,7 +576,7 @@ function Events() {
               </div>
             ))}
             {currentEvents.length === 0 && (
-              <div className="flex flex-col opacity-20 items-center mt-9 justify-center text-center w-full ] text-white">
+              <div className="flex flex-col opacity-20 items-center mt-9 mb-9 justify-center text-center w-full ] text-white">
                 <div>
                   <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
                 </div>
@@ -597,115 +607,212 @@ function Events() {
             </Button>
           </div>
         </div>
-
+        {/* NEW LATEST CONTAINER */}
+        
         {/* Right Container */}
         <div className="newRightContainer">
+
+          
+          <div className="popularContainer">
+              
           <h1>Popular</h1>
 
-          {/* Popular Navigation */}
-          <ul className="popularNav">
-            <Button
-              className={activePopular === "Weekly" ? "active" : ""}
-              onPress={() => setActivePopular("Weekly")}
-            >
-              <li>Weekly</li>
-            </Button>
-            <div>/</div>
-            <Button
-              className={activePopular === "Monthly" ? "active" : ""}
-              onPress={() => setActivePopular("Monthly")}
-            >
-              <li>Monthly</li>
-            </Button>
-            <div>/</div>
-            <Button
-              className={activePopular === "All" ? "active" : ""}
-              onPress={() => setActivePopular("All")}
-            >
-              <li>All</li>
-            </Button>
-          </ul>
+            {/* Popular Navigation */}
+            <ul className="popularNav">
+              <Button
+                className={activePopular === "Weekly" ? "active" : ""}
+                onPress={() => setActivePopular("Weekly")}
+              >
+                <li>Weekly</li>
+              </Button>
+              <div>|</div>
+              <Button
+                className={activePopular === "Monthly" ? "active" : ""}
+                onPress={() => setActivePopular("Monthly")}
+              >
+                <li>Monthly</li>
+              </Button>
+              <div>|</div>
+              <Button
+                className={activePopular === "All" ? "active" : ""}
+                onPress={() => setActivePopular("All")}
+              >
+                <li>All</li>
+              </Button>
+            </ul>
 
-          {/* Dynamic Popular Content */}
-          <div className="popularContent">
-            {activePopular === "Weekly" && (
-              <>
-                {PopularEvents().TopWeekEvent &&
-                  PopularEvents().TopWeekEvent.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="popularDisplay"
-                      onClick={() => {
-                        setSelectedEvent(item);
-                        openModal(item);
-                      }}
-                    >
-                      <div className="popularCount">
-                        <h1>{index + 1}</h1>
+            {/* Dynamic Popular Content */}
+            <div className="popularContent">
+              {activePopular === "Weekly" && (
+                <>
+                  {PopularEvents().TopWeekEvent && PopularEvents().TopWeekEvent.length > 0 ? (
+                    PopularEvents().TopWeekEvent.slice(0, 5).map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="popularDisplay"
+                        onClick={() => {
+                          setSelectedEvent(item);
+                          openModal(item);
+                        }}
+                      >
+                        <div className="popularCount">
+                          <h1>{index + 1}</h1>
+                        </div>
+                        <img
+                          src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                          alt={item.title}
+                        />
+                        <div className="popularDetails">
+                          <h1>{item.title}</h1>
+                        </div>
                       </div>
-                      <img
-                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
-                        alt={item.title}
-                      />
-                      <div className="popularDetails">
-                        <h1>{item.title}</h1>
+                    ))
+                  ) : (
+                    
+                    <div className="flex flex-col opacity-20 items-center mt-2 mb-2 justify-center text-center w-full text-white">
+                      <div>
+                        <CalendarOff size={50} color="#ffffff" strokeWidth={1.5} />
                       </div>
-                    </div>
-                  ))}
-              </>
-            )}
-            {activePopular === "Monthly" && (
-              <>
-                {PopularEvents().TopMonthEvent &&
-                  PopularEvents().TopMonthEvent.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="popularDisplay"
-                      onClick={() => {
-                        setSelectedEvent(item);
-                        openModal(item);
-                      }}
-                    >
-                      <div className="popularCount">
-                        <h1>{index + 1}</h1>
-                      </div>
-                      <img
-                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
-                        alt={item.title}
-                      />
-                      <div className="popularDetails">
-                        <h1>{item.title}</h1>
+                      <div>
+                        <p className="text-[1rem] font-bold">
+                          No events yet.
+                        </p>
                       </div>
                     </div>
-                  ))}
-              </>
-            )}
-            {activePopular === "All" && (
-              <>
-                {PopularEvents().TopAllTime &&
-                  PopularEvents().TopAllTime.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="popularDisplay"
-                      onClick={() => {
-                        setSelectedEvent(item);
-                        openModal(item);
-                      }}
-                    >
-                      <div className="popularCount">
-                        <h1>{index + 1}</h1>
+
+                  )}
+                </>
+              )}
+
+              {activePopular === "Monthly" && (
+                <>
+                  {PopularEvents().TopMonthEvent && PopularEvents().TopMonthEvent.length > 0 ? (
+                    PopularEvents().TopMonthEvent.slice(0, 5).map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="popularDisplay"
+                        onClick={() => {
+                          setSelectedEvent(item);
+                          openModal(item);
+                        }}
+                      >
+                        <div className="popularCount">
+                          <h1>{index + 1}</h1>
+                        </div>
+                        <img
+                          src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                          alt={item.title}
+                        />
+                        <div className="popularDetails">
+                          <h1>{item.title}</h1>
+                        </div>
                       </div>
-                      <img
-                        src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
-                        alt={item.title}
-                      />
-                      <div className="popularDetails">
-                        <h1>{item.title}</h1>
+                    ))
+                  ) : (
+
+                    <div className="flex flex-col opacity-20 items-center mt-2 mb-2 justify-center text-center w-full text-white">
+                      <div>
+                        <CalendarOff size={50} color="#ffffff" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <p className="text-[1rem] font-bold">
+                          No events yet.
+                        </p>
                       </div>
                     </div>
-                  ))}
-              </>
+
+                  )}
+                </>
+              )}
+
+              {activePopular === "All" && (
+                <>
+                  {PopularEvents().TopAllTime && PopularEvents().TopAllTime.length > 0 ? (
+                    PopularEvents().TopAllTime.slice(0, 5).map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="popularDisplay"
+                        onClick={() => {
+                          setSelectedEvent(item);
+                          openModal(item);
+                        }}
+                      >
+                        <div className="popularCount">
+                          <h1>{index + 1}</h1>
+                        </div>
+                        <img
+                          src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                          alt={item.title}
+                        />
+                        <div className="popularDetails">
+                          <h1>{item.title}</h1>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+        
+                    <div className="flex flex-col opacity-20 items-center mt-2 mb-2 justify-center text-center w-full text-white">
+                      <div>
+                        <CalendarOff size={50} color="#ffffff" strokeWidth={1.5} />
+                      </div>
+                      <div>
+                        <p className="text-[1rem] font-bold">
+                          No events yet.
+                        </p>
+                      </div>
+                    </div>
+
+                  )}
+                </>
+              )}
+            </div>
+
+            
+          </div>
+          {/* SA LATEST EVENTS */}
+          
+          <div className="newLatestContainer">
+            <h1>Latest Events</h1>
+            <hr />
+            <>
+            {PopularEvents().TopWeekEvent && PopularEvents().TopWeekEvent.length > 0 ? (
+              PopularEvents().TopWeekEvent.slice(0, 5).map((item, index) => (
+                <div
+                  key={item.id}
+                  className="newLatestDisplay"
+                  onClick={() => {
+                    setSelectedEvent(item);
+                    openModal(item);
+                  }}
+                >
+                  <div className="newLatestCount">
+                    <h1>{index + 1}</h1>
+                  </div>
+                  <img
+                    src={`http://localhost:5000/api/event/uploads/${item.eventImage}`}
+                    alt={item.title}
+                  />
+                  <div className="newLatestDetails">
+                    <h1>{item.title}</h1>
+                    <p className="newDetails">
+                      Added on <br />
+                      {format(new Date(item.createdAt), "MMMM dd, yyyy")}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col opacity-20 items-center mt-2 mb-1 justify-center text-center w-full text-white">
+                <div>
+                  <CalendarOff size={50} color="#ffffff" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[1rem] font-bold">No events yet.</p>
+                </div>
+              </div>
             )}
+
+            </>
           </div>
         </div>
       </div>

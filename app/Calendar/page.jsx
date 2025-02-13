@@ -127,28 +127,33 @@ function Calendar() {
       <div className="newCalendarBody">
         <div className="newCalendarContainer">
           <div className="newCalendarHeader">
-            <h1>Event Calendar</h1>
-            <p>
-              Stay updated with all upcoming events in one organized calendar
-              view.
-            </p>
-          </div>
+            <div className="calendarControls">
+              <button onClick={handlePrevMonth}>◀</button>
 
-          <div className="calendarContent">
-            {/* Left Side: Calendar */}
-            <div className="calendar">
-              <div className="calendarControls">
-                <button onClick={handlePrevMonth}>◀</button>
-                <span>
+              <div className="calendarDates">
+                <span className='year'>  
+                  {currentDate.getFullYear()}
+                </span>
+
+                <span className='month'>
                   {currentDate.toLocaleString('default', {
                     month: 'long',
                   })}{' '}
-                  {currentDate.getFullYear()}
                 </span>
-                <button onClick={handleNextMonth}>▶</button>
               </div>
-              <hr />
-              <div className="dayTitles">
+              
+              <button onClick={handleNextMonth}>▶</button>
+            </div>
+            <div className="calendarSubHeader">
+              <p>123456 events being held this month</p>
+            </div>
+          </div>
+          <hr />
+          
+          <div className="calendarContent">
+            {/* Left Side: Calendar */}
+            <div className="calendar">
+                            <div className="dayTitles">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
                   (day, index) => (
                     <div className="dayTitle" key={index}>

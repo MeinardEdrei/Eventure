@@ -1,4 +1,7 @@
+// SignUp
+
 "use client";
+
 import "../css/Login-Signup.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -14,6 +17,8 @@ import {
   ListBox,
   ListBoxItem,
 } from "react-aria-components";
+import Alert from "../Create-Event/Alert";
+
 
 const departments = [
   { id: "CCIS", name: "CCIS - College of Computing and Information Sciences" },
@@ -36,11 +41,18 @@ export default function Register() {
   const [status, setStatus] = useState("Approved");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
+
+  // Alert state
+  const [alert, setAlert] = useState({
+    show: false,
+    type: "",
+    message: "",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    // setError("");
 
     const trimmedUsername = username.trim();
     const trimmedEmail = email.trim();
@@ -48,63 +60,90 @@ export default function Register() {
     const trimmedStudentNumber = studentNumber.trim();
 
     if (!trimmedEmail.endsWith("@umak.edu.ph")) {
-      setError("Email must end with @umak.edu.ph");
+      setAlert({
+        show: true,
+        type: "error",
+        message: "Email must end with @umak.edu.ph",
+      });
       return;
     }
-    
+
     try {
       const res = await axios.post(
         "http://localhost:5000/api/user/register",
-        { 
-          username: trimmedUsername, 
-          email: trimmedEmail, 
-          password: trimmedPassword, 
-          student_number: trimmedStudentNumber, 
+        {
+          username: trimmedUsername,
+          email: trimmedEmail,
+          password: trimmedPassword,
+          student_number: trimmedStudentNumber,
           section: section,
-          status, 
-          role, 
-          department: selectedDepartment 
+          status,
+          role,
+          department: selectedDepartment,
         },
         { headers: { "Content-Type": "application/json" } }
       );
-      
+
       if (res.status === 200) {
-        alert(res.data.message);
-        router.push("/Login");
-      } else {
-        throw new Error(res.data.message || "Unknown error");
+        setAlert({
+          show: true,
+          type: "success",
+          message: res.data.message || "Registration successful!",
+        });
+
+        // Navigate after a short delay to allow the user to see the success message
+        setTimeout(() => {
+          router.push("/Login");
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
-      setError(error.response?.data?.message || "Registration failed");
+      setAlert({
+        show: true,
+        type: "error",
+        message: error.response?.data?.message || "Registration failed",
+      });
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      {alert.show && (
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          onClose={() => setAlert({ ...alert, show: false })}
+        />
+      )}
+
       <div className="max-w-md w-full space-y-8 backdrop-blur-lg bg-[#1C1C1C]/40 p-8 rounded-2xl border border-[#F7F0FF]/10">
         <div className="text-center">
-          <h2 className="text-4xl font-bold text-[#F7F0FF] mb-2">Create Account</h2>
+          <h2 className="text-4xl font-bold text-[#F7F0FF] mb-2">
+            Create Account
+          </h2>
           <p className="text-[#F7F0FF]/60">Join our community</p>
         </div>
 
-        {error && (
+        {/* {error && (
           <div className="bg-red-900/20 border border-red-500/50 text-red-500 p-3 rounded-lg text-sm">
             {error}
           </div>
-        )}
+        )} */}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="space-y-4">
-          <div className="relative group">
-              <input 
+            <div className="relative group">
+              <input
                 className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
-                placeholder="Student Number" 
+                placeholder="Student Number"
                 value={studentNumber}
                 onChange={(e) => setStudentNumber(e.target.value)}
                 required
               />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
 
             <div className="relative group">
@@ -115,18 +154,24 @@ export default function Register() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
 
             <div className="relative group">
-              <input 
+              <input
                 className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
-                placeholder="Section" 
+                placeholder="Section"
                 value={section}
                 onChange={(e) => setSection(e.target.value)}
                 required
               />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
 
             <div className="relative group">
@@ -140,7 +185,10 @@ export default function Register() {
                 title="Please use your UMAK email"
                 required
               />
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
 
             <div className="relative group">
@@ -161,7 +209,10 @@ export default function Register() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
 
             <div className="relative group">
@@ -171,12 +222,14 @@ export default function Register() {
                 onOpenChange={setIsOpen}
               >
                 <div className="input-button-container relative">
-                  <Input 
-                    placeholder="Select Department" 
+                  <Input
+                    placeholder="Select Department"
                     className="w-full bg-[#25152C]/30 text-[#F7F0FF] border border-[#F7F0FF]/10 rounded-lg px-4 py-3 outline-none focus:border-[#F7F0FF]/30 transition-all duration-300"
                   />
                   <Button
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
                   >
                     <ChevronDown />
                   </Button>
@@ -202,7 +255,10 @@ export default function Register() {
                   </ListBox>
                 </Popover>
               </ComboBox>
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ zIndex: -1 }} />
+              <div
+                className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ zIndex: -1 }}
+              />
             </div>
           </div>
 
@@ -214,10 +270,17 @@ export default function Register() {
           </button>
 
           <div className="flex flex-col items-center space-y-2 text-sm">
-            <Link href="/Login" className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200">
-              Already have an account? <span className="underline">Sign in</span>
+            <Link
+              href="/Login"
+              className="text-[#F7F0FF]/80 hover:text-[#F7F0FF] transition-colors duration-200"
+            >
+              Already have an account?{" "}
+              <span className="underline">Sign in</span>
             </Link>
-            <Link href="/" className="text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200">
+            <Link
+              href="/"
+              className="text-[#F7F0FF]/60 hover:text-[#F7F0FF] transition-colors duration-200"
+            >
               Return to Homepage
             </Link>
           </div>

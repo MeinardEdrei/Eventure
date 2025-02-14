@@ -18,6 +18,9 @@ import {
   XCircle,
   CirclePlus,
   CalendarOff,
+  RefreshCcw,
+  Check,
+  CheckCheck,
 } from "lucide-react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
@@ -31,7 +34,8 @@ function MyEvents() {
   const progressOptions = [
     "Created",
     "Pending",
-    "Pre-Approved",
+    // "Pre-Approved", //the icon is not showing due to the dash
+    "Validating",
     "Approved",
     "Appealed",
     "Rejected",
@@ -61,8 +65,9 @@ function MyEvents() {
   const statusIcons = {
     Created: <CirclePlus className="mr-2 h-4 w-4" />,
     Pending: <Clock className="mr-2 h-4 w-4" />,
-    PreApproved: <CheckCircle className="mr-2 h-4 w-4" />,
-    Approved: <Edit className="mr-2 h-4 w-4" />,
+    Validating: <Check className="mr-2 h-4 w-4" />,
+    Approved: <CheckCheck className="mr-2 h-4 w-4" />,
+    Appealed: <RefreshCcw className="mr-2 h-4 w-4" />,
     Rejected: <XCircle className="mr-2 h-4 w-4" />,
   };
 
@@ -70,7 +75,7 @@ function MyEvents() {
   const [eventCounts, setEventCounts] = useState({
     Created: 0,
     Pending: 0,
-    PreApproved: 0,
+    Validating: 0,
     Approved: 0,
     Rejected: 0,
   });
@@ -98,7 +103,8 @@ function MyEvents() {
       setLoading(true); // Set loading to true before fetching
 
       // Simulate a 5-second delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Loading Time
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
 
       if (session) {
         const res = await axios.get(
@@ -387,7 +393,7 @@ function MyEvents() {
       case "Pending":
         return renderPendingEventCard(event);
       case "Pre-Approved":
-        return renderPreApprovedEventCard(event);
+        return Validating(event);
       case "Approved":
         return renderApprovedEventCard(event);
       case "Rejected":
@@ -411,7 +417,7 @@ function MyEvents() {
       </div>
       <div className="cardDetails w-full">
         <div className="flex flex-row justify-between items-start">
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col mb-0">
             <div className="cardTitle">{event.title}</div>
             <div className="cardInfo">
               <p>{event.location}</p>
@@ -430,14 +436,14 @@ function MyEvents() {
           {/* Edit Event */}
           <div className="flex flex-row justify-end">
             <button
-              className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
+              className="edit-btn py-[0.4rem] px-3 flex flex-row items-center gap-2"
               onClick={() => {
                 setSelectedEvent(event);
                 setIsEditModalOpen(true);
               }}
             >
-              <Pencil size={20} strokeWidth={1.5} />
-              Edit
+              <Pencil size={15} strokeWidth={1.5} />
+              <p className="text-[0.8rem]">Edit</p>
             </button>
           </div>
 
@@ -458,15 +464,19 @@ function MyEvents() {
               setIsUploadModalOpen(true);
               setSelectedEvent(event);
             }}
-            className="bg-[#b6b6b6] hover:bg-[#6a6a6a] text-[#000000] hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+            className="py-[0.4rem] px-3 bg-[#606060] text-[#000000] hover:bg-[#434343] transition-all flex items-center gap-2 rounded"
           >
             <i
               className={`fa ${
                 event.requirementFilesCount === 0 ? "fa-plus" : "fa-cog"
-              } text-[0.8rem]`}
+              } text-[0.7rem]`}
+              style={{
+                color: "white",
+              }}
               aria-hidden="true"
             ></i>
-            <p className="text-[0.8rem]">
+
+            <p className="text-[0.8rem] text-[#ffffff]">
               {event.requirementFilesCount === 0
                 ? "Upload Files"
                 : "Manage Requirements"}
@@ -480,10 +490,14 @@ function MyEvents() {
               onClick={() => {
                 handleEventSubmit(selectedEvent.id);
               }}
-              className="bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 px-4 py-2 rounded"
+              className="py-[0.4rem] px-3 bg-[#387b31] hover:bg-[#2b6026] text-white hover:text-white transition-all flex items-center gap-2 rounded"
             >
-              <FontAwesomeIcon icon={faPaperPlane} />
-              <p>Submit</p>
+              <FontAwesomeIcon
+                size={15}
+                strokeWidth={1.5}
+                icon={faPaperPlane}
+              />
+              <p className="text-[0.8rem]">Submit</p>
             </button>
           )}
         </div>
@@ -503,7 +517,7 @@ function MyEvents() {
       </div>
       <div className="cardDetails w-full">
         <div className="flex flex-row justify-between items-start">
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col">
             <div>
               <div className="cardTitle">{event.title}</div>
               <div className="cardInfo">
@@ -516,8 +530,8 @@ function MyEvents() {
                   })}
                 </p>
               </div>
-              <div className="inline-block bg-[#4A4A4A] mt-2 px-2 py-[2px] rounded">
-                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+              <div className="inline-block bg-[#4A4A4A] mt-2 px-2 py-[1px] rounded">
+                <p className="cardStatus">Status: {selected}</p>
               </div>
             </div>
           </div>
@@ -528,14 +542,14 @@ function MyEvents() {
           {/* Edit Event */}
           <div className="flex flex-row justify-end">
             <button
-              className="edit-btn py-[0.5rem] px-6 flex flex-row items-center gap-2"
+              className="edit-btn py-[0.4rem] px-3 flex flex-row items-center gap-2"
               onClick={() => {
                 setSelectedEvent(event);
                 setIsEditModalOpen(true);
               }}
             >
-              <Pencil size={20} strokeWidth={1.5} />
-              Edit
+              <Pencil size={15} strokeWidth={1.5} />
+              <p className="text-[0.8rem]">Edit</p>
             </button>
           </div>
 
@@ -601,7 +615,7 @@ function MyEvents() {
       </div>
       <div className="cardDetails w-full">
         <div className="flex flex-row justify-between items-start gap-10">
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col">
             <div>
               <div className="cardTitle">{event.title}</div>
               <div className="cardInfo">
@@ -615,7 +629,7 @@ function MyEvents() {
                 </p>
               </div>
               <div className="inline-block bg-[#008C10] mt-2 px-2 py-[2px] rounded">
-                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+                <p className="cardStatus">Status: {selected}</p>
               </div>
             </div>
           </div>
@@ -624,7 +638,7 @@ function MyEvents() {
         <div className="flex flex-row gap-4 justify-end">
           {/* Button: See Details */}
           <Link href={`/Event-Details/${event.id}`}>
-            <div className="bg-transparent hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 px-4 py-2 rounded">
+            <div className="bg-transparent py-[0.4rem] px-3 hover:bg-[#ffffff]/50 transition-all border border-[#ffffff]/25 flex items-center gap-2 rounded">
               <i
                 className="fa fa-info-circle text-[0.8rem]"
                 aria-hidden="true"
@@ -673,7 +687,7 @@ function MyEvents() {
       </div>
       <div className="cardDetails w-full">
         <div className="flex flex-row justify-between items-start gap-10">
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col mb-2">
             <div>
               <div className="cardTitle">{event.title}</div>
               <div className="cardInfo">
@@ -687,7 +701,7 @@ function MyEvents() {
                 </p>
               </div>
               <div className="inline-block bg-[#00158C] mt-2 px-2 py-[2px] rounded">
-                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+                <p className="cardStatus">Status: {selected}</p>
               </div>
             </div>
           </div>
@@ -722,7 +736,7 @@ function MyEvents() {
                 </p>
               </div>
               <div className="inline-block bg-[#00158C] mt-2 px-2 py-[2px] rounded">
-                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+                <p className="cardStatus">Status: {selected}</p>
               </div>
             </div>
           </div>
@@ -748,7 +762,7 @@ function MyEvents() {
           </div>
           <div className="cardDetails w-full">
             <div className="flex flex-row justify-between items-start">
-              <div className="flex flex-col mb-4">
+              <div className="flex flex-col mb-2">
                 <div>
                   <div className="cardTitle">{event.title}</div>
                   <div className="cardInfo">
@@ -762,9 +776,7 @@ function MyEvents() {
                     </p>
                   </div>
                   <div className="inline-block bg-[#8D0000] mt-2 px-2 py-[2px] rounded">
-                    <p className="text-[0.8rem] text-white">
-                      Status: {selected}
-                    </p>
+                    <p className="cardStatus">Status: {selected}</p>
                   </div>
                 </div>
               </div>
@@ -835,7 +847,7 @@ function MyEvents() {
                 </p>
               </div>
               <div className="inline-block bg-[#4A4A4A] mt-2 px-2 py-[2px] rounded">
-                <p className="text-[0.8rem] text-white">Status: {selected}</p>
+                <p className="cardStatus">Status: {selected}</p>
               </div>
             </div>
           </div>
@@ -859,136 +871,161 @@ function MyEvents() {
 
   return (
     <div className="org-list-mnc">
-      {/* Header */}
-      <div className="flex flex-col gap-2">
-        <div className="eventTitle">My Events</div>
-
-        {/* Status Toggle Buttons with Search */}
-        <div className="flex flex-col w-full md:flex-row gap-4 items-center justify-between mb-2">
-          {/* Status Toggle Buttons */}
-          <div className="flex flex-row gap-1 bg-transparent border border-[#ffffff]/30 w-[100%] p-1 justify-between rounded-lg overflow-hidden mb-2 md:mb-0">
-            {progressOptions.map((option) => (
-              <button
-                key={option}
-                className={`
-                  flex items-center px-[0.8rem] py-2 rounded-md text-sm transition-all duration-300
-                  ${
-                    selected === option
-                      ? "bg-[#bababa] text-black"
-                      : "text-[#ffffff]/50 hover:bg-gray-200 hover:text-gray-800"
-                  }
-                `}
-                onClick={() => setSelected(option)}
-              >
-                {statusIcons[option]}
-                {option}
-                <p className="ml-2 text-[0.8rem] text-[#ffffff]/50 bg-[#484848]/70 px-2 rounded">
-                  {eventCounts[option] || 0}
-                </p>
-              </button>
-            ))}
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative flex-grow w-[30%]">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
+      <div className="flex flex-row justify-between gap-20">
+        {/* Left Container */}
+        <div className="w-[20%]">
+          {/* Header */}
+          <div className="flex flex-col gap-2">
+            <div className="bg-slat-700">
+              <h1 className="text-[2rem] text-center font-black">My Events</h1>
+              {/* <hr className="w-[100%]"/> */}
             </div>
-            <input
-              type="text"
-              placeholder="Search events..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="
-                bg-transparent
-                w-full pl-10 pr-4 py-2 
-                border border-[#ffffff]/30 rounded-lg 
-                focus:ring-2 focus:ring-[#666666] focus:bg-[#343434]
-                transition-all duration-300
-                text-white placeholder-gray-400 outline-none
-              "
-            />
+            {/* Status Toggle Buttons with Search */}
+            <div className="flex flex-col w-full md:flex-row gap-4 items-center justify-between mb-2">
+              {/* Status Toggle Buttons */}
+              <div className="flex flex-col p-3 gap-3 min-h-[90vh] bg-transparent border border-[#ffffff]/20 w-[100%] rounded-lg overflow-hidden mb-2 md:mb-0">
+                {progressOptions.map((option) => (
+                  <button
+                    key={option}
+                    className={`
+                    flex items-center px-[0.9rem] py-3 rounded-md text-sm transition-all duration-300
+                    ${
+                      selected === option
+                        ? "bg-[#ececec] text-black font-bold"
+                        : "text-[#ffffff]/25 hover:bg-[#ececec] hover:text-[#303030] "
+                    }
+                  `}
+                    onClick={() => setSelected(option)}
+                  >
+                    {statusIcons[option]}
+                    {option}
+                    <p
+                      className={`ml-auto text-[1.1rem] font-[500] px-2 rounded
+                      ${
+                        selected === option
+                          ? "text-[#303030] font-extrabold" // Change text color to black when selected
+                          : ""
+                        //  : "text-[#ffffff]/50 hover:text-black" // Change text color to black on hover
+                      }
+                    `}
+                    >
+                      {eventCounts[option] || 0}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* <div className="line-container w-[100%] h-auto">
+          <hr className="border border-solid border-[#ffffff62]" />
+        </div> */}
           </div>
         </div>
 
-        {/* <div className="line-container w-[100%] h-auto">
-          <hr className="border border-solid border-[#ffffff62]" />
-        </div> */}
-      </div>
-
-      {/* Contents */}
-      <div className="flex flex-col items-center justify-between w-[100%]">
-        <div className="content-wrapper flex flex-col items-start gap-4 w-[80%]">
-          {/* Status */}
-          <div className="card-status">
-            {selected === "Created" ? (
-              <h3>Recently {selected}</h3>
-            ) : (
-              <h3>{selected}</h3>
-            )}
-          </div>
-
-          <div className="cards-container w-full">
-            {filteredEvents.length === 0 ? (
-              <div className="flex flex-col opacity-20 items-center mt-9 justify-center text-center w-full ] text-white">
-                <div>
-                  <CalendarOff size={100} color="#ffffff" strokeWidth={1.5} />
+        {/* Right Container */}
+        <div className="w-[80%]">
+          {/* Contents */}
+          <div className="flex flex-col items-center justify-between w-[100%]">
+            <div className="content-wrapper flex flex-col items-start w-[100%]">
+              {/* Header: Right */}
+              <div className="flex flex-row justify-between my-[3rem] items-center w-[100%]">
+                {/* Status */}
+                <div className="card-status">
+                  {selected === "Created" ? (
+                    <h3>Recently {selected}</h3>
+                  ) : (
+                    <h3>{selected}</h3>
+                  )}
                 </div>
-                <div>
-                  <p className="text-[1.2rem] font-bold">
-                    {" "}
-                    You don't have any {selected} events yet.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <>
-                {filteredEvents.map((event, index) => (
-                  <div key={index}>{renderEventCard(event)}</div>
-                ))}
 
-                {/* Pagination Component */}
-                <div className="flex justify-center w-full mt-10">
-                  <Pagination
-                    count={Math.ceil(
-                      events.filter((event) => event.status === selected)
-                        .length / eventsPerPage
-                    )}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    color="primary"
-                    variant="outlined"
-                    shape="rounded"
-                    // hidePrevButton
-                    // hideNextButton
-                    className="custom-pagination"
-                    sx={{
-                      "& .MuiPaginationItem-root": {
-                        color: "white",
-                        border: "1px solid rgba(255,255,255,0.3)",
-                        backgroundColor: "transparent",
-                        "&:hover": {
-                          backgroundColor: "rgba(255,255,255,0.2)",
-                        },
-                      },
-                      "& .Mui-selected": {
-                        backgroundColor: "#ffffff !important",
-                        color: "#000000",
-                      },
-                    }}
+                {/* Search Bar */}
+                <div className="relative w-[30%]">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search events..."
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    className="
+        bg-transparent
+        w-full pl-10 pr-4 py-2 
+        border border-[#ffffff]/30 rounded-lg 
+        focus:ring-2 focus:ring-[#666666] focus:bg-[#343434]
+        transition-all duration-300
+        text-white placeholder-gray-400 outline-none
+      "
                   />
                 </div>
-              </>
-            )}
+              </div>
+              <div className="cards-container w-full">
+                {filteredEvents.length === 0 ? (
+                  <div className="flex flex-col opacity-20 items-center mt-9 justify-center text-center w-full ] text-white">
+                    <div>
+                      <CalendarOff
+                        size={100}
+                        color="#ffffff"
+                        strokeWidth={1.5}
+                      />
+                    </div>
+                    <div>
+                      <p className="text-[1.2rem] font-bold">
+                        {" "}
+                        You don't have any {selected} events yet.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {filteredEvents.map((event, index) => (
+                      <div key={index}>{renderEventCard(event)}</div>
+                    ))}
 
-            <PDFUploadModal
-              isOpen={isUploadModalOpen}
-              onClose={() => setIsUploadModalOpen(false)}
-              onUpload={handleFileUpload}
-              event={selectedEvent}
-              handleDeleteFile={handleDeleteFile}
-              handleFileDownload={handleFileDownload}
-            />
+                    {/* Pagination Component */}
+                    <div className="flex justify-center w-full mt-10">
+                      <Pagination
+                        count={Math.ceil(
+                          events.filter((event) => event.status === selected)
+                            .length / eventsPerPage
+                        )}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                        variant="outlined"
+                        shape="rounded"
+                        // hidePrevButton
+                        // hideNextButton
+                        className="custom-pagination"
+                        sx={{
+                          "& .MuiPaginationItem-root": {
+                            color: "white",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                            backgroundColor: "transparent",
+                            "&:hover": {
+                              backgroundColor: "rgba(255,255,255,0.2)",
+                            },
+                          },
+                          "& .Mui-selected": {
+                            backgroundColor: "#ffffff !important",
+                            color: "#000000",
+                          },
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <PDFUploadModal
+                  isOpen={isUploadModalOpen}
+                  onClose={() => setIsUploadModalOpen(false)}
+                  onUpload={handleFileUpload}
+                  event={selectedEvent}
+                  handleDeleteFile={handleDeleteFile}
+                  handleFileDownload={handleFileDownload}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

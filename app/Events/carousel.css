@@ -1,0 +1,66 @@
+
+.embla {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+  
+}
+.embla__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  border: 0.25px solid hsl(0, 0%, 15%);
+  border-radius: 10px;
+}
+.embla__slide img {
+  height: 30rem;
+  width: 100%;
+  object-fit: cover;
+  object-position: 100% 25%;
+  position: relative;
+  overflow: hidden;
+  z-index: -1;
+  border-radius: 10px;
+}
+.embla__buttons{
+  gap: 51rem;
+  display: flex;
+  position: absolute;
+  left: 10rem;
+  top: 25.5rem;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.embla__prev:hover, .embla__next:hover {
+  border: 1px solid black;
+  opacity: 100%;
+}
+.embla__prev, .embla__next {
+  opacity: 25%;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: black;
+  transition: .50s ease-in-out;
+}
+.embla__text {
+  padding: 1rem;
+}
+.embla__title {
+  font-size: 25px;
+  font-weight: 800;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.embla__description {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
